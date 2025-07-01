@@ -123,7 +123,7 @@ function setupCamera() {
 
     /*  Create the camera and set its initial position.                       */
     camera = new three.PerspectiveCamera(36, windowRatio, 0.25, 100);
-    camera.position.set(0.0, -15.0, 5.0);
+    camera.position.set(0.0, -10.0, 3.0);
 }
 
 /******************************************************************************
@@ -214,6 +214,17 @@ function setupScene() {
             scene.add(arrow);
         }
     }
+
+    const origin = new three.Vector3(0.0, 0.0, 0.0);
+    const xPos = new three.Vector3(5.0, 0.0, 0.0);
+    const yPos = new three.Vector3(0.0, 5.0, 0.0);
+    const zPos = new three.Vector3(0.0, 0.0, 5.0);
+
+    const xArrow = new three.ArrowHelper(xPos, origin, 5.5, 0x000000, 0.5);
+    const zArrow = new three.ArrowHelper(zPos, origin, 3.0, 0x000000, 0.5);
+
+    scene.add(xArrow);
+    scene.add(zArrow);
 }
 /*  End of setupScene.                                                        */
 
