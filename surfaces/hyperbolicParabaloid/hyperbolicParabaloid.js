@@ -15,7 +15,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Renders a hyperbolic parabaloid, z = x^2 - y^2.                       *
+ *      Renders a hyperbolic paraboloid, z = x^2 - y^2.                       *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       July 10, 2025                                                 *
@@ -50,7 +50,7 @@ function onWindowResize() {
  *  Function:                                                                 *
  *      animate                                                               *
  *  Purpose:                                                                  *
- *      Rotates the sphere slowly about the z axis.                           *
+ *      Rotates the hyperbolic paraboloid slowly about the z axis.            *
  *  Arguments:                                                                *
  *      None.                                                                 *
  *  Output:                                                                   *
@@ -60,10 +60,10 @@ function animate() {
 
     /*  The elapsed time is used for the rotation parameter.                  */
     const currentTime = Date.now();
-    const time = (currentTime - startTime) / 1024.0;
+    const time = (currentTime - startTime);
 
     /*  Rotate the object slightly as time passes.                            */
-    object.rotation.z = 0.125 * time;
+    object.rotation.z = time / 8192.0;
 
     /*  Re-render the newly rotated scene.                                    */
     renderer.render(scene, camera);
@@ -130,7 +130,8 @@ function setupCamera() {
  *  Function:                                                                 *
  *      setupScene                                                            *
  *  Purpose:                                                                  *
- *      Creates the scene, which is a wireframe sphere and a black background.*
+ *      Creates the scene, which is a wireframe hyperbolic paraboloid and a   *
+ *      black background.                                                     *
  *  Arguments:                                                                *
  *      None.                                                                 *
  *  Output:                                                                   *
@@ -138,20 +139,19 @@ function setupCamera() {
  ******************************************************************************/
 function setupScene() {
 
-    /*  three.js has several sphere tools, but the wireframes end up with the *
-     *  diagonal lines rendered. We are trying to represent the sphere as a   *
-     *  parametrization using the square and the triangles do not help show   *
-     *  this. We use BufferGeometry and create a sphere from scratch.         */
+    /*  three.js has parametric function tools, but this renders the          *
+     *  with diagonals across the constituents squares, creating a mesh of    *
+     *  triangles. To see a square pattern, we'll need to make our own buffer.*/
     const geometry = new three.BufferGeometry();
 
-    /*  The vertices for the sphere will by typed as 32-bit floats. We'll     *
+    /*  The vertices for the object will by typed as 32-bit floats. We'll     *
      *  need a variable for the buffer attributes as well.                    */
     let f32Vertices, geometryAttributes;
 
     /*  Material the wireframe will be made out of.                           */
     const material = new three.MeshBasicMaterial( { color: 0x00AAFF } );
 
-    /*  Radius of the sphere, and the number of longitude and latitude lines. */
+    /*  Parameters for the hyperbolic paraboloid.                             */
     const START = -1.0;
     const FINISH = 1.0;
     const LENGTH = FINISH - START;
@@ -160,31 +160,35 @@ function setupScene() {
     const DX = LENGTH / WIDTH;
     const DY = LENGTH / HEIGHT;
 
-    /*  Vertices for the mesh used to draw the sphere.                        */
+    /*  Vertices for the mesh used to draw the hyperbolic paraboloid.         */
     let vertices = [];
     let indices = [];
 
     /*  Variables for indexing over the two axes.                             */
     let xIndex, yIndex;
 
-    /*  Loope through the zenith angles, azimuth angles are the inner loop.   */
+    /*  Loop through the horizontal axis. The hyperbolic paraboloid lies      *
+     *  above the xy plane, meaning it is of the form z = f(x, y).            */
     for (xIndex = 1; xIndex <= WIDTH; ++xIndex) {
 
+        /*  Convert pixel index to x coordinate in the plane.                 */
         const X = START + xIndex * DX;
 
-        /*  With the latitude fixed we now go around in a circle, allowing    *
-         *  the azimuthal angle to vary.                                      */
+        /*  Loop through the vertical component of the object.                */
         for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
 
+            /*  Convert pixel index to y coordinate.                          */
             const Y = START + yIndex * DY;
+
+            /*  The hyperbolic paraboloid has a simple formula: z = x^2 - y^2.*/
             const Z = X*X - Y*Y;
 
             /*  Add this point to our vertex array.                           */
             vertices.push(X, Y, Z);
         }
-        /*  End of azimuth for-loop.                                          */
+        /*  End of vertical for-loop.                                         */
     }
-    /*  End of zenith for-loop.                                               */
+    /*  End of horizontal for-loop.                                           */
 
     /*  The BufferAttribute constructor wants a typed array, convert the      *
      *  vertex array into a 32-bit float array.                               */
@@ -197,39 +201,65 @@ function setupScene() {
     /*  We need to create the lines now. We do this by creating ordered       *
      *  pairs of the indices for the vertices in the vertex array that we     *
      *  want to connect. Each point will be connected to its four surrounding *
-     *  neighbors, except for the north and south poles which will be         *
-     *  connected to all adjacent points. Because of this we start the theta  *
-     *  index at 1 (avoid 0, which is the north pole) and stop at             *
-     *  LAT_LINES - 1, avoiding the final latitude line since this needs to   *
-     *  be dealt with more carefully to account for the south pole.           */
+     *  neighbors, except for the points on the boundary, which have fewer    *
+     *  neighbors. We handle these boundary points separately.                */
     for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
 
-        /*  The latitude is fixed, we now go around the azimuth component. We *
-         *  attach "L"'s at each point.                                       */
-        for (yIndex = 0; yIndex < HEIGHT - 1; ++yIndex) {
+        /*  The horizontal component is now fixed, loop through the vertical. */
+        for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
 
+            /*  We operate in row-major fashion, so the starting index for    *
+             *  this row is the current vertical index times the height.      */
             const SHIFT = yIndex * HEIGHT;
 
-            const index00 = SHIFT + xIndex;
-            const index01 = index00 + 1;
-            const index10 = index00 + HEIGHT;
+            /*  The current index is the shift plus horizontal index. That    *
+             *  is, the index for (x, y) is y*height + x.                     */
+            const INDEX00 = SHIFT + xIndex;
 
-            /*  Add the "L" shape centered at the current point. This         *
-             *  consists of two line segments, and hence needs four vertices. */
-            indices.push(index00, index01, index00, index10);
+            /*  The point directly after the current point, in the horizontal.*/
+            const INDEX01 = INDEX00 + 1;
+
+            /*  The point directly above the current point, in the vertical.  */
+            const INDEX10 = INDEX00 + HEIGHT;
+
+            /*  If we are not at the very top of the object, we can add an    *
+             *  "L" shape to our object, connecting the bottom left point     *
+             *  with the bottom right point, and similarly the bottom left    *
+             *  point with the upper left point.                              */
+            if (yIndex != HEIGHT - 1)
+                indices.push(INDEX00, INDEX01, INDEX00, INDEX10);
+
+            /*  At the top boundary, the upper left point goes beyond the     *
+             *  bounds of our object and does not need to be drawn. Only add  *
+             *  the line from bottom left to bottom right.                    */
+            else
+                indices.push(INDEX00, INDEX01);
         }
-        /*  End of azimuth for-loop.                                          */
+        /*  End of vertical for-loop.                                         */
     }
-    /*  End of zenith for-loop.                                               */
+    /*  End of horizontal for-loop.                                           */
+
+    /*  We stopped the horizontal for loop at WIDTH - 2, to avoid writing     *
+     *  past the bounds of the object. This means we have left out the        *
+     *  right-most vertical column, and need to add it back in.               */
+    for (yIndex = 0; yIndex < HEIGHT - 1; ++yIndex)
+    {
+        /*  Same computation above, adding vertical lines only, and with the  *
+         *  x index set to WIDTH - 1, the right-most index.                   */
+        const SHIFT = yIndex * HEIGHT;
+        const BOTTOM = SHIFT + WIDTH - 1;
+        const TOP = BOTTOM + HEIGHT;
+        indices.push(BOTTOM, TOP);
+    }
 
     /*  Add the vertices and index array to the mesh.                         */
     geometry.setAttribute('position', geometryAttributes);
     geometry.setIndex(indices);
 
-    /*  We wish to create a wireframe for the sphere. Create the lines.       */
+    /*  We wish to create a wireframe for the object. Create the lines.       */
     object = new three.LineSegments(geometry, material);
 
-    /*  Create the scene and add the sphere to it.                            */
+    /*  Create the scene and add the hyperbolic paraboloid to it.             */
     scene = new three.Scene();
     scene.add(object);
 }
@@ -239,7 +269,7 @@ function setupScene() {
  *  Function:                                                                 *
  *      init                                                                  *
  *  Purpose:                                                                  *
- *      Creates the animation for the wireframe sphere.                       *
+ *      Creates the animation for the wireframe hyperbolic paraboloid.        *
  *  Arguments:                                                                *
  *      None.                                                                 *
  *  Output:                                                                   *
