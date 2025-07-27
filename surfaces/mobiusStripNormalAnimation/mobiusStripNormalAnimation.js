@@ -1,0 +1,349 @@
+/******************************************************************************
+ *                                  LICENSE                                   *
+ ******************************************************************************
+ *  This file is free software: you can redistribute it and/or modify         *
+ *  it under the terms of the GNU General Public License as published by      *
+ *  the Free Software Foundation, either version 3 of the License, or         *
+ *  (at your option) any later version.                                       *
+ *                                                                            *
+ *  This file is distributed in the hope that it will be useful,              *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             *
+ *  GNU General Public License for more details.                              *
+ *                                                                            *
+ *  You should have received a copy of the GNU General Public License         *
+ *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
+ ******************************************************************************
+ *  Purpose:                                                                  *
+ *      Renders a wireframe Mobius strip.                                     *
+ ******************************************************************************
+ *  Author:     Ryan Maguire                                                  *
+ *  Date:       July 27, 2025                                                 *
+ ******************************************************************************/
+
+/*  three.js has all of the tools for generating 3D animations.               */
+import * as three from 'three';
+
+/*  OrbitControls allows the user to control the animation using the mouse.   */
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+/*  Globals for the animation.                                                */
+let camera, scene, renderer, startTime, object, dir, arrow;
+
+/******************************************************************************
+ *  Function:                                                                 *
+ *      onWindowResize                                                        *
+ *  Purpose:                                                                  *
+ *      Resets the camera and renderer when the window is resized.            *
+ *  Arguments:                                                                *
+ *      None.                                                                 *
+ *  Output:                                                                   *
+ *      None.                                                                 *
+ ******************************************************************************/
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+/******************************************************************************
+ *  Function:                                                                 *
+ *      animate                                                               *
+ *  Purpose:                                                                  *
+ *      Rotates the Mobius strip slowly about the z axis.                     *
+ *  Arguments:                                                                *
+ *      None.                                                                 *
+ *  Output:                                                                   *
+ *      None.                                                                 *
+ ******************************************************************************/
+function animate() {
+
+    /*  The elapsed time is used for the rotation parameter.                  */
+    const currentTime = Date.now();
+    const time = (currentTime - startTime);
+    const t = time / 1024.0;
+
+    const cos_t = Math.cos(t);
+    const sin_t = Math.sin(t);
+    const cos_half_t = Math.cos(0.5 * t);
+    const sin_half_t = Math.sin(0.5 * t);
+
+    arrow.position.x = cos_t;
+    arrow.position.y = sin_t;
+
+    dir.x = cos_t * sin_half_t;
+    dir.y = sin_t * sin_half_t;
+    dir.z = -cos_half_t
+    dir.normalize();
+    arrow.setDirection(dir);
+
+    /*  Re-render the newly rotated scene.                                    */
+    renderer.render(scene, camera);
+}
+
+/******************************************************************************
+ *  Function:                                                                 *
+ *      createControls                                                        *
+ *  Purpose:                                                                  *
+ *      Creates controls so that a user may interact with the animation.      *
+ *  Arguments:                                                                *
+ *      None.                                                                 *
+ *  Output:                                                                   *
+ *      None.                                                                 *
+ ******************************************************************************/
+function createControls() {
+
+    /*  These controls allow the user to interact with the image using the    *
+     *  mouse. Clicking and dragging will rearrange the image.                */
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 1, 0);
+    controls.update();
+}
+
+/******************************************************************************
+ *  Function:                                                                 *
+ *      setupRenderer                                                         *
+ *  Purpose:                                                                  *
+ *      Initializes the renderer for the animation with default values.       *
+ *  Arguments:                                                                *
+ *      None.                                                                 *
+ *  Output:                                                                   *
+ *      None.                                                                 *
+ ******************************************************************************/
+function setupRenderer() {
+    renderer = new three.WebGLRenderer({antialias: true});
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setAnimationLoop(animate);
+    renderer.shadowMap.enabled = true;
+}
+
+/******************************************************************************
+ *  Function:                                                                 *
+ *      setupCamera                                                           *
+ *  Purpose:                                                                  *
+ *      Initialize the camera and camera geometry for the scene.              *
+ *  Arguments:                                                                *
+ *      None.                                                                 *
+ *  Output:                                                                   *
+ *      None.                                                                 *
+ ******************************************************************************/
+function setupCamera() {
+
+    /*  Aspect ratio for the window.                                          */
+    const windowRatio = window.innerWidth / window.innerHeight;
+
+    /*  Create the camera and set its initial position.                       */
+    camera = new three.PerspectiveCamera(36, windowRatio, 0.25, 16);
+    camera.position.set(2.0, -5.0, -5.0);
+}
+
+/******************************************************************************
+ *  Function:                                                                 *
+ *      setupScene                                                            *
+ *  Purpose:                                                                  *
+ *      Creates the scene, which is a wireframe Mobius strip and a            *
+ *      black background.                                                     *
+ *  Arguments:                                                                *
+ *      None.                                                                 *
+ *  Output:                                                                   *
+ *      None.                                                                 *
+ ******************************************************************************/
+function setupScene() {
+
+    /*  Lighting for the scene.                                               */
+    const mainLight = new three.DirectionalLight(0xFFFFFF, 1.0);
+
+    const base = new three.Vector3(1.0, 0.0, 0.0);
+
+    /*  three.js has parametric function tools, but this renders the          *
+     *  with diagonals across the constituents squares, creating a mesh of    *
+     *  triangles. To see a square pattern, we'll need to make our own buffer.*/
+    const geometry = new three.BufferGeometry();
+
+    /*  The vertices for the object will by typed as 32-bit floats. We'll     *
+     *  need a variable for the buffer attributes as well.                    */
+    let f32Vertices, geometryAttributes;
+
+    /*  Material the wireframe will be made out of.                           */
+    const materialParameters = {side: three.DoubleSide};
+    const material = new three.MeshNormalMaterial(materialParameters);
+
+    /*  Parameters for the Mobius strip. The horizontal axis is parametrized  *
+     *  by the angle on the unit circle, which varies from 0 to 2 pi.         */
+    const X_START = 0.0;
+    const X_FINISH = 2.0 * Math.PI;
+
+    /*  Vertical axis is the height of the strip of paper, -1 to 1.           */
+    const Y_START = -1.0;
+    const Y_FINISH = 1.0;
+
+    /*  The number of segments we'll divide the two axes into.                */
+    const WIDTH = 64;
+    const HEIGHT = 16;
+
+    /*  Parameters for the uv plane, the strip in the plane that parametrizes *
+     *  the Mobius band.                                                      */
+    const X_LENGTH = X_FINISH - X_START;
+    const Y_LENGTH = Y_FINISH - Y_START;
+    const DX = X_LENGTH / (WIDTH - 1);
+    const DY = Y_LENGTH / (HEIGHT - 1);
+
+    /*  Vertices for the mesh used to draw the Mobius strip.                  */
+    let vertices = [];
+    let indices = [];
+
+    /*  Variables for indexing over the two axes.                             */
+    let xIndex, yIndex;
+
+    /*  Loop through the horizontal axis.                                     */
+    for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
+
+        /*  Convert pixel index to x coordinate in the plane.                 */
+        const X = X_START + xIndex * DX;
+
+        /*  Loop through the vertical component of the object.                */
+        for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
+
+            /*  Convert pixel index to y coordinate.                          */
+            const Y = Y_START + yIndex * DY;
+
+            /*  The formula for the Mobius band.                              */
+            const COS_X = Math.cos(X);
+            const SIN_X = Math.sin(X);
+            const COS_HALF_X = Math.cos(0.5 * X);
+            const SIN_HALF_X = Math.sin(0.5 * X);
+
+            const T = 1.0 + 0.5 * Y * COS_HALF_X;
+
+            const X_PT = T * COS_X;
+            const Y_PT = T * SIN_X;
+            const Z_PT = 0.5 * Y * SIN_HALF_X;
+
+            /*  Add this point to our vertex array.                           */
+            vertices.push(X_PT, Y_PT, Z_PT);
+        }
+        /*  End of vertical for-loop.                                         */
+    }
+    /*  End of horizontal for-loop.                                           */
+
+    /*  The Mobius band has a half twist, so the "orientation" of the strip   *
+     *  is reverse after x varies from 0 to 2 pi (left becomes right and      *
+     *  right becomes left). We cannot simply connect a line segment from the *
+     *  (WIDTH - 1, y) point to the (0, y) point, these points do not line up *
+     *  because of the flip. Instead we need to connect the (WIDTH - 1, y)    *
+     *  point to the (0, HEIGHT - 1 - y) point, the HEIGHT - 1 - y index      *
+     *  takes into account the flip. Add these to our vertex array.           */
+    for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
+
+        /*  Replacing y with HEIGHT - 1 - y flips the horizontal axis. There  *
+         *  are three components to a point, since we are working in three    *
+         *  dimensional space, so the index is scaled by 3.                   */
+        const X_IND = 3 * (HEIGHT - 1 - yIndex);
+        const Y_IND = X_IND + 1;
+        const Z_IND = Y_IND + 1;
+
+        /*  No need to recompute these points, they correspond to the first   *
+         *  column in the vertex array. Add them to the end as well.          */
+        vertices.push(vertices[X_IND], vertices[Y_IND], vertices[Z_IND]);
+    }
+
+    /*  The BufferAttribute constructor wants a typed array, convert the      *
+     *  vertex array into a 32-bit float array.                               */
+    f32Vertices = new Float32Array(vertices);
+
+    /*  We can now create the buffer attributes. The data is 3D, hence the    *
+     *  itemSize parameter is 3.                                              */
+    geometryAttributes = new three.BufferAttribute(f32Vertices, 3);
+
+    /*  We need to create the lines now. We do this by creating ordered       *
+     *  pairs of the indices for the vertices in the vertex array that we     *
+     *  want to connect. Each point will be connected to its four surrounding *
+     *  neighbors, except for the points on the boundary, which have fewer    *
+     *  neighbors. We handle these boundary points separately.                */
+    for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
+
+        /*  The horizontal component is now fixed, loop through the vertical. */
+        for (yIndex = 0; yIndex < HEIGHT - 1; ++yIndex) {
+
+            /*  We operate in row-major fashion, so the starting index for    *
+             *  this row is the current horizontal index times the height.    */
+            const SHIFT = xIndex * HEIGHT;
+
+            /*  The current index is the shift plus vertical index. That      *
+             *  is, the index for (x, y) is x*height + y.                     */
+            const INDEX00 = SHIFT + yIndex;
+
+            /*  The point directly after the current point, in the vertical.  */
+            const INDEX01 = INDEX00 + 1;
+
+            /*  The point next to the current point, in the horizontal.       */
+            const INDEX10 = INDEX00 + HEIGHT;
+
+            /*  Lastly, the point above and to the right.                     */
+            const INDEX11 = INDEX10 + 1;
+
+            /*  Add the constituent triangles that make up the current square.*/
+            indices.push(INDEX00, INDEX01, INDEX10, INDEX10, INDEX01, INDEX11);
+        }
+        /*  End of vertical for-loop.                                         */
+    }
+    /*  End of horizontal for-loop.                                           */
+
+    /*  Add the vertices and index array to the mesh.                         */
+    geometry.setAttribute('position', geometryAttributes);
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+
+    dir = new three.Vector3(0.0, 0.0, -1.0);
+    arrow = new three.ArrowHelper(dir, base, 0.5, 0x000000, 0.125, 0.0625);
+
+    console.log(arrow.line.material.linewidth);
+
+    /*  We wish to create a wireframe for the object. Create the lines.       */
+    object = new three.Mesh(geometry, material);
+    object.castShadow = true;
+
+    /*  Create the scene and add the Mobius strip to it.                      */
+    scene = new three.Scene();
+    scene.background = new three.Color(0xCCCCCC);
+    scene.add(object);
+    scene.add(arrow);
+    scene.add(mainLight);
+}
+/*  End of setupScene.                                                        */
+
+/******************************************************************************
+ *  Function:                                                                 *
+ *      init                                                                  *
+ *  Purpose:                                                                  *
+ *      Creates the animation for the wireframe Mobius strip.                 *
+ *  Arguments:                                                                *
+ *      None.                                                                 *
+ *  Output:                                                                   *
+ *      None.                                                                 *
+ ******************************************************************************/
+function init() {
+
+    /*  Initialize the globals for the animation. This includes the renderer, *
+     *  camera, objects, and scene.                                           */
+    setupRenderer();
+    setupCamera();
+    setupScene();
+
+    /*  Make the animation interactive. The user can click and drag the       *
+     *  drawing around using their mouse.                                     */
+    createControls();
+
+    /*  Attach the drawing to the actual page.                                */
+    document.body.appendChild(renderer.domElement);
+
+    /*  When the window is resized, update the necessary parameters.          */
+    window.addEventListener('resize', onWindowResize);
+
+    /*  Initialize the start time. This is used as the parameter for rotation.*/
+    startTime = Date.now();
+}
+
+/*  Create the animation.                                                     */
+init();
