@@ -203,7 +203,11 @@ function setupArrows() {
 
                 /*  Create the arrow and add it to the scene.                 */
                 dir = FORCE.normalize();
-                arrow = new three.ArrowHelper(dir, POS, scale, 0xFFFFFF);
+
+                arrow = new three.ArrowHelper(
+                    dir, POS, scale, 0xFFFFFF, 0.3 * scale, 0.15 * scale
+                );
+
                 scene.add(arrow);
             }
         }

@@ -283,7 +283,10 @@ function setupArrows() {
 
                 /*  Create the arrow and add it to the scene.                 */
                 dir = new three.Vector3(-X / NORM, -Y / NORM, -Z / NORM);
-                arrow = new three.ArrowHelper(dir, POS, SCALE, 0xFF0000);
+                arrow = new three.ArrowHelper(
+                    dir, POS, SCALE, 0xFF0000, 0.3 * SCALE, 0.15 * SCALE
+                );
+
                 scene.add(arrow);
 
                 /*  We will rotate this arrow throughout the animation. Add   *
