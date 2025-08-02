@@ -180,8 +180,8 @@ function setupArrows() {
                 const BLUE_DIST = FORCE.length();
                 const RED_DIST = RED_FORCE.length();
 
-                const BLUE_SCALE = -0.5 / (BLUE_DIST * BLUE_DIST * BLUE_DIST);
-                const RED_SCALE = 0.5 / (RED_DIST * RED_DIST * RED_DIST);
+                const BLUE_SCALE = 0.5 / (BLUE_DIST * BLUE_DIST * BLUE_DIST);
+                const RED_SCALE = -0.5 / (RED_DIST * RED_DIST * RED_DIST);
 
                 let dir, arrow, scale;
 
@@ -195,10 +195,10 @@ function setupArrows() {
                 if (BLUE_DIST < RADIUS)
                     continue;
 
-                if (BLUE_DIST - scale < RADIUS)
+                if (RED_DIST < RADIUS)
                     continue;
 
-                if (RED_DIST < RADIUS)
+                if (RED_DIST - scale < RADIUS)
                     continue;
 
                 /*  Create the arrow and add it to the scene.                 */
