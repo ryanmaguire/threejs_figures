@@ -134,7 +134,7 @@ function setupCamera() {
 
     /*  Create the camera and set its initial position.                       */
     camera = new three.PerspectiveCamera(50, windowRatio, 0.25, 100);
-    camera.position.set(3.0, 5.0, 6.0);
+    camera.position.set(2.0, 3.0, 5.0);
 }
 
 /******************************************************************************
