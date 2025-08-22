@@ -26,8 +26,6 @@ import * as three from 'three';
 
 /*  OrbitControls allows the user to control the animation using the mouse.   */
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-import {ParametricGeometry}
-    from 'three/addons/geometries/ParametricGeometry.js';
 
 /*  Globals for the animation.                                                */
 let camera, scene, renderer, startTime, object, paraboloid, plane;
@@ -64,18 +62,24 @@ function onWindowResize() {
  ******************************************************************************/
 function animate() {
 
-    /*  The elapsed time is used for the rotation parameter.                  */
+    /*  The elapsed time is used for the homotopy parameter.                  */
     const currentTime = Date.now();
     const time = (currentTime - startTime) / 1024.0;
 
+    /*  We need the parameter to vary back and forth from 0 to 1. Use the     *
+     *  cosine function to do this.                                           */
     const t = 0.5 * (1.0 - Math.cos(time));
 
+    /*  Variables for the indices of the vertices of the mesh.                */
     let xInd, yInd;
 
+    /*  Loop through the horizontal components.                               */
     for (xInd = 0; xInd <= WIDTH; ++xInd)
     {
+        /*  Loop through the vertical components.                             */
         for (yInd = 0; yInd <= HEIGHT; ++yInd)
         {
+            /*  The index for (x, y) is given by x + (WIDTH + 1) * y. Compute.*/
             const ind = yInd * (WIDTH + 1) + xInd;
 
             const xp = plane.geometry.attributes.position.getX(ind);

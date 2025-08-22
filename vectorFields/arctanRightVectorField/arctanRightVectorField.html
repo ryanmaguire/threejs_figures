@@ -15,7 +15,7 @@
     along with this file.  If not, see <https://www.gnu.org/licenses/>.
 
     Purpose:
-        HTML part of the exponential vector field.
+        HTML part of the arctan vector field.
 
     Author:     Ryan Maguire
     Date:       August 2, 2025
@@ -38,7 +38,7 @@
     <head>
         <meta charset = "utf-8">
         <title>
-            Exponential Vector Field
+            Arctan Vector Field
         </title>
         <style>
             body {
@@ -47,10 +47,31 @@
         </style>
     </head>
     <body>
-        <script
-            type = "module"
-            src = "arctanRightVectorField.js"
-        >
+        <script type="module">
+
+            const candidates = [
+                'threejs_arctanRightVectorField.js',
+                'arctanRightVectorField.js'
+            ];
+
+            async function loadAvailableScript() {
+                for (const path of candidates) {
+                    try {
+                        const res = await fetch(path, {method: 'HEAD'});
+
+                        if (res.ok) {
+                            await import(`./${path}`);
+                            console.log(`Loaded module: ${path}`);
+                            return;
+                        }
+                    } catch (err) {
+                        /*  Ignore and try to load the next file.             */
+                    }
+                }
+                console.error('three.js animation not found.');
+            }
+
+            loadAvailableScript();
         </script>
     </body>
 </html>

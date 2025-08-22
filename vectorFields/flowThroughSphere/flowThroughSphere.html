@@ -38,7 +38,7 @@
     <head>
         <meta charset = "utf-8">
         <title>
-            Gravitation Field Day
+            Flow Through Sphere
         </title>
         <style>
             body {
@@ -47,10 +47,31 @@
         </style>
     </head>
     <body>
-        <script
-            type = "module"
-            src = "flowThroughSphere.js"
-        >
+        <script type="module">
+
+            const candidates = [
+                'threejs_flowThroughSphere.js',
+                'flowThroughSphere.js'
+            ];
+
+            async function loadAvailableScript() {
+                for (const path of candidates) {
+                    try {
+                        const res = await fetch(path, {method: 'HEAD'});
+
+                        if (res.ok) {
+                            await import(`./${path}`);
+                            console.log(`Loaded module: ${path}`);
+                            return;
+                        }
+                    } catch (err) {
+                        /*  Ignore and try to load the next file.             */
+                    }
+                }
+                console.error('three.js animation not found.');
+            }
+
+            loadAvailableScript();
         </script>
     </body>
 </html>
