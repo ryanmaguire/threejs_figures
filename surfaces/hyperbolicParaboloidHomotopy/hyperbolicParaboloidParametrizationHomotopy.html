@@ -15,10 +15,10 @@
     along with this file.  If not, see <https://www.gnu.org/licenses/>.
 
     Purpose:
-        HTML part of the torus homotopy.
+        HTML part of the hyperbolic paraboloid homotopy.
 
     Author:     Ryan Maguire
-    Date:       July 18, 2024
+    Date:       July 18, 2025
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -47,10 +47,31 @@
         </style>
     </head>
     <body>
-        <script
-            type = "module"
-            src = "hyperbolicParaboloidParametrizationHomotopy.js"
-        >
+        <script type="module">
+
+            const candidates = [
+                'threejs_hyperbolicParaboloidParametrizationHomotopy.js',
+                'hyperbolicParaboloidParametrizationHomotopy.js'
+            ];
+
+            async function loadAvailableScript() {
+                for (const path of candidates) {
+                    try {
+                        const res = await fetch(path, {method: 'HEAD'});
+
+                        if (res.ok) {
+                            await import(`./${path}`);
+                            console.log(`Loaded module: ${path}`);
+                            return;
+                        }
+                    } catch (err) {
+                        /*  Ignore and try to load the next file.             */
+                    }
+                }
+                console.error('three.js animation not found.');
+            }
+
+            loadAvailableScript();
         </script>
     </body>
 </html>
