@@ -15,10 +15,10 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Renders a homotopy from a plane to a Mobius strip.                    *
+ *      Renders a wireframe Mobius strip.                                     *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
- *  Date:       July 18, 2025                                                 *
+ *  Date:       July 27, 2025                                                 *
  ******************************************************************************/
 
 /*  three.js has all of the tools for generating 3D animations.               */
@@ -28,11 +28,7 @@ import * as three from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
 /*  Globals for the animation.                                                */
-let camera, scene, renderer, startTime, frontObject, backObject, mobius, plane;
-
-/*  Parameters for the Mobius strip.                                          */
-const WIDTH = 32;
-const HEIGHT = 32;
+let camera, scene, renderer, startTime, object;
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -54,7 +50,7 @@ function onWindowResize() {
  *  Function:                                                                 *
  *      animate                                                               *
  *  Purpose:                                                                  *
- *      Transforms the plane to a Mobius strip using a homotopy.              *
+ *      Rotates the Mobius strip slowly about the z axis.                     *
  *  Arguments:                                                                *
  *      None.                                                                 *
  *  Output:                                                                   *
@@ -64,39 +60,12 @@ function animate() {
 
     /*  The elapsed time is used for the rotation parameter.                  */
     const currentTime = Date.now();
-    const time = (currentTime - startTime) / 1024.0;
+    const time = (currentTime - startTime);
 
-    const t = 0.5 * (1.0 - Math.cos(time));
-
-    let xInd, yInd;
-
-    for (xInd = 0; xInd <= WIDTH; ++xInd)
-    {
-        for (yInd = 0; yInd <= HEIGHT; ++yInd)
-        {
-            const ind = yInd * (WIDTH + 1) + xInd;
-
-            const xp = plane.geometry.attributes.position.getX(ind);
-            const xs = mobius.geometry.attributes.position.getX(ind);
-
-            const yp = plane.geometry.attributes.position.getY(ind);
-            const ys = mobius.geometry.attributes.position.getY(ind);
-
-            const zp = plane.geometry.attributes.position.getZ(ind);
-            const zs = mobius.geometry.attributes.position.getZ(ind);
-
-            const x = t * xs + (1 - t) * xp;
-            const y = t * ys + (1 - t) * yp;
-            const z = t * zs + (1 - t) * zp;
-
-            frontObject.geometry.attributes.position.setXYZ(ind, x, y, z);
-        }
-    }
+    /*  Rotate the object slightly as time passes.                            */
+    object.rotation.z = time / 8192.0;
 
     /*  Re-render the newly rotated scene.                                    */
-    backObject.geometry.attributes.position.needsUpdate = true;
-    frontObject.geometry.attributes.position.needsUpdate = true;
-
     renderer.render(scene, camera);
 }
 
@@ -153,15 +122,16 @@ function setupCamera() {
     const windowRatio = window.innerWidth / window.innerHeight;
 
     /*  Create the camera and set its initial position.                       */
-    camera = new three.PerspectiveCamera(36, windowRatio, 0.25, 25);
-    camera.position.set(0.0, -5.0, 4.0);
+    camera = new three.PerspectiveCamera(36, windowRatio, 0.25, 16);
+    camera.position.set(0.0, -5.0, 6.0);
 }
 
 /******************************************************************************
  *  Function:                                                                 *
  *      setupScene                                                            *
  *  Purpose:                                                                  *
- *      Creates the scene. This includes the Mobius strip and the plane.      *
+ *      Creates the scene, which is a wireframe Mobius strip and a            *
+ *      black background.                                                     *
  *  Arguments:                                                                *
  *      None.                                                                 *
  *  Output:                                                                   *
@@ -169,24 +139,21 @@ function setupCamera() {
  ******************************************************************************/
 function setupScene() {
 
+    /*  Lighting for the scene.                                               */
+    const mainLight = new three.DirectionalLight(0xFFFFFF, 1.0);
+
     /*  three.js has parametric function tools, but this renders the          *
      *  with diagonals across the constituents squares, creating a mesh of    *
      *  triangles. To see a square pattern, we'll need to make our own buffer.*/
-    const planeGeometry = new three.BufferGeometry();
-    const mobiusGeometry = new three.BufferGeometry();
-    const objectGeometry = new three.BufferGeometry();
+    const geometry = new three.BufferGeometry();
 
     /*  The vertices for the object will by typed as 32-bit floats. We'll     *
      *  need a variable for the buffer attributes as well.                    */
-    let f32PlaneVertices, f32MobiusVertices, f32ObjectVertices;
-    let planeAttributes, mobiusAttributes, objectAttributes;
+    let f32Vertices, geometryAttributes;
 
     /*  Material the wireframe will be made out of.                           */
-    const frontParameters = {color: 0xFF2200, side: three.FrontSide};
-    const backParameters = {color: 0x00AAFF, side: three.BackSide};
-
-    const backMaterial = new three.MeshBasicMaterial(backParameters);
-    const frontMaterial = new three.MeshBasicMaterial(frontParameters);
+    const materialParameters = {side: three.DoubleSide};
+    const material = new three.MeshNormalMaterial(materialParameters);
 
     /*  Parameters for the Mobius strip. The horizontal axis is parametrized  *
      *  by the angle on the unit circle, which varies from 0 to 2 pi.         */
@@ -198,8 +165,9 @@ function setupScene() {
     const Y_FINISH = 1.0;
 
     /*  The number of segments we'll divide the two axes into.                */
-    const WIDTH = 32;
-    const HEIGHT = 32;
+    const WIDTH = 64;
+    const HEIGHT = 17;
+    const HALF_HEIGHT = 8;
 
     /*  Parameters for the uv plane, the strip in the plane that parametrizes *
      *  the Mobius band.                                                      */
@@ -209,16 +177,14 @@ function setupScene() {
     const DY = Y_LENGTH / (HEIGHT - 1);
 
     /*  Vertices for the mesh used to draw the Mobius strip.                  */
-    let mobiusVertices = [];
-    let planeVertices = [];
-    let objectVertices = [];
+    let vertices = [];
     let indices = [];
 
     /*  Variables for indexing over the two axes.                             */
     let xIndex, yIndex;
 
     /*  Loop through the horizontal axis.                                     */
-    for (xIndex = 0; xIndex < WIDTH; ++xIndex) {
+    for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
 
         /*  Convert pixel index to x coordinate in the plane.                 */
         const X = X_START + xIndex * DX;
@@ -232,21 +198,14 @@ function setupScene() {
             /*  The formula for the Mobius band.                              */
             const COS_X = Math.cos(X);
             const SIN_X = Math.sin(X);
-            const COS_THREE_HALVES_X = Math.cos(1.5 * X);
-            const SIN_THREE_HALVES_X = Math.sin(1.5 * X);
 
-            const T = 1.0 + 0.5 * Y * COS_THREE_HALVES_X;
+            const T = 1.0 + 0.5 * Y * COS_X;
 
             const X_PT = T * COS_X;
             const Y_PT = T * SIN_X;
-            const Z_PT = 0.5 * Y * SIN_THREE_HALVES_X;
+            const Z_PT = 0.5 * Y * SIN_X;
 
-            /*  Add this point to our vertex array.                           */
-            planeVertices.push(X - Math.PI, Y, 0.0);
-            objectVertices.push(X - Math.PI, Y, 0.0);
-
-            if (xIndex != WIDTH - 1)
-                mobiusVertices.push(X_PT, Y_PT, Z_PT);
+            vertices.push(X_PT, Y_PT, Z_PT);
         }
         /*  End of vertical for-loop.                                         */
     }
@@ -264,18 +223,22 @@ function setupScene() {
         /*  Replacing y with HEIGHT - 1 - y flips the horizontal axis. There  *
          *  are three components to a point, since we are working in three    *
          *  dimensional space, so the index is scaled by 3.                   */
-        const X_IND = 3 * (HEIGHT - 1 - yIndex);
+        const X_IND = 3 * yIndex;
         const Y_IND = X_IND + 1;
         const Z_IND = Y_IND + 1;
 
         /*  No need to recompute these points, they correspond to the first   *
          *  column in the vertex array. Add them to the end as well.          */
-        mobiusVertices.push(
-            mobiusVertices[X_IND],
-            mobiusVertices[Y_IND],
-            mobiusVertices[Z_IND]
-        );
+        vertices.push(vertices[X_IND], vertices[Y_IND], vertices[Z_IND]);
     }
+
+    /*  The BufferAttribute constructor wants a typed array, convert the      *
+     *  vertex array into a 32-bit float array.                               */
+    f32Vertices = new Float32Array(vertices);
+
+    /*  We can now create the buffer attributes. The data is 3D, hence the    *
+     *  itemSize parameter is 3.                                              */
+    geometryAttributes = new three.BufferAttribute(f32Vertices, 3);
 
     /*  We need to create the lines now. We do this by creating ordered       *
      *  pairs of the indices for the vertices in the vertex array that we     *
@@ -304,6 +267,9 @@ function setupScene() {
             /*  Lastly, the point above and to the right.                     */
             const INDEX11 = INDEX10 + 1;
 
+            if ((yIndex == HALF_HEIGHT) || (yIndex == HALF_HEIGHT - 1))
+                continue;
+
             /*  Add the constituent triangles that make up the current square.*/
             indices.push(INDEX00, INDEX01, INDEX10, INDEX10, INDEX01, INDEX11);
         }
@@ -311,39 +277,19 @@ function setupScene() {
     }
     /*  End of horizontal for-loop.                                           */
 
-    /*  The BufferAttribute constructor wants a typed array, convert the      *
-     *  vertex array into a 32-bit float array.                               */
-    f32MobiusVertices = new Float32Array(mobiusVertices);
-    f32PlaneVertices = new Float32Array(planeVertices);
-    f32ObjectVertices = new Float32Array(objectVertices);
-
-    /*  We can now create the buffer attributes. The data is 3D, hence the    *
-     *  itemSize parameter is 3.                                              */
-    mobiusAttributes = new three.BufferAttribute(f32MobiusVertices, 3);
-    planeAttributes = new three.BufferAttribute(f32PlaneVertices, 3);
-    objectAttributes = new three.BufferAttribute(f32ObjectVertices, 3);
-
     /*  Add the vertices and index array to the mesh.                         */
-    planeGeometry.setAttribute('position', planeAttributes);
-    objectGeometry.setIndex(indices);
-
-    mobiusGeometry.setAttribute('position', mobiusAttributes);
-    objectGeometry.setIndex(indices);
-
-    objectGeometry.setAttribute('position', objectAttributes);
-    objectGeometry.setIndex(indices);
-    objectGeometry.computeVertexNormals();
+    geometry.setAttribute('position', geometryAttributes);
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
 
     /*  We wish to create a wireframe for the object. Create the lines.       */
-    plane = new three.Mesh(planeGeometry, frontMaterial);
-	mobius = new three.Mesh(mobiusGeometry, frontMaterial);
-    frontObject = new three.Mesh(objectGeometry, frontMaterial);
-    backObject = new three.Mesh(objectGeometry, backMaterial);
+    object = new three.Mesh(geometry, material);
+    object.castShadow = true;
 
     /*  Create the scene and add the Mobius strip to it.                      */
     scene = new three.Scene();
-    scene.add(backObject);
-    scene.add(frontObject);
+    scene.add(object);
+    scene.add(mainLight);
 }
 /*  End of setupScene.                                                        */
 
@@ -351,7 +297,7 @@ function setupScene() {
  *  Function:                                                                 *
  *      init                                                                  *
  *  Purpose:                                                                  *
- *      Creates the animation for the Mobius strip.                           *
+ *      Creates the animation for the wireframe Mobius strip.                 *
  *  Arguments:                                                                *
  *      None.                                                                 *
  *  Output:                                                                   *
