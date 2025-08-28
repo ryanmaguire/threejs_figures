@@ -15,7 +15,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Renders a homotopy from a plane to a Mobius strip.                    *
+ *      Renders a homotopy from a plane to a three twist surface.             *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       August 27, 2025                                               *
