@@ -18,7 +18,7 @@
  *      Renders a homotopy from a plane to a Mobius strip.                    *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
- *  Date:       July 18, 2025                                                 *
+ *  Date:       August 27, 2025                                               *
  ******************************************************************************/
 
 /*  three.js has all of the tools for generating 3D animations.               */
