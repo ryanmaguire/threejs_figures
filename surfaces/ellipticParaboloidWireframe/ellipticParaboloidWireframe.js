@@ -59,11 +59,11 @@ function onWindowResize() {
 function animate() {
 
     /*  The elapsed time is used for the rotation parameter.                  */
-    const currentTime = Date.now();
-    const time = (currentTime - startTime);
+    const CURRENT_TIME = Date.now();
+    const TIME = (CURRENT_TIME - startTime);
 
     /*  Rotate the object slightly as time passes.                            */
-    object.rotation.z = time / 8192.0;
+    object.rotation.z = TIME / 8192.0;
 
     /*  Re-render the newly rotated scene.                                    */
     renderer.render(scene, camera);
@@ -118,12 +118,24 @@ function setupRenderer() {
  ******************************************************************************/
 function setupCamera() {
 
+    /*  Starting location for the camera.                                     */
+    const CAMERA_X = 0.0;
+    const CAMERA_Y = -5.0;
+    const CAMERA_Z = 6.0;
+
+    /*  Field-of-View for the camera.                                         */
+    const FOV = 36.0;
+
+    /*  Drawing thresholds for objects in the camera's view.                  */
+    const NEAR = 0.25;
+    const FAR = 100.0;
+
     /*  Aspect ratio for the window.                                          */
-    const windowRatio = window.innerWidth / window.innerHeight;
+    const WINDOW_RATIO = window.innerWidth / window.innerHeight;
 
     /*  Create the camera and set its initial position.                       */
-    camera = new three.PerspectiveCamera(36, windowRatio, 0.25, 100);
-    camera.position.set(0.0,-5.0, 6.0);
+    camera = new three.PerspectiveCamera(FOV, WINDOW_RATIO, NEAR, FAR);
+    camera.position.set(CAMERA_X, CAMERA_Y, CAMERA_Z);
 }
 
 /******************************************************************************
@@ -193,9 +205,9 @@ function setupScene() {
             /*  Add this point to our vertex array.                           */
             vertices.push(X, Y, Z);
         }
-        /*  End of vertical for-loop.                                         */
+        /*  End of horizontal for-loop.                                       */
     }
-    /*  End of horizontal for-loop.                                           */
+    /*  End of vertical for-loop.                                             */
 
     /*  The BufferAttribute constructor wants a typed array, convert the      *
      *  vertex array into a 32-bit float array.                               */
