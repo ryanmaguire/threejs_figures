@@ -15,7 +15,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Renders a wireframe Mobius strip.                                     *
+ *      Renders a three twist surface with the center removed.                *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       July 27, 2025                                                 *
