@@ -122,7 +122,7 @@ function setupCamera() {
     const windowRatio = window.innerWidth / window.innerHeight;
 
     /*  Create the camera and set its initial position.                       */
-    camera = new three.PerspectiveCamera(36, windowRatio, 0.25, 16);
+    camera = new three.PerspectiveCamera(36, windowRatio, 0.25, 100);
     camera.position.set(0.0,-5.0, 6.0);
 }
 
@@ -139,7 +139,7 @@ function setupCamera() {
  ******************************************************************************/
 function setupScene() {
 
-    /*  three.js has parametric function tools, but this renders the          *
+    /*  three.js has parametric function tools, but this renders the object   *
      *  with diagonals across the constituents squares, creating a mesh of    *
      *  triangles. To see a square pattern, we'll need to make our own buffer.*/
     const geometry = new three.BufferGeometry();
@@ -149,16 +149,20 @@ function setupScene() {
     let f32Vertices, geometryAttributes;
 
     /*  Material the wireframe will be made out of.                           */
-    const material = new three.MeshBasicMaterial( { color: 0x00AAFF } );
+    const material = new three.MeshBasicMaterial({color: 0x00AAFF});
 
     /*  Parameters for the elliptic paraboloid.                               */
     const START = -1.0;
     const FINISH = 1.0;
     const LENGTH = FINISH - START;
+
+    /*  The number of samples in the horizontal and vertical axes.            */
     const WIDTH = 32;
     const HEIGHT = 32;
-    const DX = LENGTH / WIDTH;
-    const DY = LENGTH / HEIGHT;
+
+    /*  Step-sizes for the displacement between samples.                      */
+    const DX = LENGTH / (WIDTH - 1);
+    const DY = LENGTH / (HEIGHT - 1);
 
     /*  Vertices for the mesh used to draw the elliptic paraboloid.           */
     let vertices = [];
@@ -167,18 +171,21 @@ function setupScene() {
     /*  Variables for indexing over the two axes.                             */
     let xIndex, yIndex;
 
-    /*  Loop through the horizontal axis. The elliptic paraboloid lies        *
-     *  above the xy plane, meaning it is of the form z = f(x, y).            */
-    for (xIndex = 1; xIndex <= WIDTH; ++xIndex) {
+    /*  Loop through the vertical axis. The elliptic paraboloid lies          *
+     *  above the xy plane, meaning it is of the form z = f(x, y).            *
+     *                                                                        *
+     *  Note, since the y index is the outer for-loop, the array is indexed   *
+     *  in row-major fashion. That is, index = y * WIDTH + x.                 */
+    for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
 
-        /*  Convert pixel index to x coordinate in the plane.                 */
-        const X = START + xIndex * DX;
+        /*  Convert pixel index to y coordinate.                              */
+        const Y = START + yIndex * DY;
 
-        /*  Loop through the vertical component of the object.                */
-        for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
+        /*  Loop through the horizontal component of the object.              */
+        for (xIndex = 0; xIndex < WIDTH; ++xIndex) {
 
-            /*  Convert pixel index to y coordinate.                          */
-            const Y = START + yIndex * DY;
+            /*  Convert pixel index to x coordinate in the plane.             */
+            const X = START + xIndex * DX;
 
             /*  The elliptic paraboloid has a simple formula: z = x^2 + 2y^2. */
             const Z = X*X + 2.0*Y*Y;
@@ -203,27 +210,29 @@ function setupScene() {
      *  want to connect. Each point will be connected to its four surrounding *
      *  neighbors, except for the points on the boundary, which have fewer    *
      *  neighbors. We handle these boundary points separately.                */
-    for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
+    for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
 
-        /*  The horizontal component is now fixed, loop through the vertical. */
-        for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
+        /*  The indices are row-major, meaning index = y * WIDTH + x. The     *
+         *  shift factor only depends on the y-component, compute this.       */
+        const SHIFT = yIndex * WIDTH;
 
-            /*  We operate in row-major fashion, so the starting index for    *
-             *  this row is the current vertical index times the height.      */
-            const SHIFT = yIndex * HEIGHT;
+        /*  The vertical component is now fixed, loop through the horizontal  *
+         *  axis. The right-most column, which is xIndex = WIDTH - 1, is the  *
+         *  boundary and must be handled separately. This is done in later.   */
+        for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
 
             /*  The current index is the shift plus horizontal index. That    *
-             *  is, the index for (x, y) is y*height + x.                     */
+             *  is, the index for (x, y) is y * WIDTH + x.                    */
             const INDEX00 = SHIFT + xIndex;
 
             /*  The point directly after the current point, in the horizontal.*/
             const INDEX01 = INDEX00 + 1;
 
             /*  The point directly above the current point, in the vertical.  */
-            const INDEX10 = INDEX00 + HEIGHT;
+            const INDEX10 = INDEX00 + WIDTH;
 
             /*  If we are not at the very top of the object, we can add an    *
-             *  "L" shape to our object, connecting the bottom left point     *
+             *  "L" shape to our mesh, connecting the bottom left point       *
              *  with the bottom right point, and similarly the bottom left    *
              *  point with the upper left point.                              */
             if (yIndex != HEIGHT - 1)
@@ -235,9 +244,9 @@ function setupScene() {
             else
                 indices.push(INDEX00, INDEX01);
         }
-        /*  End of vertical for-loop.                                         */
+        /*  End of horizontal for-loop.                                       */
     }
-    /*  End of horizontal for-loop.                                           */
+    /*  End of vertical for-loop.                                             */
 
     /*  We stopped the horizontal for loop at WIDTH - 2, to avoid writing     *
      *  past the bounds of the object. This means we have left out the        *
@@ -246,9 +255,9 @@ function setupScene() {
     {
         /*  Same computation above, adding vertical lines only, and with the  *
          *  x index set to WIDTH - 1, the right-most index.                   */
-        const SHIFT = yIndex * HEIGHT;
+        const SHIFT = yIndex * WIDTH;
         const BOTTOM = SHIFT + WIDTH - 1;
-        const TOP = BOTTOM + HEIGHT;
+        const TOP = BOTTOM + WIDTH;
         indices.push(BOTTOM, TOP);
     }
 
