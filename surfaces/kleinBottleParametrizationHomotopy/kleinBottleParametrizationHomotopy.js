@@ -15,10 +15,10 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Renders a homotopy from a plane to a Mobius strip.                    *
+ *      Renders a homotopy from a plane to a Klein bottle.                    *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
- *  Date:       July 18, 2025                                                 *
+ *  Date:       August 28, 2025                                               *
  ******************************************************************************/
 
 /*  three.js has all of the tools for generating 3D animations.               */
