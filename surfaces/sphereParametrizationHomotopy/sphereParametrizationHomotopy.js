@@ -18,7 +18,7 @@
  *      Renders a parametrization from a plane to the sphere.                 *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
- *  Date:       June 21, 2025                                                 *
+ *  Date:       July 3, 2025                                                  *
  ******************************************************************************/
 
 /*  three.js has all of the tools for generating 3D animations.               */
