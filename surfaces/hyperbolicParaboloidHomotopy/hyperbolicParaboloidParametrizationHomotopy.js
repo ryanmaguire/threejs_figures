@@ -74,30 +74,46 @@ function animate() {
     let xInd, yInd;
 
     /*  Loop through the horizontal components.                               */
-    for (xInd = 0; xInd <= WIDTH; ++xInd)
+    for (yInd = 0; yInd <= HEIGHT; ++yInd)
     {
-        /*  Loop through the vertical components.                             */
-        for (yInd = 0; yInd <= HEIGHT; ++yInd)
-        {
-            /*  The index for (x, y) is given by x + (WIDTH + 1) * y. Compute.*/
-            const ind = yInd * (WIDTH + 1) + xInd;
+        /*  The indices are stored in row-major format, the y-shift is used   *
+         *  to get the corresponding column.                                  */
+        const SHIFT = yInd * (WIDTH + 1);
 
+        /*  Loop through the vertical components.                             */
+        for (xInd = 0; xInd <= WIDTH; ++xInd)
+        {
+            /*  The index for (x, y) is given by x + y-shift. Compute.        */
+            const ind = SHIFT + xInd;
+
+            /*  Extract the x-coordinates from the two surfaces.              */
             const xp = plane.geometry.attributes.position.getX(ind);
             const xs = paraboloid.geometry.attributes.position.getX(ind);
 
+            /*  Extract the y-coordinates from the two surfaces.              */
             const yp = plane.geometry.attributes.position.getY(ind);
             const ys = paraboloid.geometry.attributes.position.getY(ind);
 
+            /*  Extract the z-coordinates from the two surfaces.              */
             const zp = plane.geometry.attributes.position.getZ(ind);
             const zs = paraboloid.geometry.attributes.position.getZ(ind);
 
+            /*  We draw a straight line from the point P in the first surface *
+             *  to the point Q in the second surface using a linear homotopy: *
+             *                                                                *
+             *      r(t) = t Q + (1 - t) P                                    *
+             *                                                                *
+             *  We use this to calculate the vertices of the current surface. */
             const x = t * xs + (1 - t) * xp;
             const y = t * ys + (1 - t) * yp;
             const z = t * zs + (1 - t) * zp;
 
+            /*  Update the current point in the plotted object.               */
             object.geometry.attributes.position.setXYZ(ind, x, y, z);
         }
+        /*  End of y-axis for-loop.                                           */
     }
+    /*  End of x-axis for-loop.                                               */
 
     /*  Re-render the newly rotated scene.                                    */
     object.geometry.attributes.position.needsUpdate = true;
