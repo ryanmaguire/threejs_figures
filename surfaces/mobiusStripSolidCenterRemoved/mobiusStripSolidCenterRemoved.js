@@ -15,7 +15,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Renders a wireframe Mobius strip.                                     *
+ *      Renders a Mobius strip with the center cut out.                       *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       July 27, 2025                                                 *
