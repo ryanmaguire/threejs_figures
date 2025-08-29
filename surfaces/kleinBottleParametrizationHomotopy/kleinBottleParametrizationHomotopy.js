@@ -230,7 +230,7 @@ function setupScene() {
             const SIN_Y = Math.sin(Y);
 
             const X_PT = 3.0 * COS_X * (1.0 + SIN_X) + T * COS_Y * X_SCALE;
-            const Y_PT = 8.0 * SIN_X + COS_Y * Y_SCALE;
+            const Y_PT = 8.0 * SIN_X + COS_Y * Y_SCALE + 4.0;
             const Z_PT = T * SIN_Y;
 
             /*  Add this point to our vertex array.                           */
@@ -238,7 +238,7 @@ function setupScene() {
             objectVertices.push(X - Math.PI, Y, 0.0);
 
             if (xIndex != WIDTH - 1)
-                mobiusVertices.push(X_PT, Y_PT, Z_PT);
+                mobiusVertices.push(0.25 * X_PT, 0.25 * Y_PT, 0.25 * Z_PT);
         }
         /*  End of vertical for-loop.                                         */
     }
