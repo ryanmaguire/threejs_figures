@@ -31,8 +31,8 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 let camera, scene, renderer, startTime, object, mobius, plane;
 
 /*  Parameters for the Mobius strip.                                          */
-const WIDTH = 64;
-const HEIGHT = 33;
+const WIDTH = 65;
+const HEIGHT = 65;
 
 /******************************************************************************
  *  Function:                                                                 *
