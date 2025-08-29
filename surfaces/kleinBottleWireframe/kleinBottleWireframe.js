@@ -139,9 +139,6 @@ function setupCamera() {
  ******************************************************************************/
 function setupScene() {
 
-    /*  Lighting for the scene.                                               */
-    const mainLight = new three.DirectionalLight(0xFFFFFF, 1.0);
-
     /*  three.js has parametric function tools, but this renders the          *
      *  with diagonals across the constituents squares, creating a mesh of    *
      *  triangles. To see a square pattern, we'll need to make our own buffer.*/
@@ -152,8 +149,8 @@ function setupScene() {
     let f32Vertices, geometryAttributes;
 
     /*  Material the wireframe will be made out of.                           */
-    const materialParameters = {side: three.DoubleSide};
-    const material = new three.MeshNormalMaterial(materialParameters);
+    const materialParameters = {color: 0x00AAFF};
+    const material = new three.MeshBasicMaterial(materialParameters);
 
     /*  Parameters for the Mobius strip. The horizontal axis is parametrized  *
      *  by the angle on the unit circle, which varies from 0 to 2 pi.         */
@@ -165,8 +162,8 @@ function setupScene() {
     const Y_FINISH = 2.0 * Math.PI;
 
     /*  The number of segments we'll divide the two axes into.                */
-    const WIDTH = 65;
-    const HEIGHT = 65;
+    const WIDTH = 63;
+    const HEIGHT = 63;
 
     /*  Parameters for the uv plane, the strip in the plane that parametrizes *
      *  the Mobius band.                                                      */
@@ -183,7 +180,7 @@ function setupScene() {
     let xIndex, yIndex;
 
     /*  Loop through the horizontal axis.                                     */
-    for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
+    for (xIndex = 0; xIndex < WIDTH; ++xIndex) {
 
         /*  Convert pixel index to x coordinate in the plane.                 */
         const X = X_START + xIndex * DX;
@@ -200,7 +197,6 @@ function setupScene() {
             /*  Convert pixel index to y coordinate.                          */
             const Y = Y_START + yIndex * DY;
 
-
             const COS_Y = Math.cos(Y);
             const SIN_Y = Math.sin(Y);
 
@@ -215,27 +211,6 @@ function setupScene() {
     }
     /*  End of horizontal for-loop.                                           */
 
-    /*  The Mobius band has a half twist, so the "orientation" of the strip   *
-     *  is reverse after x varies from 0 to 2 pi (left becomes right and      *
-     *  right becomes left). We cannot simply connect a line segment from the *
-     *  (WIDTH - 1, y) point to the (0, y) point, these points do not line up *
-     *  because of the flip. Instead we need to connect the (WIDTH - 1, y)    *
-     *  point to the (0, HEIGHT - 1 - y) point, the HEIGHT - 1 - y index      *
-     *  takes into account the flip. Add these to our vertex array.           */
-    for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
-
-        /*  Replacing y with HEIGHT - 1 - y flips the horizontal axis. There  *
-         *  are three components to a point, since we are working in three    *
-         *  dimensional space, so the index is scaled by 3.                   */
-        const X_IND = 3 * ((3 * ((HEIGHT - 1) >> 1) - yIndex) % (HEIGHT - 1));
-        const Y_IND = X_IND + 1;
-        const Z_IND = Y_IND + 1;
-
-        /*  No need to recompute these points, they correspond to the first   *
-         *  column in the vertex array. Add them to the end as well.          */
-        vertices.push(vertices[X_IND], vertices[Y_IND], vertices[Z_IND]);
-    }
-
     /*  The BufferAttribute constructor wants a typed array, convert the      *
      *  vertex array into a 32-bit float array.                               */
     f32Vertices = new Float32Array(vertices);
@@ -249,48 +224,54 @@ function setupScene() {
      *  want to connect. Each point will be connected to its four surrounding *
      *  neighbors, except for the points on the boundary, which have fewer    *
      *  neighbors. We handle these boundary points separately.                */
-    for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
+    for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
 
-        /*  The horizontal component is now fixed, loop through the vertical. */
-        for (yIndex = 0; yIndex < HEIGHT - 1; ++yIndex) {
+        /*  The indices are row-major, meaning index = y * WIDTH + x. The     *
+         *  shift factor only depends on the y-component, compute this.       */
+        const SHIFT = yIndex * WIDTH;
 
-            /*  We operate in row-major fashion, so the starting index for    *
-             *  this row is the current horizontal index times the height.    */
-            const SHIFT = xIndex * HEIGHT;
+        /*  The vertical component is now fixed, loop through the horizontal  *
+         *  axis. The right-most column, which is xIndex = WIDTH - 1, is the  *
+         *  boundary and must be handled separately. This is done in later.   */
+        for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
 
-            /*  The current index is the shift plus vertical index. That      *
-             *  is, the index for (x, y) is x*height + y.                     */
-            const INDEX00 = SHIFT + yIndex;
+            /*  The current index is the shift plus horizontal index. That    *
+             *  is, the index for (x, y) is y * WIDTH + x.                    */
+            const INDEX00 = SHIFT + xIndex;
 
-            /*  The point directly after the current point, in the vertical.  */
+            /*  The point directly after the current point, in the horizontal.*/
             const INDEX01 = INDEX00 + 1;
 
-            /*  The point next to the current point, in the horizontal.       */
-            const INDEX10 = INDEX00 + HEIGHT;
+            /*  The point directly above the current point, in the vertical.  */
+            const INDEX10 = INDEX00 + WIDTH;
 
-            /*  Lastly, the point above and to the right.                     */
-            const INDEX11 = INDEX10 + 1;
+            /*  If we are not at the very top of the object, we can add an    *
+             *  "L" shape to our mesh, connecting the bottom left point       *
+             *  with the bottom right point, and similarly the bottom left    *
+             *  point with the upper left point.                              */
+            if (yIndex != HEIGHT - 1)
+                indices.push(INDEX00, INDEX01, INDEX00, INDEX10);
 
-            /*  Add the constituent triangles that make up the current square.*/
-            indices.push(INDEX00, INDEX01, INDEX10, INDEX10, INDEX01, INDEX11);
+            /*  At the top boundary, the upper left point goes beyond the     *
+             *  bounds of our object and does not need to be drawn. Only add  *
+             *  the line from bottom left to bottom right.                    */
+            else
+                indices.push(INDEX00, INDEX01);
         }
-        /*  End of vertical for-loop.                                         */
+        /*  End of horizontal for-loop.                                       */
     }
-    /*  End of horizontal for-loop.                                           */
+    /*  End of vertical for-loop.                                             */
 
     /*  Add the vertices and index array to the mesh.                         */
     geometry.setAttribute('position', geometryAttributes);
     geometry.setIndex(indices);
-    geometry.computeVertexNormals();
 
     /*  We wish to create a wireframe for the object. Create the lines.       */
-    object = new three.Mesh(geometry, material);
-    object.castShadow = true;
+    object = new three.LineSegments(geometry, material);
 
     /*  Create the scene and add the Mobius strip to it.                      */
     scene = new three.Scene();
     scene.add(object);
-    scene.add(mainLight);
 }
 /*  End of setupScene.                                                        */
 
