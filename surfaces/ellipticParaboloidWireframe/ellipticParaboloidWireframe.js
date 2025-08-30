@@ -15,7 +15,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Renders a elliptic paraboloid, z = x^2 + 2y^2.                        *
+ *      Renders an elliptic paraboloid, z = x^2 + 2y^2.                       *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       July 22, 2025                                                 *
@@ -83,9 +83,9 @@ function createControls() {
 
     /*  These controls allow the user to interact with the image using the    *
      *  mouse. Clicking and dragging will rearrange the image.                */
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 1, 0);
-    controls.update();
+    const CONTROLS = new OrbitControls(camera, renderer.domElement);
+    CONTROLS.target.set(0, 1, 0);
+    CONTROLS.update();
 }
 
 /******************************************************************************
@@ -152,16 +152,16 @@ function setupCamera() {
 function setupScene() {
 
     /*  three.js has parametric function tools, but this renders the object   *
-     *  with diagonals across the constituents squares, creating a mesh of    *
+     *  with diagonals across the constituent squares, creating a mesh of     *
      *  triangles. To see a square pattern, we'll need to make our own buffer.*/
-    const geometry = new three.BufferGeometry();
+    const GEOMETRY = new three.BufferGeometry();
 
     /*  The vertices for the object will by typed as 32-bit floats. We'll     *
      *  need a variable for the buffer attributes as well.                    */
     let f32Vertices, geometryAttributes;
 
     /*  Material the wireframe will be made out of.                           */
-    const material = new three.MeshBasicMaterial({color: 0x00AAFF});
+    const MATERIAL = new three.MeshBasicMaterial({color: 0x00AAFF});
 
     /*  Parameters for the elliptic paraboloid.                               */
     const START = -1.0;
@@ -230,7 +230,7 @@ function setupScene() {
 
         /*  The vertical component is now fixed, loop through the horizontal  *
          *  axis. The right-most column, which is xIndex = WIDTH - 1, is the  *
-         *  boundary and must be handled separately. This is done in later.   */
+         *  boundary and must be handled separately. This is done later.      */
         for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
 
             /*  The current index is the shift plus horizontal index. That    *
@@ -274,11 +274,11 @@ function setupScene() {
     }
 
     /*  Add the vertices and index array to the mesh.                         */
-    geometry.setAttribute('position', geometryAttributes);
-    geometry.setIndex(indices);
+    GEOMETRY.setAttribute('position', geometryAttributes);
+    GEOMETRY.setIndex(indices);
 
     /*  We wish to create a wireframe for the object. Create the lines.       */
-    object = new three.LineSegments(geometry, material);
+    object = new three.LineSegments(GEOMETRY, MATERIAL);
 
     /*  Create the scene and add the elliptic paraboloid to it.               */
     scene = new three.Scene();
