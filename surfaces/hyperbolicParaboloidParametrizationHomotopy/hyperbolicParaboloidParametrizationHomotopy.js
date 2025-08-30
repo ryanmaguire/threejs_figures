@@ -135,9 +135,9 @@ function createControls() {
 
     /*  These controls allow the user to interact with the image using the    *
      *  mouse. Clicking and dragging will rearrange the image.                */
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 1, 0);
-    controls.update();
+    const CONTROLS = new OrbitControls(camera, renderer.domElement);
+    CONTROLS.target.set(0, 1, 0);
+    CONTROLS.update();
 }
 
 /******************************************************************************
@@ -203,11 +203,11 @@ function setupCamera() {
 function setupScene() {
 
     /*  three.js has parametric function tools, but this renders the object   *
-     *  with diagonals across the constituents squares, creating a mesh of    *
+     *  with diagonals across the constituent squares, creating a mesh of     *
      *  triangles. To see a square pattern, we'll need to make our own buffer.*/
-    const planeGeometry = new three.BufferGeometry();
-    const paraboloidGeometry = new three.BufferGeometry();
-    const objectGeometry = new three.BufferGeometry();
+    const PLANE_GEOMETRY = new three.BufferGeometry();
+    const PARABOLOID_GEOMETRY = new three.BufferGeometry();
+    const OBJECT_GEOMETRY = new three.BufferGeometry();
 
     /*  The vertices for the object will by typed as 32-bit floats. We'll     *
      *  need a variable for the buffer attributes as well.                    */
@@ -215,7 +215,7 @@ function setupScene() {
     let planeAttributes, paraboloidAttributes, objectAttributes;
 
     /*  Material the wireframe will be made out of.                           */
-    const material = new three.MeshBasicMaterial({color: 0x00AAFF});
+    const MATERIAL = new three.MeshBasicMaterial({color: 0x00AAFF});
 
     /*  Parameters for the hyperbolic paraboloid.                             */
     const START = -1.0;
@@ -264,7 +264,7 @@ function setupScene() {
              *  the same points as the plane object.                          */
             objectVertices.push(X, Y, 0.0);
         }
-        /*  End of horitzonal for-loop.                                       */
+        /*  End of horizontal for-loop.                                       */
     }
     /*  End of vertical for-loop.                                             */
 
@@ -293,7 +293,7 @@ function setupScene() {
 
         /*  The vertical component is now fixed, loop through the horizontal  *
          *  axis. The right-most column, which is xIndex = WIDTH - 1, is the  *
-         *  boundary and must be handled separately. This is done in later.   */
+         *  boundary and must be handled separately. This is done later.      */
         for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
 
             /*  The current index is the shift plus horizontal index. That    *
@@ -323,7 +323,7 @@ function setupScene() {
     }
     /*  End of vertical for-loop.                                             */
 
-    /*  We stopped the horizontal for loop at WIDTH - 2, to avoid writing     *
+    /*  We stopped the horizontal for-loop at WIDTH - 2, to avoid writing     *
      *  past the bounds of the object. This means we have left out the        *
      *  right-most vertical column, and need to add it back in.               */
     for (yIndex = 0; yIndex < HEIGHT - 1; ++yIndex)
@@ -337,19 +337,19 @@ function setupScene() {
     }
 
     /*  Add the vertices and index arrays to the meshes.                      */
-    planeGeometry.setAttribute('position', planeAttributes);
-    planeGeometry.setIndex(indices);
+    PLANE_GEOMETRY.setAttribute('position', planeAttributes);
+    PLANE_GEOMETRY.setIndex(indices);
 
-    paraboloidGeometry.setAttribute('position', paraboloidAttributes);
-    paraboloidGeometry.setIndex(indices);
+    PARABOLOID_GEOMETRY.setAttribute('position', paraboloidAttributes);
+    PARABOLOID_GEOMETRY.setIndex(indices);
 
-    objectGeometry.setAttribute('position', objectAttributes);
-    objectGeometry.setIndex(indices);
+    OBJECT_GEOMETRY.setAttribute('position', objectAttributes);
+    OBJECT_GEOMETRY.setIndex(indices);
 
     /*  We wish to create a wireframe for the objects. Create the lines.      */
-    plane = new three.LineSegments(planeGeometry, material);
-	paraboloid = new three.LineSegments(paraboloidGeometry, material);
-    object = new three.LineSegments(objectGeometry, material);
+    plane = new three.LineSegments(PLANE_GEOMETRY, MATERIAL);
+	paraboloid = new three.LineSegments(PARABOLOID_GEOMETRY, MATERIAL);
+    object = new three.LineSegments(OBJECT_GEOMETRY, MATERIAL);
 
     /*  Create the scene and add the hyperbolic paraboloid to it.             */
     scene = new three.Scene();
