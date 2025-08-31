@@ -115,7 +115,7 @@ function createControls() {
     /*  These controls allow the user to interact with the image using the    *
      *  mouse. Clicking and dragging will rearrange the image.                */
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 1, 0);
+    controls.target.set(0, 0, 0);
     controls.update();
 }
 
