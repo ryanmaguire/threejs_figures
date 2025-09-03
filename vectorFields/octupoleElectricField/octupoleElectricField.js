@@ -262,9 +262,9 @@ function setupRenderer() {
 function setupCamera() {
 
     /*  Starting location for the camera.                                     */
-    const CAMERA_X = 0.0;
-    const CAMERA_Y = 1.25 * LENGTH;
-    const CAMERA_Z = 1.25 * LENGTH;
+    const CAMERA_X = 1.45 * LENGTH;
+    const CAMERA_Y = 0.55 * LENGTH;
+    const CAMERA_Z = 0.65 * LENGTH;
 
     /*  Field-of-View for the camera.                                         */
     const FOV = 36.0;
