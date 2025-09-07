@@ -15,10 +15,10 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Renders a solid Mobius strip.                                         *
+ *      Renders a cross cap Klein bottle.                                     *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
- *  Date:       July 27, 2025                                                 *
+ *  Date:       September 1, 2025                                             *
  ******************************************************************************/
 
 /*  three.js has all of the tools for generating 3D animations.               */

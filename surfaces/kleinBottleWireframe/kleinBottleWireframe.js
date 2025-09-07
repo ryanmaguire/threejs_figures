@@ -15,7 +15,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Renders a solid Klein bottle.                                         *
+ *      Renders a wireframe Klein bottle.                                     *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       August 28, 2025                                               *
