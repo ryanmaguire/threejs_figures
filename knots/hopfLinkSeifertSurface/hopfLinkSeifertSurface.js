@@ -15,10 +15,10 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Renders a solid torus.                                                *
+ *      Renders a Seifert surface for the Hopf link.                          *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
- *  Date:       August 27, 2025                                               *
+ *  Date:       September 2, 2025                                             *
  ******************************************************************************/
 
 /*  three.js has all of the tools for generating 3D animations.               */
@@ -50,7 +50,7 @@ function onWindowResize() {
  *  Function:                                                                 *
  *      animate                                                               *
  *  Purpose:                                                                  *
- *      Rotates the Mobius strip slowly about the z axis.                     *
+ *      Rotates the Seifert surface slowly about the z axis.                  *
  *  Arguments:                                                                *
  *      None.                                                                 *
  *  Output:                                                                   *
@@ -59,13 +59,14 @@ function onWindowResize() {
 function animate() {
 
     /*  The elapsed time is used for the rotation parameter.                  */
-    const currentTime = Date.now();
-    const time = (currentTime - startTime);
+    const CURRENT_TIME = Date.now();
+    const TIME = (CURRENT_TIME - startTime);
+    const ROTATION = TIME / 4096.0;
 
     /*  Rotate the object slightly as time passes.                            */
-    frontObject.rotation.z = time / 8192.0;
-    backObject.rotation.z = time / 8192.0;
-    wireFrame.rotation.z = time / 8192.0;
+    frontObject.rotation.z = ROTATION;
+    backObject.rotation.z = ROTATION;
+    wireFrame.rotation.z = ROTATION;
 
     /*  Re-render the newly rotated scene.                                    */
     renderer.render(scene, camera);
@@ -85,9 +86,9 @@ function createControls() {
 
     /*  These controls allow the user to interact with the image using the    *
      *  mouse. Clicking and dragging will rearrange the image.                */
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 1, 0);
-    controls.update();
+    const CONTROLS = new OrbitControls(camera, renderer.domElement);
+    CONTROLS.target.set(0.0, 0.0, 0.0);
+    CONTROLS.update();
 }
 
 /******************************************************************************
@@ -120,20 +121,37 @@ function setupRenderer() {
  ******************************************************************************/
 function setupCamera() {
 
+    /*  Starting location for the camera.                                     */
+    const CAMERA_X = +0.0;
+    const CAMERA_Y = -5.0;
+    const CAMERA_Z = +1.0;
+
+    /*  Field-of-View for the camera.                                         */
+    const FOV = 36.0;
+
+    /*  Drawing thresholds for objects in the camera's view.                  */
+    const NEAR = 0.25;
+    const FAR = 100.0;
+
     /*  Aspect ratio for the window.                                          */
-    const windowRatio = window.innerWidth / window.innerHeight;
+    const WINDOW_RATIO = window.innerWidth / window.innerHeight;
 
     /*  Create the camera and set its initial position.                       */
-    camera = new three.PerspectiveCamera(36, windowRatio, 0.25, 100);
-    camera.position.set(0.0, -5.0, 6.0);
+    camera = new three.PerspectiveCamera(FOV, WINDOW_RATIO, NEAR, FAR);
+    camera.position.set(CAMERA_X, CAMERA_Y, CAMERA_Z);
+
+    /*  Set the orientation for the camera.                                   */
+    camera.lookAt(0.0, 0.0, 0.0);
+    camera.up.set(0.0, 0.0, 1.0);
 }
 
 /******************************************************************************
  *  Function:                                                                 *
  *      setupScene                                                            *
  *  Purpose:                                                                  *
- *      Creates the scene, which is a wireframe Mobius strip and a            *
- *      black background.                                                     *
+ *      Creates the scene, which is a Seifert surface for the Hopf link with  *
+ *      the front side colored blue and the back side colored red, indicating *
+ *      the surface is indeed orientable. The background is black.            *
  *  Arguments:                                                                *
  *      None.                                                                 *
  *  Output:                                                                   *
@@ -141,32 +159,48 @@ function setupCamera() {
  ******************************************************************************/
 function setupScene() {
 
-    /*  Lighting for the scene.                                               */
-    const mainLight = new three.DirectionalLight(0xFFFFFF, 1.0);
+    /*  24-bit RGB values for the colors used for each surface.               */
+    const BLUE = 0x0080FF;
+    const RED = 0xFF0000;
+    const BLACK = 0x000000;
 
-    /*  three.js has parametric function tools, but this renders the          *
-     *  with diagonals across the constituents squares, creating a mesh of    *
-     *  triangles. To see a square pattern, we'll need to make our own buffer.*/
-    const geometry = new three.BufferGeometry();
+    /*  There is a single underlying geometry, but three objects are rendered *
+     *  from this. The geometry contains the points for the Seifert surface,  *
+     *  and from this we render the front side (blue), the back side (red),   *
+     *  and a wireframe to help envision the parametrization.                 */
+    const GEOMETRY = new three.BufferGeometry();
+    const WIRE_GEOMETRY = new three.BufferGeometry();
 
     /*  The vertices for the object will by typed as 32-bit floats. We'll     *
      *  need a variable for the buffer attributes as well.                    */
     let f32Vertices, geometryAttributes;
 
-    /*  Material the wireframe will be made out of.                           */
-    const wireMaterialParameters = {wireframe: true, color: 0x000000};
-    const backMaterialParameters = {side: three.BackSide, color: 0xFF0000};
-    const frontMaterialParameters = {side: three.FrontSide, color: 0x00AAFF};
-    const frontMaterial = new three.MeshBasicMaterial(frontMaterialParameters);
-    const backMaterial = new three.MeshBasicMaterial(backMaterialParameters);
-    const wireMaterial = new three.MeshBasicMaterial(wireMaterialParameters);
+    /*  Descriptions for the three objects that will be rendered.             */
+    const WIRE_DESCRIPTION = {color: BLACK};
+    const BACK_DESCRIPTION = {side: three.BackSide, color: RED};
+    const FRONT_DESCRIPTION = {side: three.FrontSide, color: BLUE};
 
-    /*  Parameters for the Mobius strip. The horizontal axis is parametrized  *
-     *  by the angle on the unit circle, which varies from 0 to 2 pi.         */
+    /*  Create the materials for the three objects.                           */
+    const FRONT_MATERIAL = new three.MeshBasicMaterial(FRONT_DESCRIPTION);
+    const BACK_MATERIAL = new three.MeshBasicMaterial(BACK_DESCRIPTION);
+    const WIRE_MATERIAL = new three.MeshBasicMaterial(WIRE_DESCRIPTION);
+
+    /*  Parameters for the Seifert surface. The horizontal axis is            *
+     *  parametrized by the angle on the unit circle, which varies from       *
+     *  0 to 2 pi.                                                            */
     const X_START = 0.0;
     const X_FINISH = 2.0 * Math.PI;
 
-    /*  Vertical axis is the height of the strip of paper, -1 to 1.           */
+    /*  The Hopf link consists of two circles, which may be parametrized by a *
+     *  single angle (this is the horizontal axis, see above). Given a point  *
+     *  on the first circle with angle theta, we draw a straight line to the  *
+     *  corresponding point on the second circle with angle theta. Labeling   *
+     *  these points P and Q, respectively, we have:                          *
+     *                                                                        *
+     *      L = (1 - t) * P + t * Q                                           *
+     *                                                                        *
+     *  The second parameter hence varies from 0 to 1. This is the vertical   *
+     *  axis used in the parametrization.                                     */
     const Y_START = 0.0;
     const Y_FINISH = 1.0;
 
@@ -174,16 +208,24 @@ function setupScene() {
     const WIDTH = 64;
     const HEIGHT = 32;
 
-    /*  Parameters for the uv plane, the strip in the plane that parametrizes *
-     *  the Mobius band.                                                      */
+    /*  Parameters for the xy plane, the strip in the plane that parametrizes *
+     *  the Seifert surface for the Hopf link.                                */
     const X_LENGTH = X_FINISH - X_START;
     const Y_LENGTH = Y_FINISH - Y_START;
+
+    /*  Step sizes between samples in the xy plane.                           */
     const DX = X_LENGTH / (WIDTH - 1);
     const DY = Y_LENGTH / (HEIGHT - 1);
 
-    /*  Vertices for the mesh used to draw the Mobius strip.                  */
+    /*  Vertices for the mesh used to draw the Seifert surface.               */
     let vertices = [];
+
+    /*  Indices corresponding to the vertices of the triangles that make up   *
+     *  the mesh of the surface.                                              */
     let indices = [];
+
+    /*  Indices corresponding to line segments that create the wireframe.     */
+    let wireIndices = [];
 
     /*  Variables for indexing over the two axes.                             */
     let xIndex, yIndex;
@@ -194,13 +236,21 @@ function setupScene() {
         /*  Convert pixel index to x coordinate in the plane.                 */
         const X = X_START + xIndex * DX;
 
+        /*  Pre-compute sine and cosine of the input.                         */
         const COS_X = Math.cos(X);
         const SIN_X = Math.sin(X);
 
+        /*  The Hopf link consists of two circles that are looped together.   *
+         *  We can create this using a circle in the xy plane and a circle in *
+         *  the xz plane that has been shifted in the x direction. Both       *
+         *  circles are parametrized by an angle (which is our variable X).   *
+         *  Compute the location of the point for the circle in the xz plane. */
         const PX = 1.0 + COS_X;
         const PY = 0.0;
         const PZ = SIN_X;
 
+        /*  Compute the location of the corresponding point that lies on the  *
+         *  circle in the xy plane.                                           */
         const QX = COS_X;
         const QY = SIN_X;
         const QZ = 0.0;
@@ -211,6 +261,9 @@ function setupScene() {
             /*  Convert pixel index to y coordinate.                          */
             const Y = Y_START + yIndex * DY;
 
+            /*  The Y parameter corresponds to the line segment between the   *
+             *  points P and Q. Compute the location of the current point on  *
+             *  the Seifert surface.                                          */
             const X_PT = PX * (1.0 - Y) + Y * QX;
             const Y_PT = PY * (1.0 - Y) + Y * QY;
             const Z_PT = PZ * (1.0 - Y) + Y * QZ;
@@ -222,18 +275,15 @@ function setupScene() {
     }
     /*  End of horizontal for-loop.                                           */
 
-    /*  The Mobius band has a half twist, so the "orientation" of the strip   *
-     *  is reverse after x varies from 0 to 2 pi (left becomes right and      *
-     *  right becomes left). We cannot simply connect a line segment from the *
-     *  (WIDTH - 1, y) point to the (0, y) point, these points do not line up *
-     *  because of the flip. Instead we need to connect the (WIDTH - 1, y)    *
-     *  point to the (0, HEIGHT - 1 - y) point, the HEIGHT - 1 - y index      *
-     *  takes into account the flip. Add these to our vertex array.           */
+    /*  The end of the parametrization matches up with the start of it. That  *
+     *  is, the X parameter corresponds to an angle that goes from 0 to 2 pi, *
+     *  and the points corresponding to X = 0 are the same as the points that *
+     *  have X = 2 pi. Rather than creating new points, we simply add the     *
+     *  first column to the end of the array. The makes the surface closed.   */
     for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
 
-        /*  Replacing y with HEIGHT - 1 - y flips the horizontal axis. There  *
-         *  are three components to a point, since we are working in three    *
-         *  dimensional space, so the index is scaled by 3.                   */
+        /*  There are three numbers needed per point, hence we increment in   *
+         *  chunks of three. Compute the indices for the x, y, and z parts.   */
         const X_IND = 3 * yIndex;
         const Y_IND = X_IND + 1;
         const Z_IND = Y_IND + 1;
@@ -251,19 +301,28 @@ function setupScene() {
      *  itemSize parameter is 3.                                              */
     geometryAttributes = new three.BufferAttribute(f32Vertices, 3);
 
-    /*  We need to create the lines now. We do this by creating ordered       *
-     *  pairs of the indices for the vertices in the vertex array that we     *
-     *  want to connect. Each point will be connected to its four surrounding *
-     *  neighbors, except for the points on the boundary, which have fewer    *
-     *  neighbors. We handle these boundary points separately.                */
+    /*  We need to create the triangles that form the mesh for the surface.   *
+     *  We do this by creating a sequence of ordered triples that correspond  *
+     *  to the indices of three points in the vertex array that form the      *
+     *  vertices for one of the triangles. Each point will be connected to    *
+     *  its nearest neighbors.                                                *
+     *                                                                        *
+     *  The wireframe is drawn to help envision the parametrization. Because  *
+     *  of this want to draw a mesh of squares, not triangles. We create a    *
+     *  second index array using the wireIndices variable that consists of    *
+     *  ordered pairs for the vertices we wish to connected. Each point is    *
+     *  connected to its four nearest neighbors, with the exception of the    *
+     *  points on the boundary, which must be handled separated. We loop      *
+     *  through and add "L" shapes for points not on the boundary, and        *
+     *  squares for points that fall on the upper edge.                       */
     for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
+
+        /*  We operate in column-major fashion, so the starting index for     *
+         *  this column is the current horizontal index times the height.     */
+        const SHIFT = xIndex * HEIGHT;
 
         /*  The horizontal component is now fixed, loop through the vertical. */
         for (yIndex = 0; yIndex < HEIGHT - 1; ++yIndex) {
-
-            /*  We operate in row-major fashion, so the starting index for    *
-             *  this row is the current horizontal index times the height.    */
-            const SHIFT = xIndex * HEIGHT;
 
             /*  The current index is the shift plus vertical index. That      *
              *  is, the index for (x, y) is x*height + y.                     */
@@ -280,27 +339,38 @@ function setupScene() {
 
             /*  Add the constituent triangles that make up the current square.*/
             indices.push(INDEX00, INDEX01, INDEX10, INDEX10, INDEX01, INDEX11);
+
+            /*  Add the vertices for the wireframe. We create an "L" shape.   */
+            wireIndices.push(INDEX00, INDEX01, INDEX00, INDEX10);
+
+            /*  At the very edge of the surface we need to add the boundary.  */
+            if (yIndex == HEIGHT - 2)
+                wireIndices.push(INDEX01, INDEX11);
         }
         /*  End of vertical for-loop.                                         */
     }
     /*  End of horizontal for-loop.                                           */
 
     /*  Add the vertices and index array to the mesh.                         */
-    geometry.setAttribute('position', geometryAttributes);
-    geometry.setIndex(indices);
-    geometry.computeVertexNormals();
+    GEOMETRY.setAttribute('position', geometryAttributes);
+    GEOMETRY.setIndex(indices);
 
-    /*  We wish to create a wireframe for the object. Create the lines.       */
-    frontObject = new three.Mesh(geometry, frontMaterial);
-    backObject = new three.Mesh(geometry, backMaterial);
-    wireFrame = new three.Mesh(geometry, wireMaterial);
+    /*  Similarly, create the wireframe geometry.                             */
+    WIRE_GEOMETRY.setAttribute('position', geometryAttributes);
+    WIRE_GEOMETRY.setIndex(wireIndices);
 
-    /*  Create the scene and add the Mobius strip to it.                      */
+    /*  Create the solid objects, the front and back of the surface.          */
+    frontObject = new three.Mesh(GEOMETRY, FRONT_MATERIAL);
+    backObject = new three.Mesh(GEOMETRY, BACK_MATERIAL);
+
+    /*  Create the wireframe object, which consists of line segments.         */
+    wireFrame = new three.LineSegments(WIRE_GEOMETRY, WIRE_MATERIAL);
+
+    /*  Create the scene and add the Seifert surface to it.                   */
     scene = new three.Scene();
     scene.add(frontObject);
     scene.add(backObject);
     scene.add(wireFrame);
-    scene.add(mainLight);
 }
 /*  End of setupScene.                                                        */
 
@@ -308,7 +378,7 @@ function setupScene() {
  *  Function:                                                                 *
  *      init                                                                  *
  *  Purpose:                                                                  *
- *      Creates the animation for the wireframe Mobius strip.                 *
+ *      Creates the animation for the Hopf link Seifert surface.              *
  *  Arguments:                                                                *
  *      None.                                                                 *
  *  Output:                                                                   *
