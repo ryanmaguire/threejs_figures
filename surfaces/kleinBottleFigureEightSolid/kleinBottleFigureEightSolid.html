@@ -18,7 +18,7 @@
         HTML part of the Klein bottle.
 
     Author:     Ryan Maguire
-    Date:       August 28, 2025
+    Date:       August 30, 2025
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -35,7 +35,7 @@
     <head>
         <meta charset = "utf-8">
         <title>
-            Solid Mobius Strip
+            Solid Figure Eight Klein Bottle
         </title>
         <style>
             body {
@@ -44,8 +44,32 @@
         </style>
     </head>
     <body>
-        <script type="module" src="kleinBottleFigureEightSolid.js">
+        <body>
+            <script type="module">
 
-        </script>
+                const candidates = [
+                    'threejs_kleinBottleFigureEightSolid.js',
+                    'kleinBottleFigureEightSolid.js'
+                ];
+
+                async function loadAvailableScript() {
+                    for (const path of candidates) {
+                        try {
+                            const res = await fetch(path, {method: 'HEAD'});
+
+                            if (res.ok) {
+                                await import(`./${path}`);
+                                console.log(`Loaded module: ${path}`);
+                                return;
+                            }
+                        } catch (err) {
+                            /*  Ignore and try to load the next file.             */
+                        }
+                    }
+                    console.error('three.js animation not found.');
+                }
+
+                loadAvailableScript();
+            </script>
     </body>
 </html>

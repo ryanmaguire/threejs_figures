@@ -28,7 +28,8 @@ import * as three from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
 /*  Globals for the animation.                                                */
-let camera, scene, renderer, startTime, frontObject, backObject, mobius, plane, wireFrame;
+let camera, scene, renderer, startTime;
+let frontObject, backObject, mobius, plane, wireFrame;
 
 /*  Parameters for the Mobius strip.                                          */
 const WIDTH = 65;
