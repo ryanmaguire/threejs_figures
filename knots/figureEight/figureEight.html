@@ -15,15 +15,13 @@
     along with this file.  If not, see <https://www.gnu.org/licenses/>.
 
     Purpose:
-        HTML part of the figure eight animation. See main.js in this directory.
+        HTML part of the figure eight animation.
 
     Author:     Ryan Maguire
     Date:       July 3, 2024
 -->
 <!DOCTYPE html>
 <html lang="en">
-
-    <!-- We use three.js to render this. -->
     <script type = "importmap">
     {
         "imports": {
@@ -34,7 +32,6 @@
         }
     }
     </script>
-
     <head>
         <meta charset = "utf-8">
         <title>
@@ -47,10 +44,31 @@
         </style>
     </head>
     <body>
-        <script
-            type = "module"
-            src = "figureEight.js"
-        >
+        <script type="module">
+
+            const candidates = [
+                'threejs_figureEight.js',
+                'figureEight.js'
+            ];
+
+            async function loadAvailableScript() {
+                for (const path of candidates) {
+                    try {
+                        const res = await fetch(path, {method: 'HEAD'});
+
+                        if (res.ok) {
+                            await import(`./${path}`);
+                            console.log(`Loaded module: ${path}`);
+                            return;
+                        }
+                    } catch (err) {
+                        /*  Ignore and try to load the next file.             */
+                    }
+                }
+                console.error('three.js animation not found.');
+            }
+
+            loadAvailableScript();
         </script>
     </body>
 </html>
