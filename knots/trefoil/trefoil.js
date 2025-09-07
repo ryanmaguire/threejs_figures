@@ -60,13 +60,13 @@ function onWindowResize() {
 function animate() {
 
     /*  The elapsed time is used for the rotation parameter.                  */
-    const currentTime = Date.now();
-    const time = (currentTime - startTime) / 1024.0;
+    const CURRENT_TIME = Date.now();
+    const TIME = (CURRENT_TIME - startTime) / 4096.0;
 
     /*  Rotate the object slightly as time passes.                            */
-    object.position.y = 0.8;
-    object.rotation.x = time * 0.5;
-    object.rotation.y = time * 0.2;
+    object.rotation.x = 0.25 * TIME + 0.5 * Math.PI;
+    object.rotation.y = 0.5 * TIME;
+    object.rotation.z = TIME;
 
     /*  Re-render the newly rotated scene.                                    */
     renderer.render(scene, camera);
@@ -85,21 +85,25 @@ function animate() {
 function createSpotLight() {
 
     /*  Hex code for white in RGB format. This is the triple (255, 255, 255). */
-    const white = 0xFFFFFF;
+    const WHITE = 0xFFFFFF;
 
     /*  Create the spotlight and set up all of its parameters.                */
-    const spotLight = new three.SpotLight(white, 60);
-    spotLight.angle = Math.PI / 5;
-    spotLight.penumbra = 0.2;
-    spotLight.position.set(2, 3, 3);
-    spotLight.castShadow = true;
-    spotLight.shadow.camera.near = 3;
-    spotLight.shadow.camera.far = 10;
-    spotLight.shadow.mapSize.width = 1024;
-    spotLight.shadow.mapSize.height = 1024;
+    const SPOT_LIGHT = new three.SpotLight(WHITE, 60);
+    SPOT_LIGHT.angle = Math.PI / 5;
+    SPOT_LIGHT.penumbra = 0.2;
+    SPOT_LIGHT.position.set(2.0, 3.0, 3.0);
+    SPOT_LIGHT.castShadow = true;
+    SPOT_LIGHT.shadow.camera.near = 3;
+    SPOT_LIGHT.shadow.camera.far = 10;
+
+    /*  This spotlight is much further away from the knot than the            *
+     *  directional light (created in the next function). Increase the shadow *
+     *  resolution to prevent it from looking blurry.                         */
+    SPOT_LIGHT.shadow.mapSize.width = 4096;
+    SPOT_LIGHT.shadow.mapSize.height = 4096;
 
     /*  Add the spotlight to the scene (scene is a global variable).          */
-    scene.add(spotLight);
+    scene.add(SPOT_LIGHT);
 }
 
 /******************************************************************************
@@ -115,23 +119,23 @@ function createSpotLight() {
 function createDirectionalLight() {
 
     /*  Color for the directional light. Dark gray / violet.                  */
-    const dirLightColor = 0x55505A;
+    const LIGHT_COLOR = 0x55505A;
 
     /*  Create the directional light and set up its parameters.               */
-    const dirLight = new three.DirectionalLight(dirLightColor, 3);
-    dirLight.position.set(0, 3, 0);
-    dirLight.castShadow = true;
-    dirLight.shadow.camera.near = 1;
-    dirLight.shadow.camera.far = 10;
-    dirLight.shadow.camera.right = +1;
-    dirLight.shadow.camera.left = -1;
-    dirLight.shadow.camera.top = +1;
-    dirLight.shadow.camera.bottom = -1;
-    dirLight.shadow.mapSize.width = 1024;
-    dirLight.shadow.mapSize.height = 1024;
+    const DIRECTIONAL_LIGHT = new three.DirectionalLight(LIGHT_COLOR, 3);
+    DIRECTIONAL_LIGHT.position.set(0.0, 0.0, 3.0);
+    DIRECTIONAL_LIGHT.castShadow = true;
+    DIRECTIONAL_LIGHT.shadow.camera.near = 1;
+    DIRECTIONAL_LIGHT.shadow.camera.far = 10;
+    DIRECTIONAL_LIGHT.shadow.camera.right = +1;
+    DIRECTIONAL_LIGHT.shadow.camera.left = -1;
+    DIRECTIONAL_LIGHT.shadow.camera.top = +1;
+    DIRECTIONAL_LIGHT.shadow.camera.bottom = -1;
+    DIRECTIONAL_LIGHT.shadow.mapSize.width = 1024;
+    DIRECTIONAL_LIGHT.shadow.mapSize.height = 1024;
 
     /*  Add this light to the (global) scene.                                 */
-    scene.add(dirLight);
+    scene.add(DIRECTIONAL_LIGHT);
 }
 
 /******************************************************************************
@@ -147,11 +151,11 @@ function createDirectionalLight() {
 function createAmbientLight() {
 
     /*  A neutral gray color for the light.                                   */
-    const gray = 0xCCCCCC;
+    const GRAY = 0xCCCCCC;
 
     /*  Create the ambient light and add it to the (global) scene.            */
-    const ambientLight = new three.AmbientLight(gray);
-    scene.add(ambientLight);
+    const AMBIENT_LIGHT = new three.AmbientLight(GRAY);
+    scene.add(AMBIENT_LIGHT);
 }
 
 /******************************************************************************
@@ -168,9 +172,9 @@ function createControls() {
 
     /*  These controls allow the user to interact with the image using the    *
      *  mouse. Clicking and dragging will rearrange the image.                */
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 1, 0);
-    controls.update();
+    const CONTROLS = new OrbitControls(camera, renderer.domElement);
+    CONTROLS.target.set(0.0, 0.0, 0.0);
+    CONTROLS.update();
 }
 
 /******************************************************************************
@@ -203,12 +207,28 @@ function setupRenderer() {
  ******************************************************************************/
 function setupCamera() {
 
+    /*  Starting location for the camera.                                     */
+    const CAMERA_X = 0.0;
+    const CAMERA_Y = 4.0;
+    const CAMERA_Z = 1.0;
+
+    /*  Field-of-View for the camera.                                         */
+    const FOV = 36.0;
+
+    /*  Drawing thresholds for objects in the camera's view.                  */
+    const NEAR = 0.25;
+    const FAR = 100.0;
+
     /*  Aspect ratio for the window.                                          */
-    const windowRatio = window.innerWidth / window.innerHeight;
+    const WINDOW_RATIO = window.innerWidth / window.innerHeight;
 
     /*  Create the camera and set its initial position.                       */
-    camera = new three.PerspectiveCamera(36, windowRatio, 0.25, 16);
-    camera.position.set(0, 1.3, 3);
+    camera = new three.PerspectiveCamera(FOV, WINDOW_RATIO, NEAR, FAR);
+    camera.position.set(CAMERA_X, CAMERA_Y, CAMERA_Z);
+
+    /*  Set the orientation for the camera.                                   */
+    camera.lookAt(0.0, 0.0, 0.0);
+    camera.up.set(0.0, 0.0, 1.0);
 }
 
 /******************************************************************************
@@ -223,50 +243,81 @@ function setupCamera() {
  ******************************************************************************/
 function setupScene() {
 
-    /*  Color for the trefoil knot. Light blue.                               */
-    const blue = 0x00A0FF;
+    /*  Color for the trefoil eight knot. Light blue.                         */
+    const BLUE = 0x00A0FF;
 
     /*  Color for the plane. Dark gray.                                       */
-    const darkGray = 0xA0A0A0;
+    const DARK_GRAY = 0xA0A0A0;
 
     /*  Cyan for the sky. Used as the background parameter for the scene.     */
-    const cyan = 0x00FFFF;
+    const CYAN = 0x00FFFF;
 
-    /*  Material descriptions for the trefoil and the plane.                  */
-    const materialDescription = {
-        color: blue,
+    /*  Struct with the parameters for the knots material. Note the tube we   *
+     *  are drawing (the "thickened" trefoil knot) is orientable, it is       *
+     *  homeomorphic to a torus. We only need to render the front side of the *
+     *  object. The back side is "inside", so the viewer can't see it.        */
+    const KNOT_DESCRIPTION = {
+        color: BLUE,
         shininess: 100,
-        side: three.DoubleSide,
+        side: three.FrontSide,
         alphaToCoverage: true
     };
 
-    const planeDescription = {
-        color: darkGray,
-        shininess: 150
+    /*  Struct describing the floor. We only render the top side. If the user *
+     *  places the camera below the floor, they will still be able to see the *
+     *  knot, but the floor will become invisible.                            */
+    const PLANE_DESCRIPTION = {
+        color: DARK_GRAY,
+        shininess: 150,
+        side: three.FrontSide
     };
 
     /*  Parameters for the knot.                                              */
-    const knotMaterial = new three.MeshPhongMaterial(materialDescription);
-    const knotGeometry = new three.TorusKnotGeometry(0.4, 0.08, 256, 32, 2, 3);
+    const KNOT_SAMPLES = 256;
+    const MERIDIAN_SAMPLES = 32;
+    const KNOT_RADIUS = 0.09375;
+    const KNOT_SIZE = 0.5;
+
+    /*  The trefoil is a torus knot, T(p, q), with p = 2 and q = 3.           */
+    const P = 2;
+    const Q = 3;
+
+    /*  Create the trefoil knot geometry.                                     */
+    const KNOT_MATERIAL = new three.MeshPhongMaterial(KNOT_DESCRIPTION);
+    const KNOT_GEOMETRY = new three.TorusKnotGeometry(
+        KNOT_SIZE, KNOT_RADIUS, KNOT_SAMPLES, MERIDIAN_SAMPLES, P, Q
+    );
 
     /*  Parameters for the plane beneath the knot.                            */
-    const planeMaterial = new three.MeshPhongMaterial(planeDescription);
-    const planeGeometry = new three.PlaneGeometry(100, 100, 1, 1);
+    const PLANE_WIDTH = 128;
+    const PLANE_HEIGHT = 128;
+    const WIDTH_SEGMENTS = 1;
+    const HEIGHT_SEGMENTS = 1;
+    const PLANE_SHIFT = -1.0;
 
-    /*  Create the plane.                                                     */
-    const ground = new three.Mesh(planeGeometry, planeMaterial);
-    ground.rotation.x = -Math.PI / 2; // rotates X/Y to X/Z
-    ground.receiveShadow = true;
+    /*  Create the plane geometry.                                            */
+    const PLANE_MATERIAL = new three.MeshPhongMaterial(PLANE_DESCRIPTION);
+    const PLANE_GEOMETRY = new three.PlaneGeometry(
+        PLANE_WIDTH, PLANE_HEIGHT, WIDTH_SEGMENTS, HEIGHT_SEGMENTS
+    );
+
+    /*  Create the plane object. We want it to be below the knot, so we shift *
+     *  it down the z axis.                                                   */
+    const GROUND = new three.Mesh(PLANE_GEOMETRY, PLANE_MATERIAL);
+    GROUND.position.z = PLANE_SHIFT;
+
+    /*  The shadow of the knot will appear on this plane.                     */
+    GROUND.receiveShadow = true;
 
     /*  Create the knot.                                                      */
-    object = new three.Mesh(knotGeometry, knotMaterial);
+    object = new three.Mesh(KNOT_GEOMETRY, KNOT_MATERIAL);
     object.castShadow = true;
 
     /*  Create the scene and add both the knot and the plane to it.           */
     scene = new three.Scene();
-    scene.background = new three.Color(cyan);
+    scene.background = new three.Color(CYAN);
+    scene.add(GROUND);
     scene.add(object);
-    scene.add(ground);
 }
 
 /******************************************************************************
