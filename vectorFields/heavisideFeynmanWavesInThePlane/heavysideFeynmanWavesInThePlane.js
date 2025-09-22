@@ -39,8 +39,8 @@ const ZENITH = 16;
  *  of arrows is the product of the three bin sizes, so roughly O(N^3). Do    *
  *  not make these numbers too big, this will slow the animation to a crawl.  */
 const LENGTH = 16.0 * RADIUS;
-const X_BINS = 64;
-const Y_BINS = 64;
+const X_BINS = 48;
+const Y_BINS = 48;
 
 const DX = LENGTH / X_BINS;
 const DY = LENGTH / Y_BINS;
@@ -105,7 +105,7 @@ function retardedAcceleration(rhoValue, retardedTime) {
 
     const FACTOR = -NUMER / NORM_SQ;
     const RHO_OUT = FACTOR * RCPR_NORM;
-    const Z_OUT = (FACTOR - SIN_T) * RCPR_NORM;
+    const Z_OUT = (SIN_T * FACTOR - SIN_T) * RCPR_NORM;
 
     return new three.Vector3(RHO_OUT, RHO_OUT, Z_OUT);
 }
@@ -293,7 +293,7 @@ function setupArrows() {
  ******************************************************************************/
 function setupScene() {
 
-    const SIZE = 0.5 * RADIUS;
+    const SIZE = 0.25 * RADIUS;
     const BLUE = {color: 0x0000FF};
     const MATERIAL = new three.MeshBasicMaterial(BLUE);
     const SPHERE_GEOMETRY = new three.SphereGeometry(SIZE, AZIMUTH, ZENITH);
