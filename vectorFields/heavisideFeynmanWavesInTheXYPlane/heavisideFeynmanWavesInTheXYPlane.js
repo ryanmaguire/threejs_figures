@@ -30,22 +30,30 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 /*  Globals for the animation.                                                */
 let camera, scene, renderer, object, startTime;
 
-/*  Parameters for the sphere, radius, and the number of subdivisions.        */
+/*  Parameters for the sphere: radius and the number of subdivisions.         */
 const RADIUS = 1.0;
 const AZIMUTH = 16;
 const ZENITH = 16;
 
 /*  Parameters for the arrows representing the vector field. The total number *
- *  of arrows is the product of the three bin sizes, so roughly O(N^3). Do    *
- *  not make these numbers too big, this will slow the animation to a crawl.  */
-const LENGTH = 16.0 * RADIUS;
+ *  of arrows is the product of the two bin sizes, so roughly O(N^2). Do not  *
+ *  make these numbers too big, this will slow the animation to a crawl.      */
 const X_BINS = 48;
 const Y_BINS = 48;
 
+/*  The boundary for the arrows to be drawn. The arrow furthest from the      *
+ *  origin will be placed at (LENGTH, LENGTH, LENGTH) / 2.                    */
+const LENGTH = 16.0 * RADIUS;
+
+/*  Step sizes between samples in the x and y axes.                           */
 const DX = LENGTH / X_BINS;
 const DY = LENGTH / Y_BINS;
 
-const arrowArray = [];
+/*  Array for the arrows drawn in animation. We keep them in an array so that *
+ *  we can more easily update the direction they are pointing in.             */
+let arrowArray = [];
+
+let accelerationDirection = new three.Vector3();
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -67,8 +75,8 @@ function halleysMethod(rhoValue, time, guess) {
 
     const RHO_SQ = rhoValue * rhoValue;
 
-    const SIN_T = Math.sin(time);
-    const COS_T = Math.cos(time);
+    const SIN_T = Math.sin(guess);
+    const COS_T = Math.cos(guess);
 
     const SIN_T_SQ = SIN_T * SIN_T;
     const SIN_T_QR = SIN_T_SQ * SIN_T_SQ;
@@ -89,10 +97,11 @@ function halleysMethod(rhoValue, time, guess) {
     return guess - NUMER / DENOM;
 }
 
-function retardedAcceleration(rhoValue, retardedTime) {
+function setRetardedAcceleration(arrow, rhoValue, time, guess) {
 
-    const SIN_T = Math.sin(retardedTime);
-    const COS_T = Math.cos(retardedTime);
+    const RETARDED_TIME = halleysMethod(rhoValue, time, guess);
+    const SIN_T = Math.sin(RETARDED_TIME);
+    const COS_T = Math.cos(RETARDED_TIME);
 
     const SIN_T_SQ = SIN_T * SIN_T;
     const COS_T_SQ = COS_T * COS_T;
@@ -104,10 +113,21 @@ function retardedAcceleration(rhoValue, retardedTime) {
     const NUMER = COS_T_SQ - SIN_T_SQ - SIN_T_SQ * COS_T_SQ / NORM_SQ;
 
     const FACTOR = -NUMER / NORM_SQ;
-    const RHO_OUT = FACTOR * RCPR_NORM;
-    const Z_OUT = (SIN_T * FACTOR - SIN_T) * RCPR_NORM;
+    const RHO_FACTOR = FACTOR * RCPR_NORM;
 
-    return new three.Vector3(RHO_OUT, RHO_OUT, Z_OUT);
+    const X = arrow.position.x * RHO_FACTOR;
+    const Y = arrow.position.y * RHO_FACTOR;
+    const Z = (FACTOR - 1.0) * SIN_T * RCPR_NORM;
+
+    const LENGTH = Math.sqrt(X*X + Y*Y + Z*Z);
+    const NORMALIZATION = 1.0 / LENGTH;
+
+    accelerationDirection.x = X * NORMALIZATION;
+    accelerationDirection.y = Y * NORMALIZATION;
+    accelerationDirection.z = Z * NORMALIZATION;
+
+    arrow.setDirection(accelerationDirection);
+    arrow.setLength(LENGTH);
 }
 
 /******************************************************************************
@@ -139,21 +159,10 @@ function animate() {
 
         const GUESS = TIME - RHO;
 
-        let retardedTime, acceleration, direction, length;
-
         if (GUESS < 0.0)
             continue;
 
-        retardedTime = halleysMethod(RHO, TIME, GUESS);
-        acceleration = retardedAcceleration(RHO, retardedTime);
-
-        acceleration.x *= X;
-        acceleration.y *= Y;
-        length = acceleration.length();
-        direction = acceleration.normalize();
-
-        arrowArray[ind].setDirection(direction);
-        arrowArray[ind].setLength(length);
+        setRetardedAcceleration(arrowArray[ind], RHO, TIME, GUESS);
     }
 
     /*  Re-render the newly rotated scene.                                    */

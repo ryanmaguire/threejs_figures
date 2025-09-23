@@ -15,10 +15,10 @@
     along with this file.  If not, see <https://www.gnu.org/licenses/>.
 
     Purpose:
-        HTML part of the electromagnetic waves.
+        Renders Heaviside-Feynman waves in R^3 (instead of just the xy plane).
 
     Author:     Ryan Maguire
-    Date:       September 19, 2025
+    Date:       September 22, 2025
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -35,7 +35,7 @@
     <head>
         <meta charset = "utf-8">
         <title>
-            Heaviside-Feynman Waves
+            Heaviside-Feynman Waves in the XZ Plane
         </title>
         <style>
             body {
@@ -47,8 +47,8 @@
         <script type="module">
 
             const candidates = [
-                'threejs_heavisideFeynmanWavesInThePlane.js',
-                'heavisideFeynmanWavesInThePlane.js'
+                'threejs_heavisideFeynmanWavesInTheXZPlane.js',
+                'heavisideFeynmanWavesInTheXZPlane.js'
             ];
 
             async function loadAvailableScript() {
