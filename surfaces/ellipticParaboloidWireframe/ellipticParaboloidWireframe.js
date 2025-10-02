@@ -196,7 +196,7 @@ function setupScene() {
      *  above the xy plane, meaning it is of the form z = f(x, y).            *
      *                                                                        *
      *  Note, since the y index is the outer for-loop, the array is indexed   *
-     *  in row-major fashion. That is, index = y * WIDTH + x.                 */
+     *  in row-major fashion. That is, index = y * width + x.                 */
     for (yIndex = 0; yIndex < height; ++yIndex) {
 
         /*  Convert pixel index to y coordinate.                              */
@@ -209,7 +209,7 @@ function setupScene() {
             const xValue = start + xIndex * dx;
 
             /*  The elliptic paraboloid has a simple formula: z = x^2 + 2y^2. *
-             *  We shift this slightly to center the center on the screen.    */
+             *  We shift this slightly to center the surface on the screen.   */
             const zValue = xValue*xValue + 2.0*yValue*yValue + heightShift;
 
             /*  Add this point to our vertex array.                           */
@@ -234,17 +234,15 @@ function setupScene() {
      *  neighbors. We handle these boundary points separately.                */
     for (yIndex = 0; yIndex < height; ++yIndex) {
 
-        /*  The indices are row-major, meaning index = y * WIDTH + x. The     *
+        /*  The indices are row-major, meaning index = y * width + x. The     *
          *  shift factor only depends on the y-component, compute this.       */
         const shift = yIndex * width;
 
-        /*  The vertical component is now fixed, loop through the horizontal  *
-         *  axis. The right-most column, which is xIndex = WIDTH - 1, is the  *
-         *  boundary and must be handled separately. This is done later.      */
-        for (xIndex = 0; xIndex < width - 1; ++xIndex) {
+        /*  The vertical component is now fixed, loop through the horizontal. */
+        for (xIndex = 0; xIndex < width; ++xIndex) {
 
             /*  The current index is the shift plus horizontal index. That    *
-             *  is, the index for (x, y) is y * WIDTH + x.                    */
+             *  is, the index for (x, y) is y * width + x.                    */
             const index00 = shift + xIndex;
 
             /*  The point directly after the current point, in the horizontal.*/
@@ -253,35 +251,24 @@ function setupScene() {
             /*  The point directly above the current point, in the vertical.  */
             const index10 = index00 + width;
 
-            /*  If we are not at the very top of the object, we can add an    *
-             *  "L" shape to our mesh, connecting the bottom left point       *
-             *  with the bottom right point, and similarly the bottom left    *
-             *  point with the upper left point.                              */
+            /*  If we are not at the top edge or the right edge of the        *
+             *  rectangle, we may add an "L" shape to our mesh connecting the *
+             *  bottom left point to the bottom right point, and the bottom   *
+             *  left point to to the upper left point. At the top of the      *
+             *  rectangle the upper left point goes beyond the bounds of the  *
+             *  parametrization, so we do not need to draw it. Check for this.*/
             if (yIndex != height - 1)
-                indices.push(index00, index01, index00, index10);
+                indices.push(index00, index10);
 
-            /*  At the top boundary, the upper left point goes beyond the     *
-             *  bounds of our object and does not need to be drawn. Only add  *
-             *  the line from bottom left to bottom right.                    */
-            else
+            /*  Similarly, at the right edge we have that the bottom right    *
+             *  point lies outside of the parametrizion and do not need to    *
+             *  add it to our mesh. Check for this.                           */
+            if (xIndex != width - 1)
                 indices.push(index00, index01);
         }
         /*  End of horizontal for-loop.                                       */
     }
     /*  End of vertical for-loop.                                             */
-
-    /*  We stopped the horizontal for loop at WIDTH - 2, to avoid writing     *
-     *  past the bounds of the object. This means we have left out the        *
-     *  right-most vertical column, and need to add it back in.               */
-    for (yIndex = 0; yIndex < height - 1; ++yIndex)
-    {
-        /*  Same computation above, adding vertical lines only, and with the  *
-         *  x index set to WIDTH - 1, the right-most index.                   */
-        const shift = yIndex * width;
-        const bottom = shift + width - 1;
-        const top = bottom + width;
-        indices.push(bottom, top);
-    }
 
     /*  Add the vertices and index array to the mesh.                         */
     geometry.setAttribute('position', geometryAttributes);
