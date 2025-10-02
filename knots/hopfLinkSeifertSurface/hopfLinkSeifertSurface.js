@@ -285,7 +285,7 @@ function setupScene() {
             /*  Convert pixel index to y coordinate.                          */
             const y = yStart + yIndex * dy;
 
-            /*  The Y parameter corresponds to the line segment between the   *
+            /*  The y parameter corresponds to the line segment between the   *
              *  points P and Q. Compute the location of the current point on  *
              *  the Seifert surface.                                          */
             const xValue = pX * (1.0 - y) + y * qX;
@@ -300,9 +300,9 @@ function setupScene() {
     /*  End of horizontal for-loop.                                           */
 
     /*  The end of the parametrization matches up with the start of it. That  *
-     *  is, the X parameter corresponds to an angle that goes from 0 to 2 pi, *
-     *  and the points corresponding to X = 0 are the same as the points that *
-     *  have X = 2 pi. Rather than creating new points, we simply add the     *
+     *  is, the x parameter corresponds to an angle that goes from 0 to 2 pi, *
+     *  and the points corresponding to x = 0 are the same as the points that *
+     *  have x = 2 pi. Rather than creating new points, we simply add the     *
      *  first column to the end of the array. The makes the surface closed.   */
     for (yIndex = 0; yIndex < height; ++yIndex) {
 
@@ -336,7 +336,7 @@ function setupScene() {
      *  second index array using the wireIndices variable that consists of    *
      *  ordered pairs for the vertices we wish to connected. Each point is    *
      *  connected to its four nearest neighbors, with the exception of the    *
-     *  points on the boundary, which must be handled separated. We loop      *
+     *  points on the boundary, which must be handled separately. We loop     *
      *  through and add "L" shapes for points not on the boundary, and        *
      *  squares for points that fall on the upper edge.                       */
     for (xIndex = 0; xIndex < width - 1; ++xIndex) {
