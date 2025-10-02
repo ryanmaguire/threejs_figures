@@ -28,7 +28,7 @@ import * as three from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
 /*  Globals for the animation.                                                */
-let camera, scene, renderer, startTime, frontObject, backObject, wireFrame;
+let camera, scene, renderer, startTime, frontObject, backObject, wireframe;
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -66,7 +66,7 @@ function animate() {
     /*  Rotate the object slightly as time passes.                            */
     frontObject.rotation.z = ROTATION;
     backObject.rotation.z = ROTATION;
-    wireFrame.rotation.z = ROTATION;
+    wireframe.rotation.z = ROTATION;
 
     /*  Re-render the newly rotated scene.                                    */
     renderer.render(scene, camera);
@@ -383,13 +383,13 @@ function setupScene() {
     backObject = new three.Mesh(GEOMETRY, BACK_MATERIAL);
 
     /*  Create the wireframe object, which consists of line segments.         */
-    wireFrame = new three.LineSegments(WIRE_GEOMETRY, WIRE_MATERIAL);
+    wireframe = new three.LineSegments(WIRE_GEOMETRY, WIRE_MATERIAL);
 
     /*  Create the scene and add the Seifert surface to it.                   */
     scene = new three.Scene();
     scene.add(frontObject);
     scene.add(backObject);
-    scene.add(wireFrame);
+    scene.add(wireframe);
 }
 /*  End of setupScene.                                                        */
 
