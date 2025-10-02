@@ -59,11 +59,11 @@ function onWindowResize() {
 function animate() {
 
     /*  The elapsed time is used for the rotation parameter.                  */
-    const CURRENT_TIME = Date.now();
-    const TIME = (CURRENT_TIME - startTime);
+    const currentTime = Date.now();
+    const time = currentTime - startTime;
 
     /*  Rotate the object slightly as time passes.                            */
-    object.rotation.z = TIME / 8192.0;
+    object.rotation.z = time / 8192.0;
 
     /*  Re-render the newly rotated scene.                                    */
     renderer.render(scene, camera);
@@ -83,9 +83,9 @@ function createControls() {
 
     /*  These controls allow the user to interact with the image using the    *
      *  mouse. Clicking and dragging will rearrange the image.                */
-    const CONTROLS = new OrbitControls(camera, renderer.domElement);
-    CONTROLS.target.set(0, 1, 0);
-    CONTROLS.update();
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0.0, 0.0, 0.0);
+    controls.update();
 }
 
 /******************************************************************************
@@ -119,23 +119,27 @@ function setupRenderer() {
 function setupCamera() {
 
     /*  Starting location for the camera.                                     */
-    const CAMERA_X = 0.0;
-    const CAMERA_Y = -5.0;
-    const CAMERA_Z = 6.0;
+    const cameraX = 0.0;
+    const cameraY = -5.0;
+    const cameraZ = +6.0;
 
     /*  Field-of-View for the camera.                                         */
     const FOV = 36.0;
 
     /*  Drawing thresholds for objects in the camera's view.                  */
-    const NEAR = 0.25;
-    const FAR = 100.0;
+    const near = 0.25;
+    const far = 100.0;
 
     /*  Aspect ratio for the window.                                          */
-    const WINDOW_RATIO = window.innerWidth / window.innerHeight;
+    const windowRatio = window.innerWidth / window.innerHeight;
 
     /*  Create the camera and set its initial position.                       */
-    camera = new three.PerspectiveCamera(FOV, WINDOW_RATIO, NEAR, FAR);
-    camera.position.set(CAMERA_X, CAMERA_Y, CAMERA_Z);
+    camera = new three.PerspectiveCamera(FOV, windowRatio, near, far);
+    camera.position.set(cameraX, cameraY, cameraZ);
+
+    /*  Set the orientation for the camera.                                   */
+    camera.lookAt(0.0, 0.0, 0.0);
+    camera.up.set(0.0, 0.0, 1.0);
 }
 
 /******************************************************************************
@@ -154,27 +158,32 @@ function setupScene() {
     /*  three.js has parametric function tools, but this renders the object   *
      *  with diagonals across the constituent squares, creating a mesh of     *
      *  triangles. To see a square pattern, we'll need to make our own buffer.*/
-    const GEOMETRY = new three.BufferGeometry();
+    const geometry = new three.BufferGeometry();
 
     /*  The vertices for the object will by typed as 32-bit floats. We'll     *
      *  need a variable for the buffer attributes as well.                    */
     let f32Vertices, geometryAttributes;
 
     /*  Material the wireframe will be made out of.                           */
-    const MATERIAL = new three.MeshBasicMaterial({color: 0x00AAFF});
+    const lightBlue = 0x00AAFF;
+    const materialDefinition = {color: lightBlue}
+    const material = new three.MeshBasicMaterial(materialDefinition);
 
     /*  Parameters for the elliptic paraboloid.                               */
-    const START = -1.0;
-    const FINISH = 1.0;
-    const LENGTH = FINISH - START;
+    const start = -1.0;
+    const finish = +1.0;
+    const length = finish - start;
+
+    /*  Shift factor to center the surface on the screen.                     */
+    const heightShift = -2.0;
 
     /*  The number of samples in the horizontal and vertical axes.            */
-    const WIDTH = 32;
-    const HEIGHT = 32;
+    const width = 32;
+    const height = 32;
 
     /*  Step-sizes for the displacement between samples.                      */
-    const DX = LENGTH / (WIDTH - 1);
-    const DY = LENGTH / (HEIGHT - 1);
+    const dx = length / (width - 1);
+    const dy = length / (height - 1);
 
     /*  Vertices for the mesh used to draw the elliptic paraboloid.           */
     let vertices = [];
@@ -188,22 +197,23 @@ function setupScene() {
      *                                                                        *
      *  Note, since the y index is the outer for-loop, the array is indexed   *
      *  in row-major fashion. That is, index = y * WIDTH + x.                 */
-    for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
+    for (yIndex = 0; yIndex < height; ++yIndex) {
 
         /*  Convert pixel index to y coordinate.                              */
-        const Y = START + yIndex * DY;
+        const yValue = start + yIndex * dy;
 
         /*  Loop through the horizontal component of the object.              */
-        for (xIndex = 0; xIndex < WIDTH; ++xIndex) {
+        for (xIndex = 0; xIndex < width; ++xIndex) {
 
             /*  Convert pixel index to x coordinate in the plane.             */
-            const X = START + xIndex * DX;
+            const xValue = start + xIndex * dx;
 
-            /*  The elliptic paraboloid has a simple formula: z = x^2 + 2y^2. */
-            const Z = X*X + 2.0*Y*Y;
+            /*  The elliptic paraboloid has a simple formula: z = x^2 + 2y^2. *
+             *  We shift this slightly to center the center on the screen.    */
+            const zValue = xValue*xValue + 2.0*yValue*yValue + heightShift;
 
             /*  Add this point to our vertex array.                           */
-            vertices.push(X, Y, Z);
+            vertices.push(xValue, yValue, zValue);
         }
         /*  End of horizontal for-loop.                                       */
     }
@@ -222,39 +232,39 @@ function setupScene() {
      *  want to connect. Each point will be connected to its four surrounding *
      *  neighbors, except for the points on the boundary, which have fewer    *
      *  neighbors. We handle these boundary points separately.                */
-    for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
+    for (yIndex = 0; yIndex < height; ++yIndex) {
 
         /*  The indices are row-major, meaning index = y * WIDTH + x. The     *
          *  shift factor only depends on the y-component, compute this.       */
-        const SHIFT = yIndex * WIDTH;
+        const shift = yIndex * width;
 
         /*  The vertical component is now fixed, loop through the horizontal  *
          *  axis. The right-most column, which is xIndex = WIDTH - 1, is the  *
          *  boundary and must be handled separately. This is done later.      */
-        for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
+        for (xIndex = 0; xIndex < width - 1; ++xIndex) {
 
             /*  The current index is the shift plus horizontal index. That    *
              *  is, the index for (x, y) is y * WIDTH + x.                    */
-            const INDEX00 = SHIFT + xIndex;
+            const index00 = shift + xIndex;
 
             /*  The point directly after the current point, in the horizontal.*/
-            const INDEX01 = INDEX00 + 1;
+            const index01 = index00 + 1;
 
             /*  The point directly above the current point, in the vertical.  */
-            const INDEX10 = INDEX00 + WIDTH;
+            const index10 = index00 + width;
 
             /*  If we are not at the very top of the object, we can add an    *
              *  "L" shape to our mesh, connecting the bottom left point       *
              *  with the bottom right point, and similarly the bottom left    *
              *  point with the upper left point.                              */
-            if (yIndex != HEIGHT - 1)
-                indices.push(INDEX00, INDEX01, INDEX00, INDEX10);
+            if (yIndex != height - 1)
+                indices.push(index00, index01, index00, index10);
 
             /*  At the top boundary, the upper left point goes beyond the     *
              *  bounds of our object and does not need to be drawn. Only add  *
              *  the line from bottom left to bottom right.                    */
             else
-                indices.push(INDEX00, INDEX01);
+                indices.push(index00, index01);
         }
         /*  End of horizontal for-loop.                                       */
     }
@@ -263,22 +273,22 @@ function setupScene() {
     /*  We stopped the horizontal for loop at WIDTH - 2, to avoid writing     *
      *  past the bounds of the object. This means we have left out the        *
      *  right-most vertical column, and need to add it back in.               */
-    for (yIndex = 0; yIndex < HEIGHT - 1; ++yIndex)
+    for (yIndex = 0; yIndex < height - 1; ++yIndex)
     {
         /*  Same computation above, adding vertical lines only, and with the  *
          *  x index set to WIDTH - 1, the right-most index.                   */
-        const SHIFT = yIndex * WIDTH;
-        const BOTTOM = SHIFT + WIDTH - 1;
-        const TOP = BOTTOM + WIDTH;
-        indices.push(BOTTOM, TOP);
+        const shift = yIndex * width;
+        const bottom = shift + width - 1;
+        const top = bottom + width;
+        indices.push(bottom, top);
     }
 
     /*  Add the vertices and index array to the mesh.                         */
-    GEOMETRY.setAttribute('position', geometryAttributes);
-    GEOMETRY.setIndex(indices);
+    geometry.setAttribute('position', geometryAttributes);
+    geometry.setIndex(indices);
 
     /*  We wish to create a wireframe for the object. Create the lines.       */
-    object = new three.LineSegments(GEOMETRY, MATERIAL);
+    object = new three.LineSegments(geometry, material);
 
     /*  Create the scene and add the elliptic paraboloid to it.               */
     scene = new three.Scene();
