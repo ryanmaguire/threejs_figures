@@ -59,14 +59,14 @@ function onWindowResize() {
 function animate() {
 
     /*  The elapsed time is used for the rotation parameter.                  */
-    const CURRENT_TIME = Date.now();
-    const TIME = (CURRENT_TIME - startTime);
-    const ROTATION = TIME / 4096.0;
+    const currentTime = Date.now();
+    const time = currentTime - startTime;
+    const rotation = time / 4096.0;
 
     /*  Rotate the object slightly as time passes.                            */
-    frontObject.rotation.z = ROTATION;
-    backObject.rotation.z = ROTATION;
-    wireframe.rotation.z = ROTATION;
+    frontObject.rotation.z = rotation;
+    backObject.rotation.z = rotation;
+    wireframe.rotation.z = rotation;
 
     /*  Re-render the newly rotated scene.                                    */
     renderer.render(scene, camera);
@@ -86,9 +86,9 @@ function createControls() {
 
     /*  These controls allow the user to interact with the image using the    *
      *  mouse. Clicking and dragging will rearrange the image.                */
-    const CONTROLS = new OrbitControls(camera, renderer.domElement);
-    CONTROLS.target.set(0.0, 0.0, 0.0);
-    CONTROLS.update();
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0.0, 0.0, 0.0);
+    controls.update();
 }
 
 /******************************************************************************
@@ -122,23 +122,23 @@ function setupRenderer() {
 function setupCamera() {
 
     /*  Starting location for the camera.                                     */
-    const CAMERA_X = +0.0;
-    const CAMERA_Y = -5.0;
-    const CAMERA_Z = +1.0;
+    const cameraX = +0.0;
+    const cameraY = -4.0;
+    const cameraZ = +1.0;
 
     /*  Field-of-View for the camera.                                         */
     const FOV = 36.0;
 
     /*  Drawing thresholds for objects in the camera's view.                  */
-    const NEAR = 0.25;
-    const FAR = 100.0;
+    const near = 0.25;
+    const far = 100.0;
 
     /*  Aspect ratio for the window.                                          */
-    const WINDOW_RATIO = window.innerWidth / window.innerHeight;
+    const windowRatio = window.innerWidth / window.innerHeight;
 
     /*  Create the camera and set its initial position.                       */
-    camera = new three.PerspectiveCamera(FOV, WINDOW_RATIO, NEAR, FAR);
-    camera.position.set(CAMERA_X, CAMERA_Y, CAMERA_Z);
+    camera = new three.PerspectiveCamera(FOV, windowRatio, near, far);
+    camera.position.set(cameraX, cameraY, cameraZ);
 
     /*  Set the orientation for the camera.                                   */
     camera.lookAt(0.0, 0.0, 0.0);
@@ -160,27 +160,32 @@ function setupCamera() {
 function setupScene() {
 
     /*  24-bit RGB values for the colors used for each surface.               */
-    const BLUE = 0x0080FF;
-    const RED = 0xFF0000;
-    const BLACK = 0x000000;
+    const blue = 0x0080FF;
+    const red = 0xFF0000;
+    const black = 0x000000;
 
     /*  There is a single underlying geometry, but three objects are rendered *
      *  from this. The geometry contains the points for the Seifert surface,  *
      *  and from this we render the front side (blue), the back side (red),   *
      *  and a wireframe to help envision the parametrization.                 */
-    const GEOMETRY = new three.BufferGeometry();
-    const WIRE_GEOMETRY = new three.BufferGeometry();
+    const geometry = new three.BufferGeometry();
+    const wireGeometry = new three.BufferGeometry();
 
     /*  The vertices for the object will by typed as 32-bit floats. We'll     *
      *  need a variable for the buffer attributes as well.                    */
     let f32Vertices, geometryAttributes;
 
-    /*  Descriptions for the three objects that will be rendered.             */
-    const WIRE_DESCRIPTION = {color: BLACK};
-    const BACK_DESCRIPTION = {
+    /*  Wireframe parameters. It is drawn on top of the Seifert surface.      */
+    const wireDescription = {color: black};
+
+    /*  Parameters for the underside of the Seifert surface.                  */
+    const backDescription = {
+
+        /*  The Seifert surface is orientable, meaning there is a front and a *
+         *  back to it. To indicate this we use two colors, one for each side.*
+         *  The back side is drawn red.                                       */
         side: three.BackSide,
-        color: RED,
-        shininess: 100,
+        color: red,
 
         /*  The wireframe renders poorly without enabling polygon offset, and *
          *  setting the polygon offset factor. Do not set this factor too     *
@@ -189,10 +194,10 @@ function setupScene() {
         polygonOffsetFactor: 2
     };
 
-    const FRONT_DESCRIPTION = {
+    /*  Parameters for the top side of the Seifert surface.                   */
+    const frontDescription = {
         side: three.FrontSide,
-        color: BLUE,
-        shininess: 100,
+        color: blue,
 
         /*  Same fix for the blue side of the surface.                        */
         polygonOffset: true,
@@ -200,15 +205,15 @@ function setupScene() {
     };
 
     /*  Create the materials for the three objects.                           */
-    const FRONT_MATERIAL = new three.MeshBasicMaterial(FRONT_DESCRIPTION);
-    const BACK_MATERIAL = new three.MeshBasicMaterial(BACK_DESCRIPTION);
-    const WIRE_MATERIAL = new three.MeshBasicMaterial(WIRE_DESCRIPTION);
+    const frontMaterial = new three.MeshBasicMaterial(frontDescription);
+    const backMaterial = new three.MeshBasicMaterial(backDescription);
+    const wireMaterial = new three.MeshBasicMaterial(wireDescription);
 
     /*  Parameters for the Seifert surface. The horizontal axis is            *
      *  parametrized by the angle on the unit circle, which varies from       *
      *  0 to 2 pi.                                                            */
-    const X_START = 0.0;
-    const X_FINISH = 2.0 * Math.PI;
+    const xStart = 0.0;
+    const xFinish = 2.0 * Math.PI;
 
     /*  The Hopf link consists of two circles, which may be parametrized by a *
      *  single angle (this is the horizontal axis, see above). Given a point  *
@@ -220,21 +225,21 @@ function setupScene() {
      *                                                                        *
      *  The second parameter hence varies from 0 to 1. This is the vertical   *
      *  axis used in the parametrization.                                     */
-    const Y_START = 0.0;
-    const Y_FINISH = 1.0;
+    const yStart = 0.0;
+    const yFinish = 1.0;
 
     /*  The number of segments we'll divide the two axes into.                */
-    const WIDTH = 64;
-    const HEIGHT = 32;
+    const width = 64;
+    const height = 32;
 
     /*  Parameters for the xy plane, the strip in the plane that parametrizes *
      *  the Seifert surface for the Hopf link.                                */
-    const X_LENGTH = X_FINISH - X_START;
-    const Y_LENGTH = Y_FINISH - Y_START;
+    const xLength = xFinish - xStart;
+    const yLength = yFinish - yStart;
 
     /*  Step sizes between samples in the xy plane.                           */
-    const DX = X_LENGTH / (WIDTH - 1);
-    const DY = Y_LENGTH / (HEIGHT - 1);
+    const dx = xLength / (width - 1);
+    const dy = yLength / (height - 1);
 
     /*  Vertices for the mesh used to draw the Seifert surface.               */
     let vertices = [];
@@ -250,45 +255,45 @@ function setupScene() {
     let xIndex, yIndex;
 
     /*  Loop through the horizontal axis.                                     */
-    for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
+    for (xIndex = 0; xIndex < width - 1; ++xIndex) {
 
         /*  Convert pixel index to x coordinate in the plane.                 */
-        const X = X_START + xIndex * DX;
+        const x = xStart + xIndex * dx;
 
         /*  Pre-compute sine and cosine of the input.                         */
-        const COS_X = Math.cos(X);
-        const SIN_X = Math.sin(X);
+        const cosX = Math.cos(x);
+        const sinX = Math.sin(x);
 
         /*  The Hopf link consists of two circles that are looped together.   *
          *  We can create this using a circle in the xy plane and a circle in *
          *  the xz plane that has been shifted in the x direction. Both       *
-         *  circles are parametrized by an angle (which is our variable X).   *
+         *  circles are parametrized by an angle (which is our variable x).   *
          *  Compute the location of the point for the circle in the xz plane. */
-        const PX = 1.0 + COS_X;
-        const PY = 0.0;
-        const PZ = SIN_X;
+        const pX = 1.0 + cosX;
+        const pY = 0.0;
+        const pZ = sinX;
 
         /*  Compute the location of the corresponding point that lies on the  *
          *  circle in the xy plane.                                           */
-        const QX = COS_X;
-        const QY = SIN_X;
-        const QZ = 0.0;
+        const qX = cosX;
+        const qY = sinX;
+        const qZ = 0.0;
 
         /*  Loop through the vertical component of the object.                */
-        for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
+        for (yIndex = 0; yIndex < height; ++yIndex) {
 
             /*  Convert pixel index to y coordinate.                          */
-            const Y = Y_START + yIndex * DY;
+            const y = yStart + yIndex * dy;
 
             /*  The Y parameter corresponds to the line segment between the   *
              *  points P and Q. Compute the location of the current point on  *
              *  the Seifert surface.                                          */
-            const X_PT = PX * (1.0 - Y) + Y * QX;
-            const Y_PT = PY * (1.0 - Y) + Y * QY;
-            const Z_PT = PZ * (1.0 - Y) + Y * QZ;
+            const xValue = pX * (1.0 - y) + y * qX;
+            const yValue = pY * (1.0 - y) + y * qY;
+            const zValue = pZ * (1.0 - y) + y * qZ;
 
             /*  Add this point to our vertex array.                           */
-            vertices.push(X_PT, Y_PT, Z_PT);
+            vertices.push(xValue, yValue, zValue);
         }
         /*  End of vertical for-loop.                                         */
     }
@@ -299,17 +304,17 @@ function setupScene() {
      *  and the points corresponding to X = 0 are the same as the points that *
      *  have X = 2 pi. Rather than creating new points, we simply add the     *
      *  first column to the end of the array. The makes the surface closed.   */
-    for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
+    for (yIndex = 0; yIndex < height; ++yIndex) {
 
         /*  There are three numbers needed per point, hence we increment in   *
          *  chunks of three. Compute the indices for the x, y, and z parts.   */
-        const X_IND = 3 * yIndex;
-        const Y_IND = X_IND + 1;
-        const Z_IND = Y_IND + 1;
+        const xInd = 3 * yIndex;
+        const yInd = xInd + 1;
+        const zInd = yInd + 1;
 
         /*  No need to recompute these points, they correspond to the first   *
          *  column in the vertex array. Add them to the end as well.          */
-        vertices.push(vertices[X_IND], vertices[Y_IND], vertices[Z_IND]);
+        vertices.push(vertices[xInd], vertices[yInd], vertices[zInd]);
     }
 
     /*  The BufferAttribute constructor wants a typed array, convert the      *
@@ -334,56 +339,56 @@ function setupScene() {
      *  points on the boundary, which must be handled separated. We loop      *
      *  through and add "L" shapes for points not on the boundary, and        *
      *  squares for points that fall on the upper edge.                       */
-    for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
+    for (xIndex = 0; xIndex < width - 1; ++xIndex) {
 
         /*  We operate in column-major fashion, so the starting index for     *
          *  this column is the current horizontal index times the height.     */
-        const SHIFT = xIndex * HEIGHT;
+        const shift = xIndex * height;
 
         /*  The horizontal component is now fixed, loop through the vertical. */
-        for (yIndex = 0; yIndex < HEIGHT - 1; ++yIndex) {
+        for (yIndex = 0; yIndex < height - 1; ++yIndex) {
 
             /*  The current index is the shift plus vertical index. That      *
              *  is, the index for (x, y) is x*height + y.                     */
-            const INDEX00 = SHIFT + yIndex;
+            const index00 = shift + yIndex;
 
             /*  The point directly after the current point, in the vertical.  */
-            const INDEX01 = INDEX00 + 1;
+            const index01 = index00 + 1;
 
             /*  The point next to the current point, in the horizontal.       */
-            const INDEX10 = INDEX00 + HEIGHT;
+            const index10 = index00 + height;
 
             /*  Lastly, the point above and to the right.                     */
-            const INDEX11 = INDEX10 + 1;
+            const index11 = index10 + 1;
 
             /*  Add the constituent triangles that make up the current square.*/
-            indices.push(INDEX00, INDEX01, INDEX10, INDEX10, INDEX01, INDEX11);
+            indices.push(index00, index01, index10, index10, index01, index11);
 
             /*  Add the vertices for the wireframe. We create an "L" shape.   */
-            wireIndices.push(INDEX00, INDEX01, INDEX00, INDEX10);
+            wireIndices.push(index00, index01, index00, index10);
 
             /*  At the very edge of the surface we need to add the boundary.  */
-            if (yIndex == HEIGHT - 2)
-                wireIndices.push(INDEX01, INDEX11);
+            if (yIndex == height - 2)
+                wireIndices.push(index01, index11);
         }
         /*  End of vertical for-loop.                                         */
     }
     /*  End of horizontal for-loop.                                           */
 
     /*  Add the vertices and index array to the mesh.                         */
-    GEOMETRY.setAttribute('position', geometryAttributes);
-    GEOMETRY.setIndex(indices);
+    geometry.setAttribute('position', geometryAttributes);
+    geometry.setIndex(indices);
 
     /*  Similarly, create the wireframe geometry.                             */
-    WIRE_GEOMETRY.setAttribute('position', geometryAttributes);
-    WIRE_GEOMETRY.setIndex(wireIndices);
+    wireGeometry.setAttribute('position', geometryAttributes);
+    wireGeometry.setIndex(wireIndices);
 
     /*  Create the solid objects, the front and back of the surface.          */
-    frontObject = new three.Mesh(GEOMETRY, FRONT_MATERIAL);
-    backObject = new three.Mesh(GEOMETRY, BACK_MATERIAL);
+    frontObject = new three.Mesh(geometry, frontMaterial);
+    backObject = new three.Mesh(geometry, backMaterial);
 
     /*  Create the wireframe object, which consists of line segments.         */
-    wireframe = new three.LineSegments(WIRE_GEOMETRY, WIRE_MATERIAL);
+    wireframe = new three.LineSegments(wireGeometry, wireMaterial);
 
     /*  Create the scene and add the Seifert surface to it.                   */
     scene = new three.Scene();
