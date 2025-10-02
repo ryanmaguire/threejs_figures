@@ -177,8 +177,27 @@ function setupScene() {
 
     /*  Descriptions for the three objects that will be rendered.             */
     const WIRE_DESCRIPTION = {color: BLACK};
-    const BACK_DESCRIPTION = {side: three.BackSide, color: RED};
-    const FRONT_DESCRIPTION = {side: three.FrontSide, color: BLUE};
+    const BACK_DESCRIPTION = {
+        side: three.BackSide,
+        color: RED,
+        shininess: 100,
+
+        /*  The wireframe renders poorly without enabling polygon offset, and *
+         *  setting the polygon offset factor. Do not set this factor too     *
+         *  high since this makes the surface look semi-transparent.          */
+        polygonOffset: true,
+        polygonOffsetFactor: 2
+    };
+
+    const FRONT_DESCRIPTION = {
+        side: three.FrontSide,
+        color: BLUE,
+        shininess: 100,
+
+        /*  Same fix for the blue side of the surface.                        */
+        polygonOffset: true,
+        polygonOffsetFactor: 2
+    };
 
     /*  Create the materials for the three objects.                           */
     const FRONT_MATERIAL = new three.MeshBasicMaterial(FRONT_DESCRIPTION);
