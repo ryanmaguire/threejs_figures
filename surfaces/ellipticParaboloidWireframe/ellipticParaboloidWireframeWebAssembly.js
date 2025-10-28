@@ -28,7 +28,14 @@ import * as three from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
 /*  Globals for the animation.                                                */
-let camera, scene, renderer, startTime, object;
+let camera, scene, renderer, startTime, object, f32Vertices;
+
+/*  The number of samples in the horizontal and vertical axes.                */
+const width = 32;
+const height = 32;
+
+/*  Total number of points used for the mesh.                                 */
+const numberOfPoints = width * height;
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -60,10 +67,10 @@ function animate() {
 
     /*  The elapsed time is used for the rotation parameter.                  */
     const currentTime = Date.now();
-    const time = currentTime - startTime;
+    const angle = (currentTime - startTime) / 8192.0;
 
     /*  Rotate the object slightly as time passes.                            */
-    object.rotation.z = time / 8192.0;
+    Module.rotateMesh(f32Vertices, angle, numberOfPoints);
 
     /*  Re-render the newly rotated scene.                                    */
     renderer.render(scene, camera);
@@ -162,66 +169,19 @@ function setupScene() {
 
     /*  The vertices for the object will by typed as 32-bit floats. We'll     *
      *  need a variable for the buffer attributes as well.                    */
-    let f32Vertices, geometryAttributes;
+    let geometryAttributes;
 
     /*  Material the wireframe will be made out of.                           */
     const lightBlue = 0x00AAFF;
     const materialDefinition = {color: lightBlue}
     const material = new three.MeshBasicMaterial(materialDefinition);
 
-    /*  Parameters for the elliptic paraboloid.                               */
-    const start = -1.0;
-    const finish = +1.0;
-    const length = finish - start;
-
-    /*  Shift factor to center the surface on the screen.                     */
-    const heightShift = -2.0;
-
-    /*  The number of samples in the horizontal and vertical axes.            */
-    const width = 32;
-    const height = 32;
-
-    /*  Step-sizes for the displacement between samples.                      */
-    const dx = length / (width - 1);
-    const dy = length / (height - 1);
-
     /*  Vertices for the mesh used to draw the elliptic paraboloid.           */
-    let vertices = [];
     let indices = [];
-
-    /*  Variables for indexing over the two axes.                             */
-    let xIndex, yIndex;
-
-    /*  Loop through the vertical axis. The elliptic paraboloid lies          *
-     *  above the xy plane, meaning it is of the form z = f(x, y).            *
-     *                                                                        *
-     *  Note, since the y index is the outer for-loop, the array is indexed   *
-     *  in row-major fashion. That is, index = y * width + x.                 */
-    for (yIndex = 0; yIndex < height; ++yIndex) {
-
-        /*  Convert pixel index to y coordinate.                              */
-        const yValue = start + yIndex * dy;
-
-        /*  Loop through the horizontal component of the object.              */
-        for (xIndex = 0; xIndex < width; ++xIndex) {
-
-            /*  Convert pixel index to x coordinate in the plane.             */
-            const xValue = start + xIndex * dx;
-
-            /*  The elliptic paraboloid has a simple formula: z = x^2 + 2y^2. *
-             *  We shift this slightly to center the surface on the screen.   */
-            const zValue = xValue*xValue + 2.0*yValue*yValue + heightShift;
-
-            /*  Add this point to our vertex array.                           */
-            vertices.push(xValue, yValue, zValue);
-        }
-        /*  End of horizontal for-loop.                                       */
-    }
-    /*  End of vertical for-loop.                                             */
 
     /*  The BufferAttribute constructor wants a typed array, convert the      *
      *  vertex array into a 32-bit float array.                               */
-    f32Vertices = new Float32Array(vertices);
+    f32Vertices = new Float32Array(numberOfPoints);
 
     /*  We can now create the buffer attributes. The data is 3D, hence the    *
      *  itemSize parameter is 3.                                              */
@@ -273,6 +233,8 @@ function setupScene() {
     /*  Add the vertices and index array to the mesh.                         */
     geometry.setAttribute('position', geometryAttributes);
     geometry.setIndex(indices);
+
+    Module.generateMesh(f32Vertices, width, height);
 
     /*  We wish to create a wireframe for the object. Create the lines.       */
     object = new three.LineSegments(geometry, material);
