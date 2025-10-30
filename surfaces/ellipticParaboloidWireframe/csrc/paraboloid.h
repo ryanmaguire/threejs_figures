@@ -1,5 +1,3 @@
-
-
 #ifndef THREEJS_FIGURES_PARABOLOID_H
 #define THREEJS_FIGURES_PARABOLOID_H
 
@@ -21,9 +19,16 @@ static const float paraboloid_y_start = -1.0F;
 static const float paraboloid_width = 2.0F;
 static const float paraboloid_height = 2.0F;
 
-extern float *get_buffer(void);
+extern float *get_mesh_buffer(void);
+extern unsigned int*get_index_buffer(void);
+
 extern void generate_mesh(float *arr, unsigned int nx_pts, unsigned int ny_pts);
+
+extern void
+generate_indices(unsigned int *arr, unsigned int nx_pts, unsigned int ny_pts);
+
 extern void rotate_mesh(float *arr, unsigned int n_pts);
+
 extern void set_rotation_angle(float angle);
 
 #endif

@@ -11,8 +11,10 @@ OUT_FILES = $(MAIN_FILE) $(WASM_FILE)
 
 FUNCTIONS = "[            \
     '_rotate_mesh',       \
+	'_generate_indices',  \
     '_generate_mesh',     \
-    '_get_buffer',        \
+    '_get_index_buffer',  \
+    '_get_mesh_buffer',   \
     '_set_rotation_angle' \
 ]"
 
