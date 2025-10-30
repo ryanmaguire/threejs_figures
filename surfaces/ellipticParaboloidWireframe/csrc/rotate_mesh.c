@@ -1,11 +1,7 @@
-#include <math.h>
 #include "paraboloid.h"
 
-void rotate_mesh(float *arr, float angle, unsigned int n_pts)
+void rotate_mesh(float *arr, unsigned int n_pts)
 {
-    const float cos_angle = cosf(angle);
-    const float sin_angle = sinf(angle);
-
     unsigned int index;
 
     for (index = 0; index < n_pts; ++index)
