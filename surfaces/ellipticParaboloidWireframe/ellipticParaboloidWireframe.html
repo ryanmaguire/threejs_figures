@@ -44,31 +44,8 @@
         </style>
     </head>
     <body>
-        <script type="module">
+        <script type="module" src="ellipticParaboloidWireframeWebAssembly.js">
 
-            const candidates = [
-                'threejs_ellipticParaboloidWireframe.js',
-                'ellipticParaboloidWireframe.js'
-            ];
-
-            async function loadAvailableScript() {
-                for (const path of candidates) {
-                    try {
-                        const res = await fetch(path, {method: 'HEAD'});
-
-                        if (res.ok) {
-                            await import(`./${path}`);
-                            console.log(`Loaded module: ${path}`);
-                            return;
-                        }
-                    } catch (err) {
-                        /*  Ignore and try to load the next file.             */
-                    }
-                }
-                console.error('three.js animation not found.');
-            }
-
-            loadAvailableScript();
         </script>
     </body>
 </html>

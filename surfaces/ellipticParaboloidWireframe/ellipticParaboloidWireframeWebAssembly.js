@@ -21,14 +21,18 @@
  *  Date:       July 22, 2025                                                 *
  ******************************************************************************/
 
+import createModule from './main.js';
+
 /*  three.js has all of the tools for generating 3D animations.               */
 import * as three from 'three';
 
 /*  OrbitControls allows the user to control the animation using the mouse.   */
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
+const CModule = await createModule();
+
 /*  Globals for the animation.                                                */
-let camera, scene, renderer, startTime, object, f32Vertices;
+let camera, scene, renderer, object, f32Vertices;
 
 /*  The number of samples in the horizontal and vertical axes.                */
 const width = 32;
@@ -36,6 +40,10 @@ const height = 32;
 
 /*  Total number of points used for the mesh.                                 */
 const numberOfPoints = width * height;
+const bufferSize = 3 * numberOfPoints;
+const rotationAngle = 0.005;
+
+CModule.setRotationAngle(rotationAngle);
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -65,12 +73,9 @@ function onWindowResize() {
  ******************************************************************************/
 function animate() {
 
-    /*  The elapsed time is used for the rotation parameter.                  */
-    const currentTime = Date.now();
-    const angle = (currentTime - startTime) / 8192.0;
-
     /*  Rotate the object slightly as time passes.                            */
-    Module.rotateMesh(f32Vertices, angle, numberOfPoints);
+    CModule.rotateMesh(f32Vertices.byteOffset, numberOfPoints);
+    object.geometry.attributes.position.needsUpdate = true;
 
     /*  Re-render the newly rotated scene.                                    */
     renderer.render(scene, camera);
@@ -169,7 +174,7 @@ function setupScene() {
 
     /*  The vertices for the object will by typed as 32-bit floats. We'll     *
      *  need a variable for the buffer attributes as well.                    */
-    let geometryAttributes;
+    let geometryAttributes, indexAttribute;
 
     /*  Material the wireframe will be made out of.                           */
     const lightBlue = 0x00AAFF;
@@ -179,13 +184,15 @@ function setupScene() {
     /*  Vertices for the mesh used to draw the elliptic paraboloid.           */
     let indices = [];
 
-    /*  The BufferAttribute constructor wants a typed array, convert the      *
-     *  vertex array into a 32-bit float array.                               */
-    f32Vertices = new Float32Array(numberOfPoints);
+    const ptr = CModule.getBuffer();
+    f32Vertices = new Float32Array(CModule.HEAPF32.buffer, ptr, bufferSize);
+    CModule.generateMesh(f32Vertices.byteOffset, width, height);
 
     /*  We can now create the buffer attributes. The data is 3D, hence the    *
      *  itemSize parameter is 3.                                              */
     geometryAttributes = new three.BufferAttribute(f32Vertices, 3);
+
+    let yIndex, xIndex;
 
     /*  We need to create the lines now. We do this by creating ordered       *
      *  pairs of the indices for the vertices in the vertex array that we     *
@@ -231,10 +238,10 @@ function setupScene() {
     /*  End of vertical for-loop.                                             */
 
     /*  Add the vertices and index array to the mesh.                         */
+    const indexU32 = new Uint16Array(indices);
+    indexAttribute = new three.BufferAttribute(indexU32, 1);
     geometry.setAttribute('position', geometryAttributes);
-    geometry.setIndex(indices);
-
-    Module.generateMesh(f32Vertices, width, height);
+    geometry.setIndex(indexAttribute);
 
     /*  We wish to create a wireframe for the object. Create the lines.       */
     object = new three.LineSegments(geometry, material);
@@ -272,9 +279,6 @@ function init() {
 
     /*  When the window is resized, update the necessary parameters.          */
     window.addEventListener('resize', onWindowResize);
-
-    /*  Initialize the start time. This is used as the parameter for rotation.*/
-    startTime = Date.now();
 }
 
 /*  Create the animation.                                                     */

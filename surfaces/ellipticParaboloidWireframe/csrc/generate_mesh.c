@@ -1,4 +1,3 @@
-
 #include "paraboloid.h"
 
 void generate_mesh(float *arr, unsigned int nx_pts, unsigned int ny_pts)
@@ -9,6 +8,12 @@ void generate_mesh(float *arr, unsigned int nx_pts, unsigned int ny_pts)
 
     unsigned int x_index, y_index;
     unsigned int index = 0U;
+
+    if (nx_pts > MAX_WIDTH)
+        return;
+
+    if (ny_pts > MAX_HEIGHT)
+        return;
 
     for (y_index = 0; y_index < ny_pts; ++y_index)
     {
