@@ -32,15 +32,16 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 const CModule = await createModule();
 
 /*  Globals for the animation.                                                */
-let camera, scene, renderer, object, f32Vertices;
+let camera, scene, renderer, object;
 
 /*  The number of samples in the horizontal and vertical axes.                */
-const width = 32;
-const height = 32;
+const width = 64;
+const height = 64;
 
 /*  Total number of points used for the mesh.                                 */
 const numberOfPoints = width * height;
 const bufferSize = 3 * numberOfPoints;
+const indexSize = 2 * (2 * width * height - width - height);
 const rotationAngle = 0.005;
 
 CModule.setRotationAngle(rotationAngle);
@@ -74,8 +75,10 @@ function onWindowResize() {
 function animate() {
 
     /*  Rotate the object slightly as time passes.                            */
-    CModule.rotateMesh(f32Vertices.byteOffset, numberOfPoints);
-    object.geometry.attributes.position.needsUpdate = true;
+    const vertices = object.geometry.attributes.position;
+
+    CModule.rotateMesh(vertices.array.byteOffset, numberOfPoints);
+    vertices.needsUpdate = true;
 
     /*  Re-render the newly rotated scene.                                    */
     renderer.render(scene, camera);
@@ -172,6 +175,8 @@ function setupScene() {
      *  triangles. To see a square pattern, we'll need to make our own buffer.*/
     const geometry = new three.BufferGeometry();
 
+    let f32Vertices, u32Indices;
+
     /*  The vertices for the object will by typed as 32-bit floats. We'll     *
      *  need a variable for the buffer attributes as well.                    */
     let geometryAttributes, indexAttribute;
@@ -181,65 +186,21 @@ function setupScene() {
     const materialDefinition = {color: lightBlue}
     const material = new three.MeshBasicMaterial(materialDefinition);
 
-    /*  Vertices for the mesh used to draw the elliptic paraboloid.           */
-    let indices = [];
+    const meshPtr = CModule.getMeshBuffer();
+    const indexPtr = CModule.getIndexBuffer();
 
-    const ptr = CModule.getBuffer();
-    f32Vertices = new Float32Array(CModule.HEAPF32.buffer, ptr, bufferSize);
+    u32Indices = new Uint32Array(CModule.HEAPU32.buffer, indexPtr, indexSize);
+    f32Vertices = new Float32Array(CModule.HEAPF32.buffer, meshPtr, bufferSize);
+
     CModule.generateMesh(f32Vertices.byteOffset, width, height);
+    CModule.generateIndices(u32Indices.byteOffset, width, height);
 
     /*  We can now create the buffer attributes. The data is 3D, hence the    *
      *  itemSize parameter is 3.                                              */
     geometryAttributes = new three.BufferAttribute(f32Vertices, 3);
-
-    let yIndex, xIndex;
-
-    /*  We need to create the lines now. We do this by creating ordered       *
-     *  pairs of the indices for the vertices in the vertex array that we     *
-     *  want to connect. Each point will be connected to its four surrounding *
-     *  neighbors, except for the points on the boundary, which have fewer    *
-     *  neighbors. We handle these boundary points separately.                */
-    for (yIndex = 0; yIndex < height; ++yIndex) {
-
-        /*  The indices are row-major, meaning index = y * width + x. The     *
-         *  shift factor only depends on the y-component, compute this.       */
-        const shift = yIndex * width;
-
-        /*  The vertical component is now fixed, loop through the horizontal. */
-        for (xIndex = 0; xIndex < width; ++xIndex) {
-
-            /*  The current index is the shift plus horizontal index. That    *
-             *  is, the index for (x, y) is y * width + x.                    */
-            const index00 = shift + xIndex;
-
-            /*  The point directly after the current point, in the horizontal.*/
-            const index01 = index00 + 1;
-
-            /*  The point directly above the current point, in the vertical.  */
-            const index10 = index00 + width;
-
-            /*  If we are not at the top edge or the right edge of the        *
-             *  rectangle, we may add an "L" shape to our mesh connecting the *
-             *  bottom left point to the bottom right point, and the bottom   *
-             *  left point to to the upper left point. At the top of the      *
-             *  rectangle the upper left point goes beyond the bounds of the  *
-             *  parametrization, so we do not need to draw it. Check for this.*/
-            if (yIndex != height - 1)
-                indices.push(index00, index10);
-
-            /*  Similarly, at the right edge we have that the bottom right    *
-             *  point lies outside of the parametrizion and do not need to    *
-             *  add it to our mesh. Check for this.                           */
-            if (xIndex != width - 1)
-                indices.push(index00, index01);
-        }
-        /*  End of horizontal for-loop.                                       */
-    }
-    /*  End of vertical for-loop.                                             */
+    indexAttribute = new three.BufferAttribute(u32Indices, 1);
 
     /*  Add the vertices and index array to the mesh.                         */
-    const indexU32 = new Uint16Array(indices);
-    indexAttribute = new three.BufferAttribute(indexU32, 1);
     geometry.setAttribute('position', geometryAttributes);
     geometry.setIndex(indexAttribute);
 
