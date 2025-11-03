@@ -30,10 +30,3 @@ pub mod get_index_buffer;
 pub mod get_mesh_buffer;
 pub mod rotate_mesh;
 pub mod set_rotation_angle;
-
-use wasm_bindgen::prelude::*;
-
-#[wasm_bindgen]
-pub fn _generate_indices(arr: &mut [u32], nx_pts: u32, ny_pts: u32) {
-    crate::generate_indices::generate_indices(arr, nx_pts, ny_pts);
-}
