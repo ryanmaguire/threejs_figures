@@ -18,44 +18,43 @@
  *      Computes the locations of the points in the mesh for the surface.     *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
- *  Date:       October 30, 2025                                              *
+ *  Date:       November 3, 2025                                              *
  ******************************************************************************/
 
-/*  Function prototype and mess array found here.                             */
-#include "paraboloid.h"
+/*  Function prototype and index array found here.                            */
+pub use crate::{MAX_HEIGHT, MAX_WIDTH};
+pub use crate::{PARABOLOID_WIDTH, PARABOLOID_HEIGHT};
+pub use crate::{PARABOLOID_X_START, PARABOLOID_Y_START};
 
+pub fn generate_mesh(arr: &mut [f32], nx_pts: u32, ny_pts: u32) {
 
-void generate_mesh(float *arr, unsigned int nx_pts, unsigned int ny_pts)
-{
-    const float dx = paraboloid_width / (float)(nx_pts - 1U);
-    const float dy = paraboloid_height / (float)(ny_pts - 1U);
-    const float height_shift = -2.0F;
-
-    /*  Variables for indexing the horizontal and vertical axes.              */
-    unsigned int x_index, y_index;
+    let dx: f32 = PARABOLOID_WIDTH / ((nx_pts - 1) as f32);
+    let dy: f32 = PARABOLOID_HEIGHT / ((ny_pts - 1) as f32);
+    const HEIGH_SHIFT: f32 = -2.0;
 
     /*  Variable for indexing over the array being written to.                */
-    unsigned int index = 0U;
+    let mut index: usize = 0;
 
     /*  Avoiding writing beyond the bounds of the array that was allocated.   *
      *  Check if the input sizes are too big.                                 */
-    if ((nx_pts > MAX_WIDTH) || (ny_pts > MAX_HEIGHT))
+    if (nx_pts > MAX_WIDTH) || (ny_pts > MAX_HEIGHT) {
         return;
+    }
 
-    for (y_index = 0; y_index < ny_pts; ++y_index)
-    {
-        const float y_pt = paraboloid_y_start + (float)y_index * dy;
+    for y_index in 0..ny_pts  {
 
-        for (x_index = 0; x_index < nx_pts; ++x_index)
-        {
-            const float x_pt = paraboloid_x_start + (float)x_index * dx;
-            const float z_pt = x_pt * x_pt + 2.0F * y_pt * y_pt + height_shift;
+        let y_pt: f32 = PARABOLOID_Y_START + (y_index as f32) * dy;
+
+        for x_index in 0..nx_pts {
+
+            let x_pt: f32 = PARABOLOID_X_START + (x_index as f32) * dx;
+            let z_pt: f32 = x_pt * x_pt + 2.0 * y_pt * y_pt + HEIGH_SHIFT;
 
             arr[index] = x_pt;
-            arr[index + 1U] = y_pt;
-            arr[index + 2U] = z_pt;
+            arr[index + 1] = y_pt;
+            arr[index + 2] = z_pt;
 
-            index += 3U;
+            index += 3;
         }
     }
 }
