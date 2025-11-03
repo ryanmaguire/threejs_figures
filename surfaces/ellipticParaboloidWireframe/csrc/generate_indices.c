@@ -1,15 +1,42 @@
+/******************************************************************************
+ *                                  LICENSE                                   *
+ ******************************************************************************
+ *  This file is free software: you can redistribute it and/or modify         *
+ *  it under the terms of the GNU General Public License as published by      *
+ *  the Free Software Foundation, either version 3 of the License, or         *
+ *  (at your option) any later version.                                       *
+ *                                                                            *
+ *  This file is distributed in the hope that it will be useful,              *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             *
+ *  GNU General Public License for more details.                              *
+ *                                                                            *
+ *  You should have received a copy of the GNU General Public License         *
+ *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
+ ******************************************************************************
+ *  Purpose:                                                                  *
+ *      Computes the indices corresponding to vertices in the wireframe mesh. *
+ ******************************************************************************
+ *  Author:     Ryan Maguire                                                  *
+ *  Date:       October 30, 2025                                              *
+ ******************************************************************************/
+
+/*  Function prototype and index array found here.                            */
 #include "paraboloid.h"
 
+/*  Function for generating the wireframe for the animation.                  */
 void
 generate_indices(unsigned int *arr, unsigned int nx_pts, unsigned int ny_pts)
 {
+    /*  Variables for indexing the horizontal and vertical axes.              */
     unsigned int x_index, y_index;
+
+    /*  Variable for indexing over the array being written to.                */
     unsigned int index = 0U;
 
-    if (nx_pts > MAX_WIDTH)
-        return;
-
-    if (ny_pts > MAX_HEIGHT)
+    /*  Avoiding writing beyond the bounds of the array that was allocated.   *
+     *  Check if the input sizes are too big.                                 */
+    if ((nx_pts > MAX_WIDTH) || (ny_pts > MAX_HEIGHT))
         return;
 
     /*  We need to create the lines now. We do this by creating ordered       *
@@ -17,15 +44,15 @@ generate_indices(unsigned int *arr, unsigned int nx_pts, unsigned int ny_pts)
      *  want to connect. Each point will be connected to its four surrounding *
      *  neighbors, except for the points on the boundary, which have fewer    *
      *  neighbors. We handle these boundary points separately.                */
-    for (y_index = 0; y_index < ny_pts; ++y_index) {
-
+    for (y_index = 0; y_index < ny_pts; ++y_index)
+    {
         /*  The indices are row-major, meaning index = y * width + x. The     *
          *  shift factor only depends on the y-component, compute this.       */
         const unsigned int shift = y_index * nx_pts;
 
         /*  The vertical component is now fixed, loop through the horizontal. */
-        for (x_index = 0; x_index < nx_pts; ++x_index) {
-
+        for (x_index = 0; x_index < nx_pts; ++x_index)
+        {
             /*  The current index is the shift plus horizontal index. That    *
              *  is, the index for (x, y) is y * width + x.                    */
             const unsigned int index00 = shift + x_index;
@@ -63,3 +90,4 @@ generate_indices(unsigned int *arr, unsigned int nx_pts, unsigned int ny_pts)
     }
     /*  End of vertical for-loop.                                             */
 }
+/*  End of generate_indices.                                                  */
