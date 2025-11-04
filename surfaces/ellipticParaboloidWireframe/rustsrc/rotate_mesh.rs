@@ -1,6 +1,6 @@
 use crate::{COS_ANGLE, SIN_ANGLE};
 
-pub fn rotate_mesh(arr: &mut Vec<f32>, n_pts: u32) {
+pub fn rotate_mesh(arr: &mut [f32], n_pts: u32) {
 
     let cos_angle: f32 = *COS_ANGLE.lock().unwrap();
     let sin_angle: f32 = *SIN_ANGLE.lock().unwrap();
