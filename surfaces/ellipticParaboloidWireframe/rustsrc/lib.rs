@@ -38,6 +38,16 @@ pub fn wasm_generate_mesh(arr: &mut [f32], nx_pts: u32, ny_pts: u32) {
     generate_mesh::generate_mesh(arr, nx_pts, ny_pts);
 }
 
+#[wasm_bindgen(js_name = getIndexBuffer)]
+pub fn wasm_get_index_buffer() -> usize {
+    return get_index_buffer::get_index_buffer();
+}
+
+#[wasm_bindgen(js_name = getMeshBuffer)]
+pub fn wasm_get_mesh_buffer() -> usize {
+    return get_mesh_buffer::get_mesh_buffer();
+}
+
 #[wasm_bindgen(js_name = rotateMesh)]
 pub fn wasm_rotate_mesh(arr: &mut [f32], n_pts: u32) {
     return rotate_mesh::rotate_mesh(arr, n_pts);
