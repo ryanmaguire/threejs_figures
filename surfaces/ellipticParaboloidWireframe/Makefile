@@ -6,7 +6,7 @@ CFLAGS = -Wall -Wextra -Wpedantic -O3 -flto
 SRC_DIR = csrc
 BUILD_DIR = cbuild
 
-ALIAS_FILE = alias.js
+ALIAS_FILE = $(SRC_DIR)/alias.js
 MAIN_FILE = main.js
 WASM_FILE = main.wasm
 
