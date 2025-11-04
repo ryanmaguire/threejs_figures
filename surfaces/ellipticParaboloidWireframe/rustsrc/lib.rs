@@ -1,5 +1,29 @@
+/******************************************************************************
+ *                                  LICENSE                                   *
+ ******************************************************************************
+ *  This file is free software: you can redistribute it and/or modify         *
+ *  it under the terms of the GNU General Public License as published by      *
+ *  the Free Software Foundation, either version 3 of the License, or         *
+ *  (at your option) any later version.                                       *
+ *                                                                            *
+ *  This file is distributed in the hope that it will be useful,              *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             *
+ *  GNU General Public License for more details.                              *
+ *                                                                            *
+ *  You should have received a copy of the GNU General Public License         *
+ *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
+ ******************************************************************************
+ *  Purpose:                                                                  *
+ *      Rust version of the elliptic paraboloid wireframe animation.          *
+ ******************************************************************************
+ *  Author:     Ryan Maguire                                                  *
+ *  Date:       November 3, 2025                                              *
+ ******************************************************************************/
+#![crate_type = "lib"]
+#![crate_name = "paraboloid"]
+
 use std::sync::Mutex;
-use wasm_bindgen::prelude::*;
 
 pub const MAX_WIDTH: u32 = 512;
 pub const MAX_HEIGHT: u32 = 512;
@@ -27,33 +51,3 @@ pub mod get_index_buffer;
 pub mod get_mesh_buffer;
 pub mod rotate_mesh;
 pub mod set_rotation_angle;
-
-#[wasm_bindgen(js_name = generateIndices)]
-pub fn wasm_generate_indices(arr: &mut [u32], nx_pts: u32, ny_pts: u32) {
-    generate_indices::generate_indices(arr, nx_pts, ny_pts);
-}
-
-#[wasm_bindgen(js_name = generateMesh)]
-pub fn wasm_generate_mesh(arr: &mut [f32], nx_pts: u32, ny_pts: u32) {
-    generate_mesh::generate_mesh(arr, nx_pts, ny_pts);
-}
-
-#[wasm_bindgen(js_name = getIndexBuffer)]
-pub fn wasm_get_index_buffer() -> usize {
-    return get_index_buffer::get_index_buffer();
-}
-
-#[wasm_bindgen(js_name = getMeshBuffer)]
-pub fn wasm_get_mesh_buffer() -> usize {
-    return get_mesh_buffer::get_mesh_buffer();
-}
-
-#[wasm_bindgen(js_name = rotateMesh)]
-pub fn wasm_rotate_mesh(arr: &mut [f32], n_pts: u32) {
-    return rotate_mesh::rotate_mesh(arr, n_pts);
-}
-
-#[wasm_bindgen(js_name = setRotationAngle)]
-pub fn wasm_set_rotation_angle(angle: f32) {
-    set_rotation_angle::set_rotation_angle(angle);
-}
