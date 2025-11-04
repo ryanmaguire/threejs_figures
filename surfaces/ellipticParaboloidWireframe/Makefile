@@ -32,11 +32,8 @@ all: $(MAIN_FILE) $(WASM_FILE)
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
 
-# Create build directory if not already present
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
-
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(BUILD_DIR)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $< -c -o $@
 
 $(MAIN_FILE) $(WASM_FILE): $(OBJS) $(ALIAS_FILE)
