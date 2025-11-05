@@ -28,6 +28,9 @@ CFLAGS = -Wall -Wextra -Wpedantic -O3 -flto
 SRC_DIR = csrc
 BUILD_DIR = cbuild
 
+# Location of the optional JavaScript code. C is used by default.
+JS_SRC_DIR = jssrc
+
 # Find all C source files
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
@@ -55,7 +58,7 @@ EXPORTS = -s EXPORTED_FUNCTIONS=$(FUNCTIONS)
 POST_JS = --post-js $(POSTJS_FILE)
 EMSCRIPTEN_FLAGS = $(JS_FLAGS) $(EXPORTS) $(POST_JS)
 
-.PHONY: all clean
+.PHONY: all clean js
 
 all: $(MAIN_FILE) $(WASM_FILE)
 
@@ -69,3 +72,6 @@ $(MAIN_FILE) $(WASM_FILE): $(OBJS) $(POSTJS_FILE)
 clean:
 	rm -rf $(BUILD_DIR)
 	rm -f $(MAIN_FILE) $(WASM_FILE)
+
+js:
+	cp $(JS_SRC_DIR)/$(MAIN_FILE) .
