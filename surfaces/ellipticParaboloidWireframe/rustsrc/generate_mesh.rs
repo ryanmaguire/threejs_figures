@@ -31,7 +31,14 @@ pub use crate::{PARABOLOID_WIDTH, PARABOLOID_HEIGHT};
 pub use crate::{PARABOLOID_X_START, PARABOLOID_Y_START};
 
 /*  Function for generating the mesh for the surface by calculating vertices. */
-pub fn generate_mesh(arr: &mut [f32], nx_pts: u32, ny_pts: u32) {
+pub fn generate_mesh(ptr: *mut f32, nx_pts: u32, ny_pts: u32) {
+
+    /*  The size of the array passed to us is given by the number of points   *
+     *  in the mesh, which is simply the width times the height.              */
+    let len: usize = (nx_pts * ny_pts) as usize;
+
+    /*  Get a slice for the data.                                             */
+    let arr = unsafe { std::slice::from_raw_parts_mut(ptr, len) };
 
     /*  Step sizes in the horizontal and vertical axes.                       */
     let dx: f32 = PARABOLOID_WIDTH / ((nx_pts - 1) as f32);
