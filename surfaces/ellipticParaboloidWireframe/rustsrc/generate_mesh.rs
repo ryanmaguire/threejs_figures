@@ -35,7 +35,7 @@ pub fn generate_mesh(ptr: *mut f32, nx_pts: u32, ny_pts: u32) {
 
     /*  The size of the array passed to us is given by the number of points   *
      *  in the mesh, which is simply the width times the height.              */
-    let len: usize = (nx_pts * ny_pts) as usize;
+    let len: usize = (3 * nx_pts * ny_pts) as usize;
 
     /*  Get a slice for the data.                                             */
     let arr = unsafe { std::slice::from_raw_parts_mut(ptr, len) };

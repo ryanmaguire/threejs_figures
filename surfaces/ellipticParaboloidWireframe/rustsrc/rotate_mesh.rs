@@ -25,7 +25,11 @@
 use crate::{COS_ANGLE, SIN_ANGLE};
 
 /*  Function for rotating the mesh by a fixed angle.                          */
-pub fn rotate_mesh(arr: &mut [f32], n_pts: u32) {
+pub fn rotate_mesh(ptr: *mut f32, n_pts: u32) {
+
+    /*  Convert the pointer into a slice.                                     */
+    let n_elements = (3 * n_pts) as usize;
+    let arr = unsafe { std::slice::from_raw_parts_mut(ptr, n_elements) };
 
     /*  Get the cosine and sine of the angle as f32's.                        */
     let cos_angle: f32 = *COS_ANGLE.lock().unwrap();

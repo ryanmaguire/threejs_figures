@@ -31,6 +31,11 @@ BUILD_DIR = cbuild
 # Location of the optional JavaScript code. C is used by default.
 JS_SRC_DIR = jssrc
 
+# Location of the optional Rust code. C is used by default.
+RUST_SRC_DIR = rustsrc
+RUST_PKG_DIR = pkg
+RUST_TARGET_DIR = target
+
 # Find all C source files
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
@@ -58,7 +63,7 @@ EXPORTS = -s EXPORTED_FUNCTIONS=$(FUNCTIONS)
 POST_JS = --post-js $(POSTJS_FILE)
 EMSCRIPTEN_FLAGS = $(JS_FLAGS) $(EXPORTS) $(POST_JS)
 
-.PHONY: all clean js
+.PHONY: all clean js rust
 
 all: $(MAIN_FILE) $(WASM_FILE)
 
@@ -70,8 +75,12 @@ $(MAIN_FILE) $(WASM_FILE): $(OBJS) $(POSTJS_FILE)
 	$(CC) $(CFLAGS) $(OBJS) -o $(MAIN_FILE) $(EMSCRIPTEN_FLAGS)
 
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR) $(RUST_PKG_DIR) $(RUST_TARGET_DIR)
 	rm -f $(MAIN_FILE) $(WASM_FILE)
 
 js:
 	cp $(JS_SRC_DIR)/$(MAIN_FILE) .
+
+rust:
+	wasm-pack build --target web
+	cp $(RUST_SRC_DIR)/$(MAIN_FILE) .
