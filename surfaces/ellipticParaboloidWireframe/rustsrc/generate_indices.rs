@@ -25,7 +25,23 @@
 pub use crate::{MAX_HEIGHT, MAX_WIDTH};
 
 /*  Function for generating the wireframe for the animation.                  */
-pub fn generate_indices(arr: &mut [u32], nx_pts: u32, ny_pts: u32) {
+pub fn generate_indices(ptr: *mut u32, nx_pts: u32, ny_pts: u32) {
+
+    /*  We are only passed the address of the data, we need to convert it     *
+     *  into a slice. This requires the total number of elements in the array,*
+     *  which is given in terms of the number number of points in the mesh.   */
+    let number_of_points: u32 = nx_pts * ny_pts;
+
+    /*  For each vertex, there are two edges comming out of it forming an "L" *
+     *  shape. This is true for all points except those along the top edge    *
+     *  and the right-most edge, where there is only one edge. Lastly, for    *
+     *  each edge there are two vertices, the starting vertex and the         *
+     *  terminal one, meaning there are 2 (2wh - w - h) elements in the index *
+     *  array, where w is the width and h is the height.                      */
+    let len = (2 * (2 * number_of_points - nx_pts - ny_pts)) as usize;
+
+    /*  Convert the pointer into a slice.                                     */
+    let arr = unsafe { std::slice::from_raw_parts_mut(ptr, len) };
 
     /*  Variable for indexing over the array being written to.                */
     let mut index: usize = 0;
