@@ -27,6 +27,8 @@ import * as three from 'three';
 /*  OrbitControls allows the user to control the animation using the mouse.   */
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
+import Stats from 'three/addons/libs/stats.module.js';
+
 /* JavaScript module using WebAssembly compiled from C code using emscripten. */
 import createModule from './ellipticParaboloidWireframeModule.js';
 
@@ -231,8 +233,11 @@ function init() {
     const surface = setupSurface(geometry);
     const scene = setupScene(surface);
 
+    const stats = new Stats();
+
     function animation() {
         module.animate(renderer, scene, camera, surface, numberOfPoints);
+        stats.update();
     }
 
     function onWindowResize () {
@@ -249,6 +254,7 @@ function init() {
 
     /*  Attach the drawing to the actual page.                                */
     document.body.appendChild(renderer.domElement);
+    document.body.appendChild(stats.dom);
 
     /*  When the window is resized, update the necessary parameters.          */
     window.addEventListener('resize', onWindowResize);
