@@ -23,13 +23,13 @@
 package main
 
 /*  Function for rotating the mesh by a fixed angle.                          */
-func rotateMesh(arr []float32, n_pts uint32) {
+func rotateMesh(arr []float32, nPts uint32) {
 
     /*  Variable for indexing over the elements of the mesh.                  */
     var index uint32
 
     /*  Loop through each point in the mesh.                                  */
-    for index = 0; index < n_pts; index++ {
+    for index = 0; index < nPts; index++ {
 
         /*  A vertex has three values, the x, y, and z coordinates. The index *
          *  for the x value of the point is 3 times the current index.        */
