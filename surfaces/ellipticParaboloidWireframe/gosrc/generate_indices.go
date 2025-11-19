@@ -23,17 +23,17 @@
 package main
 
 /*  Function for generating the wireframe for the animation.                  */
-func generateIndices(arr []uint32, nx_pts, ny_pts uint32) {
+func generateIndices(arr []uint32, nxPts, nyPts uint32) {
 
     /*  Variables for indexing the horizontal and vertical axes.              */
-    var x_index, y_index uint32
+    var xIndex, yIndex uint32
 
     /*  Variable for indexing over the array being written to.                */
     var index uint32 = 0
 
-    /*  Avoiding writing beyond the bounds of the array that was allocated.   *
+    /*  Avoid writing beyond the bounds of the array that was allocated.      *
      *  Check if the input sizes are too big.                                 */
-    if (nx_pts > MAX_WIDTH) || (ny_pts > MAX_HEIGHT) {
+    if (nxPts > maxWidth) || (nyPts > maxHeight) {
         return
     }
 
@@ -42,24 +42,24 @@ func generateIndices(arr []uint32, nx_pts, ny_pts uint32) {
      *  want to connect. Each point will be connected to its four surrounding *
      *  neighbors, except for the points on the boundary, which have fewer    *
      *  neighbors. We handle these boundary points separately.                */
-    for y_index = 0; y_index < ny_pts; y_index++ {
+    for yIndex = 0; yIndex < nyPts; yIndex++ {
 
         /*  The indices are row-major, meaning index = y * width + x. The     *
          *  shift factor only depends on the y-component, compute this.       */
-        var shift uint32 = y_index * nx_pts
+        var shift uint32 = yIndex * nxPts
 
         /*  The vertical component is now fixed, loop through the horizontal. */
-        for x_index = 0; x_index < nx_pts; x_index++ {
+        for xIndex = 0; xIndex < nxPts; xIndex++ {
 
             /*  The current index is the shift plus horizontal index. That    *
              *  is, the index for (x, y) is y * width + x.                    */
-            var index00 uint32 = shift + x_index
+            var index00 uint32 = shift + xIndex
 
             /*  The point directly after the current point, in the horizontal.*/
             var index01 uint32 = index00 + 1
 
             /*  The point directly above the current point, in the vertical.  */
-            var index10 uint32 = index00 + nx_pts
+            var index10 uint32 = index00 + nxPts
 
             /*  If we are not at the top edge or the right edge of the        *
              *  rectangle, we may add an "L" shape to our mesh connecting the *
@@ -67,23 +67,23 @@ func generateIndices(arr []uint32, nx_pts, ny_pts uint32) {
              *  left point to to the upper left point. At the top of the      *
              *  rectangle the upper left point goes beyond the bounds of the  *
              *  parametrization, so we do not need to draw it. Check for this.*/
-            if y_index != ny_pts - 1 {
-                arr[index] = index00;
-                arr[index + 1] = index10;
-                index += 2;
+            if yIndex != nyPts - 1 {
+                arr[index] = index00
+                arr[index + 1] = index10
+                index += 2
             }
 
             /*  Similarly, at the right edge we have that the bottom right    *
              *  point lies outside of the parametrizion and do not need to    *
              *  add it to our mesh. Check for this.                           */
-            if (x_index != nx_pts - 1) {
-                arr[index] = index00;
-                arr[index + 1] = index01;
-                index += 2;
+            if (xIndex != nxPts - 1) {
+                arr[index] = index00
+                arr[index + 1] = index01
+                index += 2
             }
         }
         /*  End of horizontal for-loop.                                       */
     }
     /*  End of vertical for-loop.                                             */
 }
-/*  End of generate_indices.                                                  */
+/*  End of generateIndices.                                                   */

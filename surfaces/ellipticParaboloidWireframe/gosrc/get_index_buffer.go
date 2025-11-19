@@ -21,13 +21,16 @@
  *  Date:       November 18, 2025                                             *
  ******************************************************************************/
 package main
+
+/*  The Pointer function is provided here, which gets an adress from an array.*/
 import "unsafe"
 
 /*  Function for getting the address of the index array.                      */
 func getIndexBuffer() uintptr {
 
-    /*  We can simply return the index buffer. At the JavaScript level this   *
-     *  is used to get the address of the index array for reading and writing.*/
-    return uintptr(unsafe.Pointer(&index_buffer))
+    /*  Get a pointer for the array and then convert this into an integer,    *
+     *  which is the address of the array. This is used at the JavaScript     *
+     *  level for reading and writing to the buffer.                          */
+    return uintptr(unsafe.Pointer(&indexBuffer))
 }
-/*  End of get_index_buffer.                                                  */
+/*  End of getIndexBuffer.                                                    */

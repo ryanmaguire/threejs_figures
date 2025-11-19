@@ -45,13 +45,13 @@ func smallAngleSine(z, zsq float32) float32 {
 func setRotationAngle(angle float32) {
 
     /*  The Taylor series are in terms of the square of the angle.            */
-    var angle_squared float32 = angle * angle
+    var angleSquared float32 = angle * angle
 
     /*  Set the global angle to its new value.                                */
-    rotation_angle = angle
+    rotationAngle = angle
 
     /*  Compute the sine and cosine of this and save it in the globals.       */
-    cos_angle = smallAngleCosine(angle_squared)
-    sin_angle = smallAngleSine(angle, angle_squared)
+    cosAngle = smallAngleCosine(angleSquared)
+    sinAngle = smallAngleSine(angle, angleSquared)
 }
-/*  End of set_rotation_angle.                                                */
+/*  End of setRotationAngle.                                                  */
