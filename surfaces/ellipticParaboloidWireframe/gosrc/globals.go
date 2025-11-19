@@ -23,21 +23,21 @@
 package main
 
 const (
-	MAX_WIDTH uint32 = 512
-	MAX_HEIGHT uint32 = 512
-	MAX_LENGTH uint32 = MAX_WIDTH * MAX_HEIGHT
-	MESH_BUFFER_SIZE uint32 = 3 * MAX_LENGTH
-	INDEX_BUFFER_SIZE uint32 = (2 * (2 * MAX_LENGTH - MAX_WIDTH - MAX_HEIGHT))
-	paraboloid_x_start float32 = -1.0
-	paraboloid_y_start float32 = -1.0
-	paraboloid_width float32 = 2.0
-	paraboloid_height float32 = 2.0
+	maxWidth uint32 = 512
+	maxHeight uint32 = 512
+	maxLength uint32 = maxWidth * maxHeight
+	meshBufferSize uint32 = 3 * maxLength
+	indexBufferSize uint32 = (2 * (2 * maxLength - maxWidth - maxHeight))
+	xStart float32 = -1.0
+	yStart float32 = -1.0
+	width float32 = 2.0
+	height float32 = 2.0
 )
 
 var (
-	rotation_angle float32
-	cos_angle float32
-	sin_angle float32
-	mesh_buffer [MESH_BUFFER_SIZE]float32
-	index_buffer [INDEX_BUFFER_SIZE]uint32
+	rotationAngle float32
+	cosAngle float32
+	sinAngle float32
+	meshBuffer [meshBufferSize]float32
+	indexBuffer [indexBufferSize]uint32
 )

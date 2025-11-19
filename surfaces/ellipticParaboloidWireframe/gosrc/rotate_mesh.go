@@ -33,18 +33,18 @@ func rotateMesh(arr []float32, n_pts uint32) {
 
         /*  A vertex has three values, the x, y, and z coordinates. The index *
          *  for the x value of the point is 3 times the current index.        */
-        var x_index uint32 = 3 * index
+        var xIndex uint32 = 3 * index
 
         /*  The y index is immediately after the x index.                     */
-        var y_index uint32 = x_index + 1
+        var yIndex uint32 = xIndex + 1
 
         /*  Use the rotation matrix. Get the initial values.                  */
-        var x float32 = arr[x_index]
-        var y float32 = arr[y_index]
+        var x float32 = arr[xIndex]
+        var y float32 = arr[yIndex]
 
         /*  Apply the rotation matrix and update the points.                  */
-        arr[x_index] = cos_angle * x - sin_angle * y
-        arr[y_index] = cos_angle * y + sin_angle * x
+        arr[xIndex] = cosAngle * x - sinAngle * y
+        arr[yIndex] = cosAngle * y + sinAngle * x
     }
 }
-/*  End of rotate_mesh.                                                       */
+/*  End of rotateMesh.                                                        */
