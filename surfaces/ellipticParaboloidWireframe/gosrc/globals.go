@@ -23,21 +23,21 @@
 package main
 
 const (
-	maxWidth uint32 = 512
-	maxHeight uint32 = 512
-	maxLength uint32 = maxWidth * maxHeight
-	meshBufferSize uint32 = 3 * maxLength
-	indexBufferSize uint32 = (2 * (2 * maxLength - maxWidth - maxHeight))
-	xStart float32 = -1.0
-	yStart float32 = -1.0
-	width float32 = 2.0
-	height float32 = 2.0
+    maxWidth uint32 = 512
+    maxHeight uint32 = 512
+    maxLength uint32 = maxWidth * maxHeight
+    meshBufferSize uint32 = 3 * maxLength
+    indexBufferSize uint32 = (2 * (2 * maxLength - maxWidth - maxHeight))
+    xStart float32 = -1.0
+    yStart float32 = -1.0
+    width float32 = 2.0
+    height float32 = 2.0
 )
 
 var (
-	rotationAngle float32
-	cosAngle float32
-	sinAngle float32
-	meshBuffer [meshBufferSize]float32
-	indexBuffer [indexBufferSize]uint32
+    rotationAngle float32
+    cosAngle float32
+    sinAngle float32
+    meshBuffer [meshBufferSize]float32
+    indexBuffer [indexBufferSize]uint32
 )
