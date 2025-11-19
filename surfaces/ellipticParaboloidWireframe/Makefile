@@ -36,6 +36,13 @@ RUST_SRC_DIR = rustsrc
 RUST_PKG_DIR = pkg
 RUST_TARGET_DIR = target
 
+# Location of the optional Go code.
+GOSRC = gosrc
+GO_GLUE = wasm_exec.js
+
+# Required flags for compiling Go to WebAssembly.
+GO_FLAGS = GOOS=js GOARCH=wasm
+
 # Find all C source files
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
@@ -63,7 +70,7 @@ EXPORTS = -s EXPORTED_FUNCTIONS=$(FUNCTIONS)
 POST_JS = --post-js $(POSTJS_FILE)
 EMSCRIPTEN_FLAGS = $(JS_FLAGS) $(EXPORTS) $(POST_JS)
 
-.PHONY: all clean js rust
+.PHONY: all clean js rust go
 
 all: $(MAIN_FILE) $(WASM_FILE)
 
@@ -76,7 +83,7 @@ $(MAIN_FILE) $(WASM_FILE): $(OBJS) $(POSTJS_FILE)
 
 clean:
 	rm -rf $(BUILD_DIR) $(RUST_PKG_DIR) $(RUST_TARGET_DIR)
-	rm -f $(MAIN_FILE) $(WASM_FILE)
+	rm -f $(MAIN_FILE) $(WASM_FILE) $(GO_GLUE)
 
 js:
 	cp $(JS_SRC_DIR)/$(MAIN_FILE) .
@@ -84,3 +91,8 @@ js:
 rust:
 	wasm-pack build --target web
 	cp $(RUST_SRC_DIR)/$(MAIN_FILE) .
+
+go:
+	$(GO_FLAGS) go build -o $(WASM_FILE) $(GOSRC)/*.go
+	cp "$(shell go env GOROOT)/misc/wasm/$(GO_GLUE)" .
+	cp $(GOSRC)/$(MAIN_FILE) .
