@@ -15,7 +15,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *    	Returns a slice to one of the buffers, given the buffer's address.    *
+ *      Returns a slice to one of the buffers, given the buffer's address.    *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 20, 2025                                             *
