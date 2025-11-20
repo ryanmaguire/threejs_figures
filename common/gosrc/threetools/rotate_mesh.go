@@ -20,31 +20,43 @@
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 18, 2025                                             *
  ******************************************************************************/
-package main
+package threetools
 
-/*  Function for rotating the mesh by a fixed angle.                          */
-func rotateMesh(arr []float32, nPts uint32) {
+/******************************************************************************
+ *  Function:                                                                 *
+ *      RotateMesh                                                            *
+ *  Purpose:                                                                  *
+ *      Rotates the mesh in a canvas by the provided unit vector.             *
+ *  Arguments:                                                                *
+ *      canvas (*Canvas):                                                     *
+ *          The canvas with the mesh that is being rotated.                   *
+ *      point (UnitVector]):                                                  *
+ *          A point on the unit circle, its polar angle is used for rotating. *
+ *  Output:                                                                   *
+ *      None.                                                                 *
+ ******************************************************************************/
+func RotateMesh(canvas *Canvas, point UnitVector) {
 
     /*  Variable for indexing over the elements of the mesh.                  */
-    var index uint32
+    var index int
 
     /*  Loop through each point in the mesh.                                  */
-    for index = 0; index < nPts; index++ {
+    for index = 0; index < canvas.NumberOfPoints; index++ {
 
         /*  A vertex has three values, the x, y, and z coordinates. The index *
          *  for the x value of the point is 3 times the current index.        */
-        var xIndex uint32 = 3 * index
+        var xIndex int = 3 * index
 
         /*  The y index is immediately after the x index.                     */
-        var yIndex uint32 = xIndex + 1
+        var yIndex int = xIndex + 1
 
         /*  Use the rotation matrix. Get the initial values.                  */
-        var x float32 = arr[xIndex]
-        var y float32 = arr[yIndex]
+        var x float32 = canvas.Mesh[xIndex]
+        var y float32 = canvas.Mesh[yIndex]
 
         /*  Apply the rotation matrix and update the points.                  */
-        arr[xIndex] = cosAngle * x - sinAngle * y
-        arr[yIndex] = cosAngle * y + sinAngle * x
+        canvas.Mesh[xIndex] = point.AngleCos * x - point.AngleSin * y
+        canvas.Mesh[yIndex] = point.AngleCos * y + point.AngleSin * x
     }
 }
-/*  End of rotateMesh.                                                        */
+/*  End of RotateMesh.                                                        */
