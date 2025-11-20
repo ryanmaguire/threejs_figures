@@ -48,22 +48,15 @@ export default async function createModule() {
     go.run(result.instance);
 
     const memory = result.instance.exports.mem;
-
-    /*  Exported functions for the module.                                    */
-    const generateMesh = window.generateMesh;
-    const generateIndices = window.generateIndices;
-    const rotateMesh = window.rotateMesh;
     const setRotationAngle = window.setRotationAngle;
-    const getMeshBuffer = window.getMeshBuffer;
-    const getIndexBuffer = window.getIndexBuffer;
 
     /*  Helper function for initializing the three.js geometry.               */
     function initializeGeometry(geometry, meshSize, indexSize) {
 
         const buffer = memory.buffer;
 
-        const meshPtr = getMeshBuffer();
-        const indexPtr = getIndexBuffer();
+        const meshPtr = window.meshBufferAddress();
+        const indexPtr = window.indexBufferAddress();
 
         const meshBuffer = new Float32Array(buffer, meshPtr, meshSize);
         const indexBuffer = new Uint32Array(buffer, indexPtr, indexSize);
@@ -90,7 +83,7 @@ export default async function createModule() {
         /*  Rotate the object slightly as time passes.                        */
         let geometry = surface.geometry;
         let mesh = geometry.attributes.position;
-        rotateMesh(mesh.array.byteOffset, arraySize);
+        window.rotateMesh(mesh.array.byteOffset, arraySize);
 
         /*  This problem seems to be unique to Go, C and rust do not have     *
          *  this issue. It is possible for the address of the mesh and index  *
@@ -104,7 +97,7 @@ export default async function createModule() {
             const indexSize = geometry.index.count;
 
             /*  Reset the geometry attributes to use the new addresses.       */
-            initializeGeometry(geometry, meshSize, indexSize, false);
+            initializeGeometry(geometry, meshSize, indexSize);
             mesh = geometry.attributes.position;
         }
 
@@ -126,26 +119,28 @@ export default async function createModule() {
      **************************************************************************/
     function setupGeometry(three, width, height) {
 
-        /*  The total number of points in the surface.                        */
-        const numberOfPoints = width * height;
-
-        /*  Compute the number of elements in each buffer.                    */
-        const meshSize = 3 * numberOfPoints;
-        const indexSize = 2 * (2 * numberOfPoints - width - height);
+        const parameters = {
+            nxPts: 64,
+            nyPts: 64,
+            width: 2.0,
+            height: 2.0,
+            xStart: -1.0,
+            yStart: -1.0,
+            meshType: 0
+        };
 
         /*  three.js has parametric function tools, but this renders the      *
          *  object with diagonals across the squares, creating a mesh of      *
          *  triangles. To see a square pattern we need to use our own buffer. */
         const geometry = new three.BufferGeometry();
-
-        /*  Get the address for the mesh and index buffers used in Go.        */
-        const meshPtr = getMeshBuffer();
-        const indexPtr = getIndexBuffer();
+        const product = parameters.nxPts * parameters.nyPts;
+        const sum = parameters.nxPts + parameters.nyPts;
+        const meshSize = 3 * product;
+        const indexSize = 2 * (2 * product - sum);
 
         /*  Setup the geometry and add a mesh of vertices and line segments.  */
-        initializeGeometry(geometry, meshSize, indexSize, true);
-        generateMesh(meshPtr, width, height);
-        generateIndices(indexPtr, width, height);
+        window.setupMesh(parameters)
+        initializeGeometry(geometry, meshSize, indexSize);
 
         return geometry;
     }
@@ -153,9 +148,6 @@ export default async function createModule() {
 
     const module = {
         animate,
-        generateIndices,
-        generateMesh,
-        rotateMesh,
         setRotationAngle,
         setupGeometry
     };
