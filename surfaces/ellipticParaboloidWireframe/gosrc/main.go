@@ -23,9 +23,30 @@
 package main
 
 /*  JavaScript wrapper tools found here.                                      */
-import "syscall/js"
+import (
+    "syscall/js"
+    "common/threetools"
+    "common/jsbindings"
+)
+
+func surface(x, y float32) float32 {
+    return x*x + 2.0 * y*y - 2.0
+}
+
+/*  Wrapper function for the Go function generateMesh.                        */
+func setupMesh(this js.Value, args []js.Value) interface{} {
+
+    jsbindings.InitCanvas(this, args)
+    threetools.GenerateMeshFromParametrization(&threetools.MainCanvas, surface)
+    threetools.GenerateRectangularWireframe(&threetools.MainCanvas)
+
+    return nil
+}
+/*  End of jsGenerateMesh.                                                    */
 
 func main() {
+
+    var window js.Value = js.Global()
 
     /*  We need main to stay alive while the animation at the JavaScript      *
      *  level is being rendered. Create a channel for an empty struct (which  *
@@ -34,12 +55,11 @@ func main() {
     empty := make(chan struct{}, 0)
 
     /*  Create JavaScript wrappers the function, using standard camel case.   */
-    js.Global().Set("generateMesh", js.FuncOf(jsGenerateMesh))
-    js.Global().Set("generateIndices", js.FuncOf(jsGenerateIndices))
-    js.Global().Set("getMeshBuffer", js.FuncOf(jsGetMeshBuffer))
-    js.Global().Set("getIndexBuffer", js.FuncOf(jsGetIndexBuffer))
-    js.Global().Set("rotateMesh", js.FuncOf(jsRotateMesh))
-    js.Global().Set("setRotationAngle", js.FuncOf(jsSetRotationAngle))
+    window.Set("rotateMesh", js.FuncOf(jsbindings.RotateMesh))
+    window.Set("setRotationAngle", js.FuncOf(jsbindings.SetRotationAngle))
+    window.Set("meshBufferAddress", js.FuncOf(jsbindings.MeshBufferAddress))
+    window.Set("indexBufferAddress", js.FuncOf(jsbindings.IndexBufferAddress))
+    window.Set("setupMesh", js.FuncOf(setupMesh))
 
 	/*  Prevent the function from exiting while the JavaScript program runs.  *
      *  Since "empty" is a channel for an empty struct, the channel does not  *

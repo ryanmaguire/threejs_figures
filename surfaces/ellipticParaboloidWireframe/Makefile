@@ -93,6 +93,7 @@ rust:
 	cp $(RUST_SRC_DIR)/$(MAIN_FILE) .
 
 go:
-	$(GO_FLAGS) go build -o $(WASM_FILE) $(GOSRC)/*.go
+	$(shell cd $(GOSRC) && $(GO_FLAGS) go build -o $(WASM_FILE) .)
 	cp "$(shell go env GOROOT)/misc/wasm/$(GO_GLUE)" .
 	cp $(GOSRC)/$(MAIN_FILE) .
+	mv $(GOSRC)/$(WASM_FILE) .
