@@ -20,7 +20,7 @@
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 18, 2025                                             *
  ******************************************************************************/
-package main
+package threetools
 
 /*  First few coefficients of the Taylor series for cosine.                   */
 const C0 float32 = +1.00000000E+00
@@ -42,16 +42,16 @@ func smallAngleSine(z, zsq float32) float32 {
 }
 
 /*  Function for setting the rotation angle and computes its sine and cosine. */
-func setRotationAngle(angle float32) {
+func SetRotationAngle(angle float32) {
 
     /*  The Taylor series are in terms of the square of the angle.            */
     var angleSquared float32 = angle * angle
 
-    /*  Set the global angle to its new value.                                */
-    rotationAngle = angle
+    /*  Compute x and y components of the unit vector given by the angle.     */
+    var cosAngle float32 = smallAngleCosine(angleSquared)
+    var sinAngle float32 = smallAngleSine(angle, angleSquared)
 
-    /*  Compute the sine and cosine of this and save it in the globals.       */
-    cosAngle = smallAngleCosine(angleSquared)
-    sinAngle = smallAngleSine(angle, angleSquared)
+    /*  Store this information in the global variable for rotating the mesh.  */
+    RotationVector = UnitVector{cosAngle, sinAngle}
 }
-/*  End of setRotationAngle.                                                  */
+/*  End of SetRotationAngle.                                                  */
