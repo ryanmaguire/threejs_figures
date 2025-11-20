@@ -15,22 +15,31 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Computes the locations of the points in the mesh for the surface.     *
+ *      Computes the locations of the points in the mesh for a surface.       *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 18, 2025                                             *
  ******************************************************************************/
-package main
+package threetools
 
-/*  Function for generating the mesh for the surface by calculating vertices. */
-func generateMesh(arr []float32, nxPts, nyPts uint32) {
+/******************************************************************************
+ *  Function:                                                                 *
+ *      GenerateMeshFromParametrization                                       *
+ *  Purpose:                                                                  *
+ *      Computes the vertices of a mesh from a parametric equation.           *
+ *  Arguments:                                                                *
+ *      canvas (*Canvas):                                                     *
+ *          The canvas for the animation. This contains geometry and buffers. *
+ *      f (SurfaceParametrization):                                           *
+ *          The function that defines the surface, z = f(x, y).               *
+ *  Output:                                                                   *
+ *      None.                                                                 *
+ ******************************************************************************/
+func GenerateMeshFromParametrization(canvas *Canvas, f SurfaceParametrization) {
 
     /*  Step sizes in the horizontal and vertical axes.                       */
-    var dx float32 = width / float32(nxPts - 1)
-    var dy float32 = height / float32(nyPts - 1)
-
-    /*  Shift for centering the object around the origin.                     */
-    const heightShift float32 = -2.0
+    var dx float32 = canvas.Width / float32(canvas.NxPts - 1)
+    var dy float32 = canvas.Height / float32(canvas.NyPts - 1)
 
     /*  Variables for indexing the horizontal and vertical axes.              */
     var xIndex, yIndex uint32
@@ -40,34 +49,31 @@ func generateMesh(arr []float32, nxPts, nyPts uint32) {
 
     /*  Avoid writing beyond the bounds of the array that was allocated.      *
      *  Check if the input sizes are too big.                                 */
-    if (nxPts > maxWidth) || (nyPts > maxHeight) {
+    if (canvas.NxPts > MaxWidth) || (canvas.NyPts > MaxHeight) {
         return
     }
 
-    /*  Loop through the vertical axis. The elliptic paraboloid lies          *
-     *  above the xy plane, meaning it is of the form z = f(x, y).            *
-     *                                                                        *
+    /*  Loop over the vertical axis. The surface is of the form z = f(x, y).  *
      *  Note, since the y index is the outer for-loop, the array is indexed   *
      *  in row-major fashion. That is, index = y * width + x.                 */
-    for yIndex = 0; yIndex < nyPts; yIndex++ {
+    for yIndex = 0; yIndex < canvas.NyPts; yIndex++ {
 
         /*  Convert pixel index to y coordinate.                              */
-        var yPt float32 = yStart + float32(yIndex) * dy
+        var yPt float32 = canvas.VerticalStart + float32(yIndex) * dy
 
         /*  Loop through the horizontal component of the object.              */
-        for xIndex = 0; xIndex < nxPts; xIndex++ {
+        for xIndex = 0; xIndex < canvas.NxPts; xIndex++ {
 
             /*  Convert pixel index to x coordinate in the plane.             */
-            var xPt float32 = xStart + float32(xIndex) * dx
+            var xPt float32 = canvas.HorizontalStart + float32(xIndex) * dx
 
-            /*  The elliptic paraboloid has a simple formula: z = x^2 + 2y^2. *
-             *  We shift this slightly to center the surface on the screen.   */
-            var zPt float32 = xPt * xPt + 2.0 * yPt * yPt + heightShift
+            /*  Get the z component using the provided parametrization.       */
+            var zPt float32 = f(xPt, yPt)
 
             /*  Add this point to our vertex array.                           */
-            arr[index] = xPt
-            arr[index + 1] = yPt
-            arr[index + 2] = zPt
+            canvas.Mesh[index] = xPt
+            canvas.Mesh[index + 1] = yPt
+            canvas.Mesh[index + 2] = zPt
 
             /*  Move on to the next point in the mesh. A point needs 3 floats.*/
             index += 3
@@ -76,4 +82,4 @@ func generateMesh(arr []float32, nxPts, nyPts uint32) {
     }
     /*  End of vertical for-loop.                                             */
 }
-/*  End of generateMesh.                                                      */
+/*  End of GenerateMeshFromParametrization.                                   */
