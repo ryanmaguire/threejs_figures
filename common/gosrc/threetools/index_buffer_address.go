@@ -15,7 +15,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Returns the addres to the index buffer.                               *
+ *      Returns the address for the global index buffer.                      *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 18, 2025                                             *
