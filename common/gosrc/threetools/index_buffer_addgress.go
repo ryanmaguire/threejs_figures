@@ -15,22 +15,31 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Returns a pointer to the index buffer.                                *
+ *      Returns the addres to the index buffer.                               *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 18, 2025                                             *
  ******************************************************************************/
-package main
+package threetools
 
-/*  The Pointer function is provided here, which gets an adress from an array.*/
+/*  The Pointer type is provided here, which gets an adress from an array.    */
 import "unsafe"
 
-/*  Function for getting the address of the index array.                      */
-func getIndexBuffer() uintptr {
+/******************************************************************************
+ *  Function:                                                                 *
+ *      IndexBufferAddress                                                    *
+ *  Purpose:                                                                  *
+ *      Returns the address of the global index buffer.                       *
+ *  Arguments:                                                                *
+ *      None.                                                                 *
+ *  Output:                                                                   *
+ *      address (uintptr):                                                    *
+ *          The address of the global index buffer as an unsigned integer.    *
+ ******************************************************************************/
+func IndexBufferAddress() uintptr {
 
     /*  Get a pointer for the array and then convert this into an integer,    *
-     *  which is the address of the array. This is used at the JavaScript     *
-     *  level for reading and writing to the buffer.                          */
-    return uintptr(unsafe.Pointer(&indexBuffer))
+     *  which is the address of the array.                                    */
+    return uintptr(unsafe.Pointer(&IndexBuffer))
 }
-/*  End of getIndexBuffer.                                                    */
+/*  End of IndexBufferAddress.                                                */
