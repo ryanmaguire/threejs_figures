@@ -20,10 +20,21 @@
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 18, 2025                                             *
  ******************************************************************************/
-package main
+package threetools
 
-/*  Function for generating the wireframe for the animation.                  */
-func generateIndices(arr []uint32, nxPts, nyPts uint32) {
+/******************************************************************************
+ *  Function:                                                                 *
+ *      GenerateRectangularWireframe                                          *
+ *  Purpose:                                                                  *
+ *      Generates the line line segments for a parametrized surface using     *
+ *      a rectangular grid for a surface of the form z = f(x, y).             *
+ *  Arguments:                                                                *
+ *      canvas (*Canvas):                                                     *
+ *          The canvas for the animation. This contains geometry and buffers. *
+ *  Output:                                                                   *
+ *      None.                                                                 *
+ ******************************************************************************/
+func GenerateRectangularWireframe(canvas *Canvas) {
 
     /*  Variables for indexing the horizontal and vertical axes.              */
     var xIndex, yIndex uint32
@@ -33,7 +44,7 @@ func generateIndices(arr []uint32, nxPts, nyPts uint32) {
 
     /*  Avoid writing beyond the bounds of the array that was allocated.      *
      *  Check if the input sizes are too big.                                 */
-    if (nxPts > maxWidth) || (nyPts > maxHeight) {
+    if (canvas.NxPts > MaxWidth) || (canvas.NyPts > MaxHeight) {
         return
     }
 
@@ -42,14 +53,14 @@ func generateIndices(arr []uint32, nxPts, nyPts uint32) {
      *  want to connect. Each point will be connected to its four surrounding *
      *  neighbors, except for the points on the boundary, which have fewer    *
      *  neighbors. We handle these boundary points separately.                */
-    for yIndex = 0; yIndex < nyPts; yIndex++ {
+    for yIndex = 0; yIndex < canvas.NyPts; yIndex++ {
 
         /*  The indices are row-major, meaning index = y * width + x. The     *
          *  shift factor only depends on the y-component, compute this.       */
-        var shift uint32 = yIndex * nxPts
+        var shift uint32 = yIndex * canvas.NxPts
 
         /*  The vertical component is now fixed, loop through the horizontal. */
-        for xIndex = 0; xIndex < nxPts; xIndex++ {
+        for xIndex = 0; xIndex < canvas.NxPts; xIndex++ {
 
             /*  The current index is the shift plus horizontal index. That    *
              *  is, the index for (x, y) is y * width + x.                    */
@@ -59,26 +70,26 @@ func generateIndices(arr []uint32, nxPts, nyPts uint32) {
             var index01 uint32 = index00 + 1
 
             /*  The point directly above the current point, in the vertical.  */
-            var index10 uint32 = index00 + nxPts
+            var index10 uint32 = index00 + canvas.NxPts
 
             /*  If we are not at the top edge or the right edge of the        *
              *  rectangle, we may add an "L" shape to our mesh connecting the *
              *  bottom left point to the bottom right point, and the bottom   *
-             *  left point to to the upper left point. At the top of the      *
+             *  left point to the upper left point. At the top of the         *
              *  rectangle the upper left point goes beyond the bounds of the  *
              *  parametrization, so we do not need to draw it. Check for this.*/
-            if yIndex != nyPts - 1 {
-                arr[index] = index00
-                arr[index + 1] = index10
+            if yIndex != canvas.NyPts - 1 {
+                canvas.Indices[index] = index00
+                canvas.Indices[index + 1] = index10
                 index += 2
             }
 
             /*  Similarly, at the right edge we have that the bottom right    *
              *  point lies outside of the parametrizion and do not need to    *
              *  add it to our mesh. Check for this.                           */
-            if (xIndex != nxPts - 1) {
-                arr[index] = index00
-                arr[index + 1] = index01
+            if (xIndex != canvas.NxPts - 1) {
+                canvas.Indices[index] = index00
+                canvas.Indices[index + 1] = index01
                 index += 2
             }
         }
@@ -86,4 +97,4 @@ func generateIndices(arr []uint32, nxPts, nyPts uint32) {
     }
     /*  End of vertical for-loop.                                             */
 }
-/*  End of generateIndices.                                                   */
+/*  End of GenerateRectangularWireframe.                                      */
