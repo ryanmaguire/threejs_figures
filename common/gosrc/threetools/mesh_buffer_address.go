@@ -15,22 +15,31 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Returns a pointer to the mesh buffer.                                 *
+ *      Returns the address for the global mesh buffer.                       *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 18, 2025                                             *
  ******************************************************************************/
-package main
+package threetools
 
-/*  The Pointer function is provided here, which gets an adress from an array.*/
+/*  The Pointer type is provided here, which gets an adress from an array.    */
 import "unsafe"
 
-/*  Function for getting the address of the mesh array.                       */
-func getMeshBuffer() uintptr {
+/******************************************************************************
+ *  Function:                                                                 *
+ *      MeshBufferAddress                                                     *
+ *  Purpose:                                                                  *
+ *      Returns the address of the global mesh buffer.                        *
+ *  Arguments:                                                                *
+ *      None.                                                                 *
+ *  Output:                                                                   *
+ *      address (uintptr):                                                    *
+ *          The address of the global mesh buffer as an unsigned integer.     *
+ ******************************************************************************/
+func MeshBufferAddress() uintptr {
 
     /*  Get a pointer for the array and then convert this into an integer,    *
-     *  which is the address of the array. This is used at the JavaScript     *
-     *  level for reading and writing to the buffer.                          */
-    return uintptr(unsafe.Pointer(&meshBuffer))
+     *  which is the address of the array.                                    */
+    return uintptr(unsafe.Pointer(&MeshBuffer))
 }
-/*  End of getIndexBuffer.                                                    */
+/*  End of MeshBufferAddress.                                                 */
