@@ -15,32 +15,47 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Initializes the primary canvas using a JavaScript struct as input.    *
+ *      JavaScript module containing the compiled WASM code from Go.          *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
- *  Date:       November 20, 2025                                             *
+ *  Date:       November 19, 2025                                             *
  ******************************************************************************/
-package jsbindings
 
-import (
-    "syscall/js"
-    "common/threetools"
-)
+import {zRotateAnimation} from './zRotateAnimation.js'
+import {squareWireframeGeometry} from './squareWireframeGeometry.js'
 
-func InitCanvas(args []js.Value) {
-    var jsObject js.Value = args[0]
-    var canvas *threetools.Canvas = &threetools.MainCanvas
-    var meshBuffer []float32 = threetools.MeshBuffer[:]
-    var indexBuffer []uint32 = threetools.IndexBuffer[:]
+/*  The Go Glue code is found here. To retreive it from the command line, use *
+ *  the command cp $(go env GOROOT)/misc/wasm/wasm_exec.js.                   */
+import './wasm_exec.js';
 
-    canvas.NxPts = uint32(jsObject.Get("nxPts").Int())
-    canvas.NyPts = uint32(jsObject.Get("nyPts").Int())
-    canvas.Width = float32(jsObject.Get("width").Float())
-    canvas.Height = float32(jsObject.Get("height").Float())
-    canvas.HorizontalStart = float32(jsObject.Get("xStart").Float())
-    canvas.VerticalStart = float32(jsObject.Get("yStart").Float())
-    canvas.MeshType = uint(jsObject.Get("meshType").Int())
+export default async function createModule() {
 
-    threetools.ResetMeshBuffer(canvas, meshBuffer)
-    threetools.ResetIndexBuffer(canvas, indexBuffer)
+    const go = new Go();
+
+    let result;
+
+    if ('instantiateStreaming' in WebAssembly) {
+        result = await WebAssembly.instantiateStreaming(
+            fetch('main.wasm'),
+            go.importObject
+        );
+    } else {
+        const resp = await fetch('main.wasm');
+        const bytes = await resp.arrayBuffer();
+        result = await WebAssembly.instantiate(bytes, go.importObject);
+    }
+
+    go.run(result.instance);
+
+    const memory = result.instance.exports.mem;
+    const setRotationAngle = window.setRotationAngle;
+
+    const module = {
+        zRotateAnimation,
+        setRotationAngle,
+        memory,
+        squareWireframeGeometry
+    };
+
+    return module;
 }

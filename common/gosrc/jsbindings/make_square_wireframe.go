@@ -23,24 +23,12 @@
 package jsbindings
 
 import (
-    "syscall/js"
-    "common/threetools"
+	"syscall/js"
+	"common/threetools"
 )
 
-func InitCanvas(args []js.Value) {
-    var jsObject js.Value = args[0]
-    var canvas *threetools.Canvas = &threetools.MainCanvas
-    var meshBuffer []float32 = threetools.MeshBuffer[:]
-    var indexBuffer []uint32 = threetools.IndexBuffer[:]
-
-    canvas.NxPts = uint32(jsObject.Get("nxPts").Int())
-    canvas.NyPts = uint32(jsObject.Get("nyPts").Int())
-    canvas.Width = float32(jsObject.Get("width").Float())
-    canvas.Height = float32(jsObject.Get("height").Float())
-    canvas.HorizontalStart = float32(jsObject.Get("xStart").Float())
-    canvas.VerticalStart = float32(jsObject.Get("yStart").Float())
-    canvas.MeshType = uint(jsObject.Get("meshType").Int())
-
-    threetools.ResetMeshBuffer(canvas, meshBuffer)
-    threetools.ResetIndexBuffer(canvas, indexBuffer)
+func MakeSquareWireframe(args []js.Value, f threetools.SurfaceParametrization) {
+	InitCanvas(args)
+    threetools.GenerateMeshFromParametrization(&threetools.MainCanvas, f)
+    threetools.GenerateRectangularWireframe(&threetools.MainCanvas)
 }
