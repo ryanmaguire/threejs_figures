@@ -1,4 +1,29 @@
-/*  OrbitControls allows the user to control the animation using the mouse.   */
+/******************************************************************************
+ *                                  LICENSE                                   *
+ ******************************************************************************
+ *  This file is part of threejs_figures.                                     *
+ *                                                                            *
+ *  threejs_figures is free software: you can redistribute it and/or modify   *
+ *  it under the terms of the GNU General Public License as published by      *
+ *  the Free Software Foundation, either version 3 of the License, or         *
+ *  (at your option) any later version.                                       *
+ *                                                                            *
+ *  threejs_figures is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             *
+ *  GNU General Public License for more details.                              *
+ *                                                                            *
+ *  You should have received a copy of the GNU General Public License         *
+ *  along with threejs_figures.  If not, see <https://www.gnu.org/licenses/>. *
+ ******************************************************************************
+ *  Purpose:                                                                  *
+ *      Creates the controls (mouse-clicks and drags) for a scene.            *
+ ******************************************************************************
+ *  Author:     Ryan Maguire                                                  *
+ *  Date:       November 21, 2025                                             *
+ ******************************************************************************/
+
+/*  OrbitControls allows the user to control the animation using their mouse. */
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
 /******************************************************************************
@@ -15,9 +40,9 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
  *      None.                                                                 *
  *  Notes:                                                                    *
  *      The controls are added to the renderer. We do not need to return the  *
- *      controls back to the caller, so this function has not return.         *
+ *      controls back to the caller, so this function has no return.          *
  ******************************************************************************/
-function setupControls(renderer, camera) {
+export function setupControls(renderer, camera) {
 
     /*  These controls allow the user to interact with the image using the    *
      *  mouse. Clicking and dragging will rearrange the image.                */
@@ -26,5 +51,3 @@ function setupControls(renderer, camera) {
     controls.update();
 }
 /*  End of setupControls.                                                     */
-
-export {setupControls};
