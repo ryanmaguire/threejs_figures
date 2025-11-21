@@ -25,7 +25,6 @@ package main
 /*  JavaScript wrapper tools found here.                                      */
 import (
     "syscall/js"
-    "common/threetools"
     "common/jsbindings"
 )
 
@@ -36,16 +35,12 @@ func surface(x, y float32) float32 {
 /*  Wrapper function for the Go function generateMesh.                        */
 func setupMesh(this js.Value, args []js.Value) interface{} {
 
-    jsbindings.InitCanvas(this, args)
-    threetools.GenerateMeshFromParametrization(&threetools.MainCanvas, surface)
-    threetools.GenerateRectangularWireframe(&threetools.MainCanvas)
-
+    jsbindings.MakeSquareWireframe(args, surface)
     return nil
 }
-/*  End of jsGenerateMesh.                                                    */
+/*  End of setupMesh.                                                         */
 
 func main() {
-
     var window js.Value = js.Global()
 
     /*  We need main to stay alive while the animation at the JavaScript      *
@@ -55,10 +50,7 @@ func main() {
     empty := make(chan struct{}, 0)
 
     /*  Create JavaScript wrappers the function, using standard camel case.   */
-    window.Set("rotateMesh", js.FuncOf(jsbindings.RotateMesh))
-    window.Set("setRotationAngle", js.FuncOf(jsbindings.SetRotationAngle))
-    window.Set("meshBufferAddress", js.FuncOf(jsbindings.MeshBufferAddress))
-    window.Set("indexBufferAddress", js.FuncOf(jsbindings.IndexBufferAddress))
+    jsbindings.ExportGoFunctions()
     window.Set("setupMesh", js.FuncOf(setupMesh))
 
 	/*  Prevent the function from exiting while the JavaScript program runs.  *
