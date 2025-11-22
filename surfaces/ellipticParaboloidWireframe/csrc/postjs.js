@@ -23,8 +23,7 @@
  *  Author:     Ryan Maguire                                                  *
  *  Date:       October 30, 2025                                              *
  ******************************************************************************/
-import initModule from "./main.js";
-import * as three from "three";
+import initModule from "../main.js";
 
 const module = await initModule();
 
@@ -42,31 +41,14 @@ export function setupMesh(parameters) {
     const bufferSize = 3 * numberOfPoints;
     const indexSize = 2 * (2 * numberOfPoints - sum);
 
-    const geometry = new three.BufferGeometry();
-
     const meshPtr = meshBufferAddress();
     const indexPtr = indexBufferAddress();
 
     const mesh = new Float32Array(memory.buffer, meshPtr, bufferSize);
     const indices = new Uint32Array(memory.buffer, indexPtr, indexSize);
 
-    /*  The vertices for the object will by typed as 32-bit floats. We'll     *
-     *  need a variable for the buffer attributes as well.                    */
-    let geometryAttributes, indexAttribute;
-
     generateMesh(mesh.byteOffset, parameters.nxPts, parameters.nyPts);
     generateIndices(indices.byteOffset, parameters.nxPts, parameters.nyPts);
-
-    /*  We can now create the buffer attributes. The data is 3D, hence the    *
-     *  itemSize parameter is 3.                                              */
-    geometryAttributes = new three.BufferAttribute(mesh, 3);
-    indexAttribute = new three.BufferAttribute(indices, 1);
-
-    /*  Add the vertices and index array to the mesh.                         */
-    geometry.setAttribute('position', geometryAttributes);
-    geometry.setIndex(indexAttribute);
-
-    return geometry;
 }
 
 async function createModule() {
