@@ -53,7 +53,7 @@ func main() {
     jsbindings.ExportGoFunctions()
     window.Set("setupMesh", js.FuncOf(setupMesh))
 
-	/*  Prevent the function from exiting while the JavaScript program runs.  *
+    /*  Prevent the function from exiting while the JavaScript program runs.  *
      *  Since "empty" is a channel for an empty struct, the channel does not  *
      *  contain a buffer. Since we are trying to receive from the channel     *
      *  (this is the "<-" syntax), we  must wait until there is something to  *
