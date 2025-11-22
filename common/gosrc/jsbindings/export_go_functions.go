@@ -22,14 +22,19 @@
  ******************************************************************************/
 package jsbindings
 
+/*  The Global function is here, allowing us to access the window.            */
 import "syscall/js"
 
+/*  Function for exporting the jsbindings routines to JavaScript.             */
 func ExportGoFunctions() {
 
-    /*  Create JavaScript wrappers the function, using standard camel case.   */
+    /*  Get the window for the page so we may set the functions as globals.   */
     var window js.Value = js.Global()
+
+    /*  Create JavaScript wrappers for the functions with standard camel case.*/
     window.Set("rotateMesh", js.FuncOf(RotateMesh))
     window.Set("setRotationAngle", js.FuncOf(SetRotationAngle))
     window.Set("meshBufferAddress", js.FuncOf(MeshBufferAddress))
     window.Set("indexBufferAddress", js.FuncOf(IndexBufferAddress))
 }
+/*  End of ExportGoFunctions.                                                 */
