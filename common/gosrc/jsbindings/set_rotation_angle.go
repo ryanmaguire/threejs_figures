@@ -27,7 +27,7 @@ import (
     "common/threetools"
 )
 
-/*  Wrapper function for the Go function SetRotationAngle.                    */
+/*  Wrapper for the Go function SetRotationAngle.                             */
 func SetRotationAngle(this js.Value, args []js.Value) interface{} {
 
     /*  The input is a single float, the new rotation angle.                  */

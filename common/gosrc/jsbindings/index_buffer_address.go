@@ -15,7 +15,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Provides a JS binding for MeshBufferAddress.                          *
+ *      Provides a JS binding for IndexBufferAddress.                         *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 19, 2025                                             *
@@ -27,10 +27,8 @@ import (
     "common/threetools"
 )
 
-/*  Wrapper function for the Go function IndexBufferAddress.                  */
+/*  Wrapper for the Go function IndexBufferAddress.                           */
 func IndexBufferAddress(this js.Value, args []js.Value) interface{} {
-
-    /*  Similar to getMeshBuffer, this gets the address of the index array.   */
     return threetools.IndexBufferAddress()
 }
 /*  End of IndexBufferAddress.                                                */
