@@ -15,21 +15,26 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Exports Go functions to JavaScript.                                   *
+ *      Provides a JS binding for SetRotationAngle.                           *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 19, 2025                                             *
  ******************************************************************************/
 package jsbindings
 
-import "syscall/js"
+import (
+    "syscall/js"
+    "common/threetools"
+)
 
-func ExportGoFunctions() {
+/*  Wrapper function for the Go function SetRotationAngle.                    */
+func SetRotationAngle(this js.Value, args []js.Value) interface{} {
 
-    /*  Create JavaScript wrappers the function, using standard camel case.   */
-    var window js.Value = js.Global()
-    window.Set("rotateMesh", js.FuncOf(RotateMesh))
-    window.Set("setRotationAngle", js.FuncOf(SetRotationAngle))
-    window.Set("meshBufferAddress", js.FuncOf(MeshBufferAddress))
-    window.Set("indexBufferAddress", js.FuncOf(IndexBufferAddress))
+    /*  The input is a single float, the new rotation angle.                  */
+    var angle float32 = float32(args[0].Float())
+
+    /*  Pass the value to the Go function and return.                         */
+    threetools.SetRotationAngle(angle)
+    return nil
 }
+/*  End of SetRotationAngle.                                                  */
