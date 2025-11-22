@@ -21,9 +21,6 @@
  *  Date:       November 19, 2025                                             *
  ******************************************************************************/
 
-import {zRotateAnimation} from './zRotateAnimation.js'
-import {squareWireframeGeometry} from './squareWireframeGeometry.js'
-
 /*  The Go Glue code is found here. To retreive it from the command line, use *
  *  the command cp $(go env GOROOT)/misc/wasm/wasm_exec.js.                   */
 import './wasm_exec.js';
@@ -49,12 +46,20 @@ export default async function createModule() {
 
     const memory = result.instance.exports.mem;
     const setRotationAngle = window.setRotationAngle;
+    const squareWireframeGeometry = window.squareWireframeGeometry;
+    const setupMesh = window.setupMesh;
+    const meshBufferAddress = window.meshBufferAddress;
+    const indexBufferAddress = window.indexBufferAddress;
+    const rotateMesh = window.rotateMesh;
 
     const module = {
-        zRotateAnimation,
-        setRotationAngle,
         memory,
-        squareWireframeGeometry
+        squareWireframeGeometry,
+        setupMesh,
+        meshBufferAddress,
+        indexBufferAddress,
+        rotateMesh,
+        setRotationAngle
     };
 
     return module;

@@ -23,8 +23,11 @@
  *  Date:       November 21, 2025                                             *
  ******************************************************************************/
 export {basicWireframe} from "./basicWireframe.js";
+export {initGeometry} from "./initGeometry.js";
 export {sceneCamera} from "./sceneCamera.js";
 export {sceneFromSurface} from "./sceneFromSurface.js";
 export {sceneRenderer} from "./sceneRenderer.js";
 export {setupControls} from "./setupControls.js";
+export {squareWireframeGeometry} from "./squareWireframeGeometry.js";
 export {windowResize} from "./windowResize.js";
+export {zRotate} from "./zRotate.js";

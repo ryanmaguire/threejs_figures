@@ -25,10 +25,8 @@ import Stats from "three/addons/libs/stats.module.js";
 
 /* JavaScript module using WebAssembly compiled from C code using emscripten. */
 import createModule from "jstools";
-
 import * as jscommon from "jscommon";
 
-/* Create the module so we may access the C functions.                        */
 const module = await createModule();
 
 /******************************************************************************
@@ -64,9 +62,7 @@ function init() {
     /*  Initialize the globals for the animation. This includes the renderer, *
      *  camera, objects, and scene.                                           */
     const lightBlue = {color: 0x00AAFF};
-    const memory = module.memory;
-    const geometry = module.squareWireframeGeometry(parameters, memory);
-
+    const geometry = jscommon.squareWireframeGeometry(parameters, module);
     const camera = jscommon.sceneCamera(window, cameraPosition);
     const renderer = jscommon.sceneRenderer(window);
     const surface = jscommon.basicWireframe(geometry, lightBlue);
@@ -74,8 +70,8 @@ function init() {
     const stats = new Stats();
 
     function animation() {
-        module.zRotateAnimation(
-            renderer, scene, camera, surface, memory, numberOfPoints
+        jscommon.zRotate(
+            renderer, scene, camera, surface, module, numberOfPoints
         );
 
         stats.update();

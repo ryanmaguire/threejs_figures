@@ -1,4 +1,4 @@
-import {initializeGeometry} from './initializeGeometry.js'
+import {initGeometry} from './initGeometry.js'
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -10,12 +10,12 @@ import {initializeGeometry} from './initializeGeometry.js'
  *  Output:                                                                   *
  *      None.                                                                 *
  ******************************************************************************/
-function zRotateAnimation(renderer, scene, camera, surface, memory, arraySize) {
+export function zRotate(renderer, scene, camera, surface, module, size) {
 
     /*  Rotate the object slightly as time passes.                            */
     const geometry = surface.geometry;
     let mesh = geometry.attributes.position;
-    window.rotateMesh(mesh.array.byteOffset, arraySize);
+    module.rotateMesh(mesh.array.byteOffset, size);
 
     /*  This problem seems to be unique to Go, C and rust do not have this    *
      *  issue. It is possible for the address of the mesh and index buffers   *
@@ -25,11 +25,11 @@ function zRotateAnimation(renderer, scene, camera, surface, memory, arraySize) {
     if (mesh.array.byteLength == 0) {
 
         /*  Compute the number of elements in each buffer.                    */
-        const meshSize = 3 * arraySize;
+        const meshSize = 3 * size;
         const indexSize = geometry.index.count;
 
         /*  Reset the geometry attributes to use the new addresses.           */
-        initializeGeometry(geometry, memory, meshSize, indexSize);
+        initGeometry(geometry, module, meshSize, indexSize);
         mesh = geometry.attributes.position;
     }
 
@@ -37,5 +37,3 @@ function zRotateAnimation(renderer, scene, camera, surface, memory, arraySize) {
     mesh.needsUpdate = true;
     renderer.render(scene, camera);
 }
-
-export {zRotateAnimation};
