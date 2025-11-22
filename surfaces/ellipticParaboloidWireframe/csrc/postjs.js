@@ -23,72 +23,39 @@
  *  Author:     Ryan Maguire                                                  *
  *  Date:       October 30, 2025                                              *
  ******************************************************************************/
-createModule.generateIndices = createModule._generate_indices;
-createModule.generateMesh = createModule._generate_mesh;
-createModule.getIndexBuffer = createModule._get_index_buffer;
-createModule.getMeshBuffer = createModule._get_mesh_buffer;
-createModule.rotateMesh = createModule._rotate_mesh;
-createModule.setRotationAngle = createModule._set_rotation_angle;
+import initModule from "./main.js";
+import * as three from "three";
 
-/******************************************************************************
- *  Function:                                                                 *
- *      animate                                                               *
- *  Purpose:                                                                  *
- *      Rotates the elliptic paraboloid slowly about the z axis.              *
- *  Arguments:                                                                *
- *      None.                                                                 *
- *  Output:                                                                   *
- *      None.                                                                 *
- ******************************************************************************/
-function animate(renderer, scene, camera, surface, arraySize) {
+const module = await initModule();
 
-    /*  Rotate the object slightly as time passes.                            */
-    const mesh = surface.geometry.attributes.position;
+export const generateIndices = module._generate_indices;
+export const generateMesh = module._generate_mesh;
+export const indexBufferAddress = module._get_index_buffer;
+export const meshBufferAddress = module._get_mesh_buffer;
+export const rotateMesh = module._rotate_mesh;
+export const setRotationAngle = module._set_rotation_angle;
+export const memory = module.HEAP8;
 
-    createModule.rotateMesh(mesh.array.byteOffset, arraySize);
-    mesh.needsUpdate = true;
-
-    /*  Re-render the newly rotated scene.                                    */
-    renderer.render(scene, camera);
-}
-
-/******************************************************************************
- *  Function:                                                                 *
- *      setupScene                                                            *
- *  Purpose:                                                                  *
- *      Creates the scene, which is a wireframe elliptic paraboloid and a     *
- *      black background.                                                     *
- *  Arguments:                                                                *
- *      None.                                                                 *
- *  Output:                                                                   *
- *      None.                                                                 *
- ******************************************************************************/
-function setupGeometry(three, width, height) {
-
-    const numberOfPoints = width * height;
+export function setupMesh(parameters) {
+    const numberOfPoints = parameters.nxPts * parameters.nyPts;
+    const sum = parameters.nxPts + parameters.nyPts;
     const bufferSize = 3 * numberOfPoints;
-    const indexSize = 2 * (2 * numberOfPoints - width - height);
+    const indexSize = 2 * (2 * numberOfPoints - sum);
 
-    /*  three.js has parametric function tools, but this renders the object   *
-     *  with diagonals across the constituent squares, creating a mesh of     *
-     *  triangles. To see a square pattern, we'll need to make our own buffer.*/
     const geometry = new three.BufferGeometry();
 
-    const meshBuffer = createModule.HEAPF32.buffer;
-    const indexBuffer = createModule.HEAPU32.buffer;
+    const meshPtr = meshBufferAddress();
+    const indexPtr = indexBufferAddress();
 
-    const meshPtr = createModule.getMeshBuffer();
-    const indexPtr = createModule.getIndexBuffer();
-
-    const mesh = new Float32Array(meshBuffer, meshPtr, bufferSize);
-    const indices = new Uint32Array(indexBuffer, indexPtr, indexSize);
+    const mesh = new Float32Array(memory.buffer, meshPtr, bufferSize);
+    const indices = new Uint32Array(memory.buffer, indexPtr, indexSize);
 
     /*  The vertices for the object will by typed as 32-bit floats. We'll     *
      *  need a variable for the buffer attributes as well.                    */
     let geometryAttributes, indexAttribute;
 
-    createModule.generateMesh(mesh.byteOffset, width, height);
-    createModule.generateIndices(indices.byteOffset, width, height);
+    generateMesh(mesh.byteOffset, parameters.nxPts, parameters.nyPts);
+    generateIndices(indices.byteOffset, parameters.nxPts, parameters.nyPts);
 
     /*  We can now create the buffer attributes. The data is 3D, hence the    *
      *  itemSize parameter is 3.                                              */
@@ -101,7 +68,20 @@ function setupGeometry(three, width, height) {
 
     return geometry;
 }
-/*  End of setupGeometry.                                                     */
 
-createModule.animate = animate;
-createModule.setupGeometry = setupGeometry;
+async function createModule() {
+    const Module = {
+        generateIndices,
+        generateMesh,
+        rotateMesh,
+        meshBufferAddress,
+        indexBufferAddress,
+        setRotationAngle,
+        memory,
+        setupMesh
+    };
+
+    return Module;
+}
+
+export default createModule;

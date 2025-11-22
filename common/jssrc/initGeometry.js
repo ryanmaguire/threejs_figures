@@ -1,13 +1,14 @@
 import {BufferAttribute} from 'three';
 
 /*  Helper function for initializing the three.js geometry.                   */
-function initializeGeometry(geometry, memory, meshSize, indexSize) {
+export function initGeometry(geometry, module, meshSize, indexSize) {
 
-    const meshPtr = window.meshBufferAddress();
-    const indexPtr = window.indexBufferAddress();
+    const meshPtr = module.meshBufferAddress();
+    const indexPtr = module.indexBufferAddress();
+    const buffer = module.memory.buffer;
 
-    const meshBuffer = new Float32Array(memory.buffer, meshPtr, meshSize);
-    const indexBuffer = new Uint32Array(memory.buffer, indexPtr, indexSize);
+    const meshBuffer = new Float32Array(buffer, meshPtr, meshSize);
+    const indexBuffer = new Uint32Array(buffer, indexPtr, indexSize);
 
     const geometryAttributes = new BufferAttribute(meshBuffer, 3);
     const indexAttribute = new BufferAttribute(indexBuffer, 1);
@@ -15,5 +16,3 @@ function initializeGeometry(geometry, memory, meshSize, indexSize) {
     geometry.setAttribute('position', geometryAttributes);
     geometry.setIndex(indexAttribute);
 }
-
-export {initializeGeometry};
