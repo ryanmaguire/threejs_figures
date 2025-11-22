@@ -35,7 +35,7 @@ func surface(x, y float32) float32 {
 /*  Wrapper function for the Go function generateMesh.                        */
 func setupMesh(this js.Value, args []js.Value) interface{} {
 
-    jsbindings.MakeSquareWireframe(args, surface)
+    jsbindings.MakeRectangularWireframe(args, surface)
     return nil
 }
 /*  End of setupMesh.                                                         */
