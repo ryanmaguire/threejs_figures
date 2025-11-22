@@ -27,11 +27,11 @@ import (
     "common/threetools"
 )
 
-/*  Wrapper function for the Go function rotateMesh.                          */
+/*  Wrapper for the Go function RotateMesh.                                   */
 func RotateMesh(this js.Value, args []js.Value) interface{} {
 
     /*  Rotate the points in the mesh by the RotationVector (see globals.go). */
     threetools.RotateMesh(&threetools.MainCanvas, threetools.RotationVector)
     return nil
 }
-/*  End of jsRotateMesh.                                                      */
+/*  End of RotateMesh.                                                        */

@@ -27,10 +27,8 @@ import (
     "common/threetools"
 )
 
-/*  Wrapper function for the Go function generateIndices.                     */
+/*  Wrapper for the Go function GenerateRectangularWireframe.                 */
 func GenerateRectangularWireframe(this js.Value, args []js.Value) interface{} {
-
-    /*  Add all of the line segments to the mesh.                             */
     threetools.GenerateRectangularWireframe(&threetools.MainCanvas)
     return nil
 }

@@ -27,10 +27,8 @@ import (
     "common/threetools"
 )
 
-/*  Wrapper function for the Go function MeshBufferAddress.                   */
+/*  Wrapper for the Go function MeshBufferAddress.                            */
 func MeshBufferAddress(this js.Value, args []js.Value) interface{} {
-
-    /*  No input, this function simply retrieves the address of messBuffer.   */
     return threetools.MeshBufferAddress()
 }
 /*  End of MeshBufferAddress.                                                 */

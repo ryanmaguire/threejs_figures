@@ -15,7 +15,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Initializes the primary canvas using a JavaScript struct as input.    *
+ *      Provides a JavaScript binding for creating a rectangular wireframe.   *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 20, 2025                                             *
@@ -23,12 +23,15 @@
 package jsbindings
 
 import (
-	"syscall/js"
-	"common/threetools"
+    "syscall/js"
+    "common/threetools"
 )
 
-func MakeSquareWireframe(args []js.Value, f threetools.SurfaceParametrization) {
-	InitCanvas(args)
+/*  Function for creating a rectangular wireframe in JavaScript.              */
+func
+MakeRectangularWireframe(args []js.Value, f threetools.SurfaceParametrization) {
+    InitCanvas(args)
     threetools.GenerateMeshFromParametrization(&threetools.MainCanvas, f)
     threetools.GenerateRectangularWireframe(&threetools.MainCanvas)
 }
+/*  End of MakeRectangularWireframe.                                          */
