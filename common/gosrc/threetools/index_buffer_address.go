@@ -24,7 +24,7 @@
  ******************************************************************************/
 package threetools
 
-/*  The Pointer type is provided here, which gets an adress from an array.    */
+/*  The Pointer type is provided here, which gets an address from an array.   */
 import "unsafe"
 
 /******************************************************************************
