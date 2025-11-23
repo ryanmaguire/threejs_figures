@@ -38,13 +38,16 @@
  *      canvas (Canvas *):                                                    *
  *          The canvas that is being resized.                                 *
  *      buffer (unsigned int *):                                              *
- *          The buffer where canvas will store its data.                      *
+ *          The buffer where the canvas will store its data.                  *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
 void reset_index_buffer(Canvas *canvas, unsigned int *buffer)
 {
+    /*  The size of the index buffer depends on the mesh type. Compute this.  */
     compute_index_size(canvas);
+
+    /*  Reset the index buffer to use the one provided.                       */
     canvas->indices = buffer;
 }
 /*  End of reset_index_buffer.                                                */
