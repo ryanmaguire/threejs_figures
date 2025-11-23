@@ -34,7 +34,6 @@ func ExportGoFunctions() {
     var window js.Value = js.Global()
 
     /*  Create JavaScript wrappers for the functions with standard camel case.*/
-    window.Set("genRectWireframe", js.FuncOf(GenerateRectangularWireframe))
     window.Set("indexBufferAddress", js.FuncOf(IndexBufferAddress))
     window.Set("mainCanvasAddress", js.FuncOf(MainCanvasAddress))
     window.Set("meshBufferAddress", js.FuncOf(MeshBufferAddress))
