@@ -15,10 +15,10 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Provides a JavaScript binding for creating a rectangular wireframe.   *
+ *      Provides a JS binding for MainCanvasAddress.                          *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
- *  Date:       November 20, 2025                                             *
+ *  Date:       November 23, 2025                                             *
  ******************************************************************************/
 package jsbindings
 
@@ -27,11 +27,8 @@ import (
     "common/threetools"
 )
 
-/*  Function for creating a rectangular wireframe in JavaScript.              */
-func
-MakeRectangularWireframe(args []js.Value, f threetools.SurfaceParametrization) {
-    InitCanvas(args)
-    threetools.MainCanvas.GenerateMeshFromParametrization(f)
-    threetools.MainCanvas.GenerateRectangularWireframe()
+/*  Wrapper for the Go function MainCanvasAddress.                            */
+func MainCanvasAddress(this js.Value, args []js.Value) interface{} {
+    return threetools.MainCanvasAddress()
 }
-/*  End of MakeRectangularWireframe.                                          */
+/*  End of MainCanvasAddress.                                                 */
