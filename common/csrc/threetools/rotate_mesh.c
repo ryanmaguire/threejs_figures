@@ -21,17 +21,32 @@
  *  Date:       October 30, 2025                                              *
  ******************************************************************************/
 
-/*  Globals for the animation are found here, as is the function prototype.   */
-#include "paraboloid.h"
+/*  Canvas and UnitVector typedefs provided here.                             */
+#include <threetools/types.h>
 
-/*  Function for rotating the mesh by a fixed angle.                          */
-void rotate_mesh(float *arr, unsigned int n_pts)
+/*  Function prototype / forward declaration given here.                      */
+#include <threetools/threetools.h>
+
+/******************************************************************************
+ *  Function:                                                                 *
+ *      rotate_mesh                                                           *
+ *  Purpose:                                                                  *
+ *      Rotates the mesh in a canvas by the provided unit vector.             *
+ *  Arguments:                                                                *
+ *      canvas (Canvas *):                                                    *
+ *          The canvas with the mesh that is being rotated.                   *
+ *      point (UnitVector):                                                   *
+ *          A point on the unit circle, its polar angle is used for rotating. *
+ *  Output:                                                                   *
+ *      None.                                                                 *
+ ******************************************************************************/
+void rotate_mesh(Canvas *canvas, UnitVector point)
 {
     /*  Variable for indexing over the elements of the mesh.                  */
     unsigned int index;
 
     /*  Loop through each point in the mesh.                                  */
-    for (index = 0; index < n_pts; ++index)
+    for (index = 0; index < canvas->number_of_points; ++index)
     {
         /*  A vertex has three values, the x, y, and z coordinates. The index *
          *  for the x value of the point is 3 times the current index.        */
@@ -41,12 +56,12 @@ void rotate_mesh(float *arr, unsigned int n_pts)
         const unsigned int y_index = x_index + 1U;
 
         /*  Use the rotation matrix. Get the initial values.                  */
-        const float x = arr[x_index];
-        const float y = arr[y_index];
+        const float x = canvas->mesh[x_index];
+        const float y = canvas->mesh[y_index];
 
         /*  Apply the rotation matrix and update the points.                  */
-        arr[x_index] = cos_angle * x - sin_angle * y;
-        arr[y_index] = cos_angle * y + sin_angle * x;
+        canvas->mesh[x_index] = point.cos_angle * x - point.sin_angle * y;
+        canvas->mesh[y_index] = point.cos_angle * y + point.sin_angle * x;
     }
 }
 /*  End of rotate_mesh.                                                       */
