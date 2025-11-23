@@ -15,7 +15,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Provides bindings for all of the Go functions for use in JavaScript.  *
+ *      Provides tools for rendering an elliptic paraboloid.                  *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 19, 2025                                             *
@@ -28,11 +28,13 @@ import (
     "common/jsbindings"
 )
 
+/*  The surface being rendered, an elliptic paraboloid.                       */
 func surface(x, y float32) float32 {
     return x*x + 2.0 * y*y - 2.0
 }
+/*  End of surface.                                                           */
 
-/*  Wrapper function for the Go function generateMesh.                        */
+/*  Wrapper for the Go function MakeRectangularWireframe.                     */
 func setupMesh(this js.Value, args []js.Value) interface{} {
 
     jsbindings.MakeRectangularWireframe(args, surface)
@@ -41,24 +43,5 @@ func setupMesh(this js.Value, args []js.Value) interface{} {
 /*  End of setupMesh.                                                         */
 
 func main() {
-    var window js.Value = js.Global()
-
-    /*  We need main to stay alive while the animation at the JavaScript      *
-     *  level is being rendered. Create a channel for an empty struct (which  *
-     *  occupies zero bytes). We'll use this to delay the exiting of this     *
-     *  function indefinitely.                                                */
-    empty := make(chan struct{}, 0)
-
-    /*  Create JavaScript wrappers the function, using standard camel case.   */
-    jsbindings.ExportGoFunctions()
-    window.Set("setupMesh", js.FuncOf(setupMesh))
-
-    /*  Prevent the function from exiting while the JavaScript program runs.  *
-     *  Since "empty" is a channel for an empty struct, the channel does not  *
-     *  contain a buffer. Since we are trying to receive from the channel     *
-     *  (this is the "<-" syntax), we  must wait until there is something to  *
-     *  receive. Since there is never anything to receive ("empty" is empty), *
-     *  this will halt the function from exiting. The JavaScript code can     *
-     *  then access the Go functions defined above without any problems.      */
-    <- empty
+    jsbindings.Run(setupMesh)
 }
