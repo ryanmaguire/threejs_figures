@@ -28,20 +28,27 @@ import (
     "common/jsbindings"
 )
 
+/*  Height shift for centering the mesh when it is rendered on the screen.    */
+const surfaceHeightShift float32 = -2.0
+
 /*  The surface being rendered, an elliptic paraboloid.                       */
 func surface(x, y float32) float32 {
-    return x*x + 2.0 * y*y - 2.0
+
+    /*  An elliptic paraboloid has the formula z = x^2 + a y^2, with a > 1.   *
+     *  We use the height shift to center the object on the screen.           */
+    return x*x + 2.0 * y*y + surfaceHeightShift
 }
 /*  End of surface.                                                           */
 
 /*  Wrapper for the Go function MakeRectangularWireframe.                     */
 func setupMesh(this js.Value, args []js.Value) interface{} {
-
     jsbindings.MakeRectangularWireframe(args, surface)
     return nil
 }
 /*  End of setupMesh.                                                         */
 
+/*  Main program, start of the JavaScript animation.                          */
 func main() {
     jsbindings.Run(setupMesh)
 }
+/*  End of main.                                                              */
