@@ -21,8 +21,11 @@
  *  Date:       October 30, 2025                                              *
  ******************************************************************************/
 
-/*  Globals for the animation and the function prototype found here.          */
-#include "paraboloid.h"
+/*  The rotation_vector global variable is provided here.                     */
+#include <threetools/globals.h>
+
+/*  Function prototype / forward declaration given here.                      */
+#include <threetools/threetools.h>
 
 /*  First few coefficients of the Taylor series for cosine.                   */
 #define C0 (+1.00000000E+00F)
@@ -39,17 +42,23 @@
 /*  Evaluates sin(z) for small z using Horner's method. Input is z and z^2.   */
 #define SMALL_ANGLE_SIN(z, zsq) z * (S0 + zsq * S1)
 
-/*  Function for setting the rotation angle and computes its sine and cosine. */
+/*  Function for setting the rotation angle and computing its sine and cosine.*/
 void set_rotation_angle(float angle)
 {
     /*  The Taylor series are in terms of the square of the angle.            */
     const float angle_squared = angle * angle;
 
-    /*  Set the global angle to its new value.                                */
-    rotation_angle = angle;
-
-    /*  Compute the sine and cosine of this and save it in the globals.       */
-    cos_angle = SMALL_ANGLE_COS(angle_squared);
-    sin_angle = SMALL_ANGLE_SIN(angle, angle_squared);
+    /*  Compute the sine and cosine and save them in the global variable.     */
+    rotation_vector.cos_angle = SMALL_ANGLE_COS(angle_squared);
+    rotation_vector.sin_angle = SMALL_ANGLE_SIN(angle, angle_squared);
 }
 /*  End of set_rotation_angle.                                                */
+
+/*  Undefine everything in case someone wants to #include this file.          */
+#undef C0
+#undef C1
+#undef C2
+#undef S0
+#undef S1
+#undef SMALL_ANGLE_COS
+#undef SMALL_ANGLE_SIN
