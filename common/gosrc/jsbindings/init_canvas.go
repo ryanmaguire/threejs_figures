@@ -27,12 +27,21 @@ import (
     "common/threetools"
 )
 
+/*  Initializes the global canvas from a JavaScript struct.                   */
 func InitCanvas(args []js.Value) {
+
+    /*  The input is a JavaScript struct with the requested geometry.         */
     var jsObject js.Value = args[0]
+
+    /*  We store all of the information in the global Go variables.           */
     var canvas *threetools.Canvas = &threetools.MainCanvas
     var meshBuffer []float32 = threetools.MeshBuffer[:]
     var indexBuffer []uint32 = threetools.IndexBuffer[:]
 
+    /*  The JavaScript struct contains the number of points in the x and y    *
+     *  axes, the physical width and height (in the same units) of the mesh,  *
+     *  the starting points for the x and y axes, and the type of mesh being  *
+     *  used. Unpack all of this from the input.                              */
     canvas.NxPts = uint32(jsObject.Get("nxPts").Int())
     canvas.NyPts = uint32(jsObject.Get("nyPts").Int())
     canvas.Width = float32(jsObject.Get("width").Float())
@@ -41,6 +50,8 @@ func InitCanvas(args []js.Value) {
     canvas.VerticalStart = float32(jsObject.Get("yStart").Float())
     canvas.MeshType = uint(jsObject.Get("meshType").Int())
 
-    threetools.ResetMeshBuffer(canvas, meshBuffer)
-    threetools.ResetIndexBuffer(canvas, indexBuffer)
+    /*  The main canvas variables are set, we can compute the rest from this. */
+    canvas.ResetMeshBuffer(meshBuffer)
+    canvas.ResetIndexBuffer(indexBuffer)
 }
+/*  End of InitCanvas.                                                        */
