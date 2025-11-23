@@ -30,15 +30,24 @@ package threetools
  *  Purpose:                                                                  *
  *      Resets the size of the mesh buffer.                                   *
  *  Arguments:                                                                *
- *      canvas (*Canvas):                                                     *
+ *      self (*Canvas):                                                       *
  *          The canvas that is being resized.                                 *
- *      buffer ([]float32]):                                                  *
+ *      buffer ([]float32):                                                   *
  *          The buffer where canvas will store its data.                      *
  *  Output:                                                                   *
  *      None.                                                                 *
  ******************************************************************************/
-func ResetMeshBuffer(canvas *Canvas, buffer []float32) {
-    canvas.NumberOfPoints = int(canvas.NxPts * canvas.NyPts)
-    canvas.MeshSize = 3 * canvas.NumberOfPoints
-    canvas.Mesh = buffer[0:canvas.MeshSize]
+func (self *Canvas) ResetMeshBuffer(buffer []float32) {
+
+    /*  The canvas is a rectangular grid, the total number of points is given *
+     *  by the product of the width and the height.                           */
+    self.NumberOfPoints = int(self.NxPts * self.NyPts)
+
+    /*  Each point corresponds to three floats (the x, y, and z components).  *
+     *  The mesh size is hence three times the number of points.              */
+    self.MeshSize = 3 * self.NumberOfPoints
+
+    /*  Reset the mesh buffer to use the provided slice.                      */
+    self.Mesh = buffer[0:self.MeshSize]
 }
+/*  End of ResetMeshBuffer.                                                   */
