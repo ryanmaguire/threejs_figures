@@ -29,7 +29,7 @@ import (
 
 /*  Wrapper for the Go function GenerateRectangularWireframe.                 */
 func GenerateRectangularWireframe(this js.Value, args []js.Value) interface{} {
-    threetools.GenerateRectangularWireframe(&threetools.MainCanvas)
+    threetools.MainCanvas.GenerateRectangularWireframe()
     return nil
 }
 /*  End of GenerateRectangularWireframe.                                      */
