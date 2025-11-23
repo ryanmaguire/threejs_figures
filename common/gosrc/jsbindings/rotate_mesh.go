@@ -31,7 +31,7 @@ import (
 func RotateMesh(this js.Value, args []js.Value) interface{} {
 
     /*  Rotate the points in the mesh by the RotationVector (see globals.go). */
-    threetools.RotateMesh(&threetools.MainCanvas, threetools.RotationVector)
+    threetools.MainCanvas.RotateMesh(threetools.RotationVector)
     return nil
 }
 /*  End of RotateMesh.                                                        */
