@@ -29,7 +29,17 @@
 /*  Function prototype / forward declaration found here.                      */
 #include <threetools/threetools.h>
 
-/*  Function for getting the address of the index array.                      */
+/******************************************************************************
+ *  Function:                                                                 *
+ *      index_buffer_address                                                  *
+ *  Purpose:                                                                  *
+ *      Returns the address of the global index buffer.                       *
+ *  Arguments:                                                                *
+ *      None (void).                                                          *
+ *  Output:                                                                   *
+ *      address (unsigned int *):                                             *
+ *          The address of the global index buffer as a pointer.              *
+ ******************************************************************************/
 unsigned int *index_buffer_address(void)
 {
     /*  We can simply return the index buffer. At the JavaScript level this   *
