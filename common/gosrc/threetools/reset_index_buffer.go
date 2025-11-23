@@ -30,14 +30,15 @@ package threetools
  *  Purpose:                                                                  *
  *      Resets the size of the index buffer.                                  *
  *  Arguments:                                                                *
- *      canvas (*Canvas):                                                     *
+ *      self (*Canvas):                                                       *
  *          The canvas that is being resized.                                 *
  *      buffer ([]uint32]):                                                   *
  *          The buffer where canvas will store its data.                      *
  *  Output:                                                                   *
  *      None.                                                                 *
  ******************************************************************************/
-func ResetIndexBuffer(canvas *Canvas, buffer []uint32) {
-    SetIndexSize(canvas)
-    canvas.Indices = buffer[0:canvas.IndexSize]
+func (self *Canvas) ResetIndexBuffer(buffer []uint32) {
+    self.ComputeIndexSize()
+    self.Indices = buffer[0:self.IndexSize]
 }
+/*  End of ResetIndexBuffer.                                                  */

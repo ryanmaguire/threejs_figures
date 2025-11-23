@@ -26,69 +26,69 @@ package threetools
 
 /******************************************************************************
  *  Function:                                                                 *
- *      SetIndexSize                                                          *
+ *      ComputeIndexSize                                                      *
  *  Purpose:                                                                  *
  *      Computes the number of elements needed for the index buffer.          *
  *  Arguments:                                                                *
- *      canvas (*Canvas):                                                     *
+ *      self (*Canvas):                                                       *
  *          The input canvas, the size of its index buffer is computed.       *
  *  Output:                                                                   *
  *      None.                                                                 *
  ******************************************************************************/
-func SetIndexSize(canvas *Canvas) {
+func (self *Canvas) ComputeIndexSize() {
 
     /*  The total number of points in the mesh is the product of the width    *
      *  and height. Points along the boundary usually have a different number *
      *  of line segments associated to them then those in the interior. The   *
      *  number of points along the boundary is proportional to the sum of the *
      *  width and height, compute both the sum and the product.               */
-    var product uint32 = canvas.NxPts * canvas.NyPts
-    var sum uint32 = canvas.NxPts + canvas.NyPts
+    var product uint32 = self.NxPts * self.NyPts
+    var sum uint32 = self.NxPts + self.NyPts
 
     /*  The number of line segments is given by the type of mesh being used.  */
-    switch canvas.MeshType {
+    switch self.MeshType {
 
         /*  Square wireframe, internal points have two line segments tied to  *
          *  them, the top and right boundary points have only one.            */
         case SquareWireframe:
-            canvas.IndexSize = int(2 * (2 * product - sum))
+            self.IndexSize = int(2 * (2 * product - sum))
 
         /*  Triangle wireframe, internal points have three line segments tied *
          *  to them, the top and right boundary points have only one.         */
         case TriangleWireframe:
-            canvas.IndexSize = int(2 * (3 * product - 2 * sum))
+            self.IndexSize = int(2 * (3 * product - 2 * sum))
 
         /*  Similar to the square wireframe, but we add a line segment from   *
          *  the right edge to the left edge.                                  */
         case CylindricalSquareWireframe:
-            canvas.IndexSize = int(2 * (2 * product - canvas.NxPts))
+            self.IndexSize = int(2 * (2 * product - self.NxPts))
 
-        /*  Similar to triangle wireframe, but we add edges and diagonals     *
+        /*  Similar to the triangle wireframe, but we add edges and diagonals *
          *  from the right edge to the left one.                              */
         case CylindricalTriangleWireframe:
-            canvas.IndexSize = int(2 * (3 * product - 2 * canvas.NxPts))
+            self.IndexSize = int(2 * (3 * product - 2 * self.NxPts))
 
-        /*  Similar to square wireframe, but the bottom edge is connected to  *
-         *  the top edge, and the left edge to the right edge.                */
+        /*  Similar to the square wireframe, but the bottom edge is connected *
+         *  to the top edge, and the left edge to the right edge.             */
         case TorodialSquareWireframe:
             fallthrough
         case KleinSquareWireframe:
             fallthrough
         case ProjectiveSquareWireframe:
-            canvas.IndexSize = int(4 * product)
+            self.IndexSize = int(4 * product)
 
-        /*  Similar to triangle wireframe, but the bottom edge is connected   *
+        /*  Similar to triangle wireframes, but the bottom edge is connected  *
          *  to the top edge, and the left edge to the right edge.             */
         case TorodialTriangleWireframe:
             fallthrough
         case KleinTriangleWireframe:
             fallthrough
         case ProjectiveTriangleWireframe:
-            canvas.IndexSize = int(6 * product)
+            self.IndexSize = int(6 * product)
 
         /*  Illegal input, set the size to zero.                              */
         default:
-            canvas.IndexSize = 0
+            self.IndexSize = 0
     }
 }
-/*  End of SetIndexSize.                                                      */
+/*  End of ComputeIndexSize.                                                  */
