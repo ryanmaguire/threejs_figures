@@ -32,7 +32,7 @@ package threetools
  *  Arguments:                                                                *
  *      self (*Canvas):                                                       *
  *          The canvas that is being resized.                                 *
- *      buffer ([]uint32]):                                                   *
+ *      buffer ([]uint32):                                                    *
  *          The buffer where canvas will store its data.                      *
  *  Output:                                                                   *
  *      None.                                                                 *
