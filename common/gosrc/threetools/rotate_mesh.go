@@ -30,20 +30,20 @@ package threetools
  *  Purpose:                                                                  *
  *      Rotates the mesh in a canvas by the provided unit vector.             *
  *  Arguments:                                                                *
- *      canvas (*Canvas):                                                     *
+ *      self (*Canvas):                                                       *
  *          The canvas with the mesh that is being rotated.                   *
  *      point (UnitVector]):                                                  *
  *          A point on the unit circle, its polar angle is used for rotating. *
  *  Output:                                                                   *
  *      None.                                                                 *
  ******************************************************************************/
-func RotateMesh(canvas *Canvas, point UnitVector) {
+func (self *Canvas) RotateMesh(point UnitVector) {
 
     /*  Variable for indexing over the elements of the mesh.                  */
     var index int
 
     /*  Loop through each point in the mesh.                                  */
-    for index = 0; index < canvas.NumberOfPoints; index++ {
+    for index = 0; index < self.NumberOfPoints; index++ {
 
         /*  A vertex has three values, the x, y, and z coordinates. The index *
          *  for the x value of the point is 3 times the current index.        */
@@ -53,12 +53,12 @@ func RotateMesh(canvas *Canvas, point UnitVector) {
         var yIndex int = xIndex + 1
 
         /*  Use the rotation matrix. Get the initial values.                  */
-        var x float32 = canvas.Mesh[xIndex]
-        var y float32 = canvas.Mesh[yIndex]
+        var x float32 = self.Mesh[xIndex]
+        var y float32 = self.Mesh[yIndex]
 
         /*  Apply the rotation matrix and update the points.                  */
-        canvas.Mesh[xIndex] = point.AngleCos * x - point.AngleSin * y
-        canvas.Mesh[yIndex] = point.AngleCos * y + point.AngleSin * x
+        self.Mesh[xIndex] = point.AngleCos * x - point.AngleSin * y
+        self.Mesh[yIndex] = point.AngleCos * y + point.AngleSin * x
     }
 }
 /*  End of RotateMesh.                                                        */
