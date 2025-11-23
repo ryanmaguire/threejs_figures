@@ -68,7 +68,7 @@ extern unsigned int index_buffer[MAX_INDEX_BUFFER_SIZE];
 
 /*  End the extern "C" statement if a C++ compiler is being used.             */
 #ifdef __cplusplus
-extern }
+}
 #endif
 
 #endif
