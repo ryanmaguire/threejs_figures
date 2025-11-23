@@ -43,7 +43,7 @@ func smallAngleSine(z, zsq float32) float32 {
     return z * (S0 + zsq * S1)
 }
 
-/*  Function for setting the rotation angle and computes its sine and cosine. */
+/*  Function for setting the rotation angle and computing its sine and cosine.*/
 func SetRotationAngle(angle float32) {
 
     /*  The Taylor series are in terms of the square of the angle.            */
