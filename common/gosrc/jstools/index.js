@@ -1,18 +1,20 @@
 /******************************************************************************
  *                                  LICENSE                                   *
  ******************************************************************************
- *  This file is free software: you can redistribute it and/or modify         *
+ *  This file is part of threejs_figures.                                     *
+ *                                                                            *
+ *  threejs_figures is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by      *
  *  the Free Software Foundation, either version 3 of the License, or         *
  *  (at your option) any later version.                                       *
  *                                                                            *
- *  This file is distributed in the hope that it will be useful,              *
+ *  threejs_figures is distributed in the hope that it will be useful,        *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of            *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             *
  *  GNU General Public License for more details.                              *
  *                                                                            *
  *  You should have received a copy of the GNU General Public License         *
- *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
+ *  along with threejs_figures.  If not, see <https://www.gnu.org/licenses/>. *
  ******************************************************************************
  *  Purpose:                                                                  *
  *      JavaScript module containing the compiled WASM code from Go.          *
@@ -22,45 +24,31 @@
  ******************************************************************************/
 
 /*  The Go Glue code is found here. To retreive it from the command line, use *
- *  the command cp $(go env GOROOT)/misc/wasm/wasm_exec.js.                   */
+ *  the command cp $(go env GOROOT)/misc/wasm/wasm_exec.js .                  */
 import './wasm_exec.js';
 
+/*  Create the module allowing JavaScript to access the Go functions.         */
 export default async function createModule() {
 
+    /*  Initialize the WebAssembly compiled from the Go source code.          */
     const go = new Go();
+    const result = await WebAssembly.instantiateStreaming(
+        fetch('main.wasm'), go.importObject
+    );
 
-    let result;
-
-    if ('instantiateStreaming' in WebAssembly) {
-        result = await WebAssembly.instantiateStreaming(
-            fetch('main.wasm'),
-            go.importObject
-        );
-    } else {
-        const resp = await fetch('main.wasm');
-        const bytes = await resp.arrayBuffer();
-        result = await WebAssembly.instantiate(bytes, go.importObject);
-    }
-
+    /*  Calling this function allows us to access the WASM memory. It is then *
+     *  available via result.instance.exports.mem.                            */
     go.run(result.instance);
 
-    const memory = result.instance.exports.mem;
-    const setRotationAngle = window.setRotationAngle;
-    const squareWireframeGeometry = window.squareWireframeGeometry;
-    const setupMesh = window.setupMesh;
-    const meshBufferAddress = window.meshBufferAddress;
-    const indexBufferAddress = window.indexBufferAddress;
-    const rotateMesh = window.rotateMesh;
-
-    const module = {
-        memory,
-        squareWireframeGeometry,
-        setupMesh,
-        meshBufferAddress,
-        indexBufferAddress,
-        rotateMesh,
-        setRotationAngle
+    /*  Export all of the jsbindings functions and the WASM memory.           */
+    return {
+        indexBufferAddress: window.indexBufferAddress,
+        mainCanvasAddress: window.mainCanvasAddress,
+        meshBufferAddress: window.meshBufferAddress,
+        memory: result.instance.exports.mem,
+        setupMesh: window.setupMesh,
+        rotateMesh: window.rotateMesh,
+        setRotationAngle: window.setRotationAngle
     };
-
-    return module;
 }
+/*  End of createModule.                                                      */
