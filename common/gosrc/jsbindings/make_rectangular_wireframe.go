@@ -31,7 +31,7 @@ import (
 func
 MakeRectangularWireframe(args []js.Value, f threetools.SurfaceParametrization) {
     InitCanvas(args)
-    threetools.GenerateMeshFromParametrization(&threetools.MainCanvas, f)
+    threetools.MainCanvas.GenerateMeshFromParametrization(f)
     threetools.GenerateRectangularWireframe(&threetools.MainCanvas)
 }
 /*  End of MakeRectangularWireframe.                                          */
