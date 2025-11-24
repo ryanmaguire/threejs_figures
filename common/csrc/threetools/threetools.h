@@ -97,6 +97,19 @@ extern unsigned int *index_buffer_address(void);
 
 /******************************************************************************
  *  Function:                                                                 *
+ *      init_main_canvas                                                      *
+ *  Purpose:                                                                  *
+ *      Initializes the main canvas for an animation.                         *
+ *  Arguments:                                                                *
+ *      parameters (CanvasParameters):                                        *
+ *          The parameters for the canvas, passed from JavaScript or Godot.   *
+ *  Output:                                                                   *
+ *      None (void).                                                          *
+ ******************************************************************************/
+void init_main_canvas(CanvasParameters parameters);
+
+/******************************************************************************
+ *  Function:                                                                 *
  *      main_canvas_address                                                   *
  *  Purpose:                                                                  *
  *      Returns a pointer to the main canvas.                                 *
