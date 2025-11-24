@@ -47,7 +47,7 @@ export default async function createModule() {
         meshBufferAddress: window.meshBufferAddress,
         memory: result.instance.exports.mem,
         setupMesh: window.setupMesh,
-        rotateMesh: window.rotateMesh,
+        zRotateMainCanvas: window.zRotateMainCanvas,
         setRotationAngle: window.setRotationAngle
     };
 }

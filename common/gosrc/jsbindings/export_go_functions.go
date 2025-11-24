@@ -37,7 +37,7 @@ func ExportGoFunctions() {
     window.Set("indexBufferAddress", js.FuncOf(IndexBufferAddress))
     window.Set("mainCanvasAddress", js.FuncOf(MainCanvasAddress))
     window.Set("meshBufferAddress", js.FuncOf(MeshBufferAddress))
-    window.Set("rotateMesh", js.FuncOf(RotateMesh))
+    window.Set("zRotateMainCanvas", js.FuncOf(RotateMainCanvas))
     window.Set("setRotationAngle", js.FuncOf(SetRotationAngle))
 }
 /*  End of ExportGoFunctions.                                                 */
