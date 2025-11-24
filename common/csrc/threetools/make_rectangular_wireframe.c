@@ -17,16 +17,16 @@
  *  along with threejs_figures.  If not, see <https://www.gnu.org/licenses/>. *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Initializes the main canvas using parameters from JavaScript / Godot. *
+ *      Creates a rectangular wireframe and stores it in the main_canvas.     *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 24, 2025                                             *
  ******************************************************************************/
 
-/*  Canvas and CanvasParameters typedefs provided here.                       */
+/*  SurfaceParametrization and CanvasParameters typedefs provided here.       */
 #include <threetools/types.h>
 
-/*  The main_canvas and buffer globals are declared here.                     */
+/*  The main_canvas global is declared here.                                  */
 #include <threetools/globals.h>
 
 /*  Function prototype / forward declaration found here.                      */
@@ -34,28 +34,23 @@
 
 /******************************************************************************
  *  Function:                                                                 *
- *      init_main_canvas                                                      *
+ *      make_rectangular_wireframe                                            *
  *  Purpose:                                                                  *
- *      Initializes the main canvas for an animation.                         *
+ *      Creates a rectangular wireframe stored in the main_canvas.            *
  *  Arguments:                                                                *
  *      parameters (const CanvasParameters * const):                          *
- *          The parameters for the canvas, passed from JavaScript or Godot.   *
+ *          The parameters for the main canvas.                               *
+ *      surface (SurfaceParametrization):                                     *
+ *          The parametrization, a function of the form z = f(x, y).          *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-void init_main_canvas(const CanvasParameters * const parameters)
+void
+make_rectangular_wireframe(const CanvasParameters * const parameters,
+                           SurfaceParametrization surface)
 {
-    /*  Most of the JavaScript / Godot parameters are the same, copy them.    */
-    main_canvas.nx_pts = parameters->nx_pts;
-    main_canvas.ny_pts = parameters->ny_pts;
-    main_canvas.width = parameters->width;
-    main_canvas.height = parameters->height;
-    main_canvas.horizontal_start = parameters->x_start;
-    main_canvas.vertical_start = parameters->y_start;
-    main_canvas.mesh_type = parameters->mesh_type;
-
-    /*  The remaining variables in the canvas can be computed from these.     */
-    reset_mesh_buffer(&main_canvas, mesh_buffer);
-    reset_index_buffer(&main_canvas, index_buffer);
+    init_main_canvas(parameters);
+    generate_mesh_from_parametrization(&main_canvas, surface);
+    generate_rectangular_wireframe(&main_canvas);
 }
-/*  End of init_main_canvas.                                                  */
+/*  End of make_rectangular_wireframe.                                        */
