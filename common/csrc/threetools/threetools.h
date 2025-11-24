@@ -101,12 +101,12 @@ extern unsigned int *index_buffer_address(void);
  *  Purpose:                                                                  *
  *      Initializes the main canvas for an animation.                         *
  *  Arguments:                                                                *
- *      parameters (CanvasParameters):                                        *
+ *      parameters (const CanvasParameters * const):                          *
  *          The parameters for the canvas, passed from JavaScript or Godot.   *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-void init_main_canvas(CanvasParameters parameters);
+extern void init_main_canvas(const CanvasParameters * const parameters);
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -122,6 +122,23 @@ void init_main_canvas(CanvasParameters parameters);
  *      This function is only used at the JavaScript level.                   *
  ******************************************************************************/
 extern Canvas *main_canvas_address(void);
+
+/******************************************************************************
+ *  Function:                                                                 *
+ *      make_rectangular_wireframe                                            *
+ *  Purpose:                                                                  *
+ *      Creates a rectangular wireframe stored in the main_canvas.            *
+ *  Arguments:                                                                *
+ *      parameters (const CanvasParameters * const):                          *
+ *          The parameters for the main canvas.                               *
+ *      surface (SurfaceParametrization):                                     *
+ *          The parametrization, a function of the form z = f(x, y).          *
+ *  Output:                                                                   *
+ *      None (void).                                                          *
+ ******************************************************************************/
+extern void
+make_rectangular_wireframe(const CanvasParameters * const parameters,
+                           SurfaceParametrization surface);
 
 /******************************************************************************
  *  Function:                                                                 *
