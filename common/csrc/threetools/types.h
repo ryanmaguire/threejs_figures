@@ -62,5 +62,13 @@ typedef struct Canvas {
     MeshType mesh_type;
 } Canvas;
 
+/*  Stripped down version of a Canvas. Used at the JavaScript / Godot level.  */
+typedef struct CanvasParameters {
+    unsigned int nx_pts, ny_pts;
+    float width, height;
+    float x_start, y_start;
+    MeshType mesh_type;
+} CanvasParameters;
+
 #endif
 /*  End of include guard.                                                     */
