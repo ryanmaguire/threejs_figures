@@ -13,27 +13,24 @@ import {initGeometry} from './initGeometry.js'
 export function zRotate(renderer, scene, camera, surface, module, size) {
 
     /*  Rotate the object slightly as time passes.                            */
-    const geometry = surface.geometry;
-    let mesh = geometry.attributes.position;
-    module.rotateMesh(mesh.array.byteOffset, size);
+    module.zRotateMainCanvas();
 
     /*  This problem seems to be unique to Go, C and rust do not have this    *
      *  issue. It is possible for the address of the mesh and index buffers   *
      *  to change on their own. It seems Go's garbage collector is at fault   *
      *  here. If the address changes, we need to update the JavaScript        *
      *  attributes to use the new locations.                                  */
-    if (mesh.array.byteLength == 0) {
+    if (surface.geometry.attributes.position.array.byteLength == 0) {
 
         /*  Compute the number of elements in each buffer.                    */
         const meshSize = 3 * size;
-        const indexSize = geometry.index.count;
+        const indexSize = surface.geometry.index.count;
 
         /*  Reset the geometry attributes to use the new addresses.           */
-        initGeometry(geometry, module, meshSize, indexSize);
-        mesh = geometry.attributes.position;
+        initGeometry(surface.geometry, module, meshSize, indexSize);
     }
 
     /*  Re-render the newly rotated scene.                                    */
-    mesh.needsUpdate = true;
+    surface.geometry.attributes.position.needsUpdate = true;
     renderer.render(scene, camera);
 }

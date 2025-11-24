@@ -32,7 +32,7 @@ export default async function createModule() {
         indexBufferAddress: module._index_buffer_address,
         mainCanvasAddress: module._main_canvas_address,
         meshBufferAddress: module._mesh_buffer_address,
-        rotateMainCanvas: module._rotate_main_canvas,
+        zRotateMainCanvas: module._z_rotate_main_canvas,
         setRotationAngle: module._set_rotation_angle,
         memory: module.HEAP8,
         setupMesh: module.setupMesh
