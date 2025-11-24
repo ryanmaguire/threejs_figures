@@ -56,7 +56,8 @@ $(BUILD_DIR)/%.o: $(CXX_SRC_DIR)/%.cpp
 	$(CXX) $(CFLAGS) $< -c -o $@
 
 $(LIBRARY_FILE): $(C_OBJS) $(CXX_OBJS)
-	$(AR) rcs $@ $(C_OBJS)
+	@$(AR) rcs $@ $(C_OBJS)
+	@echo "Building libthreetools.a ..."
 
 clean:
 	rm -rf $(BUILD_DIR)

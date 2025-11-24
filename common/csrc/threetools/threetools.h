@@ -214,6 +214,18 @@ extern void rotate_mesh(Canvas *canvas, UnitVector point);
  ******************************************************************************/
 extern void set_rotation_angle(float angle);
 
+/******************************************************************************
+ *  Function:                                                                 *
+ *      z_rotate_main_canvas                                                  *
+ *  Purpose:                                                                  *
+ *      Rotates the main_canvas variable by the rotation_vector.              *
+ *  Arguments:                                                                *
+ *      None (void).                                                          *
+ *  Output:                                                                   *
+ *      None (void).                                                          *
+ ******************************************************************************/
+extern void z_rotate_main_canvas(void);
+
 /*  End the extern "C" statement if a C++ compiler is being used.             */
 #ifdef __cplusplus
 }
