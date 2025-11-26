@@ -24,10 +24,7 @@
 import Stats from "three/addons/libs/stats.module.js";
 
 /* JavaScript module using WebAssembly compiled from C code using emscripten. */
-import createModule from "jstools";
-import * as jscommon from "jscommon";
-
-const module = await createModule();
+import * as threetools from "threetools";
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -62,32 +59,32 @@ function init() {
     /*  Initialize the globals for the animation. This includes the renderer, *
      *  camera, objects, and scene.                                           */
     const lightBlue = {color: 0x00AAFF};
-    const geometry = jscommon.squareWireframeGeometry(parameters, module);
-    const camera = jscommon.sceneCamera(window, cameraPosition);
-    const renderer = jscommon.sceneRenderer(window);
-    const surface = jscommon.basicWireframe(geometry, lightBlue);
-    const scene = jscommon.sceneFromSurface(surface);
+    const geometry = threetools.squareWireframeGeometry(parameters);
+    const camera = threetools.sceneCamera(window, cameraPosition);
+    const renderer = threetools.sceneRenderer(window);
+    const surface = threetools.basicWireframe(geometry, lightBlue);
+    const scene = threetools.sceneFromSurface(surface);
     const stats = new Stats();
 
     function animation() {
-        jscommon.zRotate(
-            renderer, scene, camera, surface, module, numberOfPoints
+        threetools.zRotate(
+            renderer, scene, camera, surface, numberOfPoints
         );
 
         stats.update();
     }
 
     function onWindowResize () {
-        jscommon.windowResize(camera, renderer, window);
+        threetools.windowResize(camera, renderer, window);
     }
 
     renderer.setAnimationLoop(animation);
 
     /*  Make the animation interactive. The user can click and drag the       *
      *  drawing around using their mouse.                                     */
-    jscommon.setupControls(renderer, camera);
+    threetools.setupControls(renderer, camera);
 
-    module.setRotationAngle(rotationAngle);
+    threetools.setRotationAngle(rotationAngle);
 
     /*  Attach the drawing to the actual page.                                */
     document.body.appendChild(renderer.domElement);
