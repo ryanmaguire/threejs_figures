@@ -31,3 +31,4 @@ export {setupControls} from "./setupControls.js";
 export {squareWireframeGeometry} from "./squareWireframeGeometry.js";
 export {windowResize} from "./windowResize.js";
 export {zRotate} from "./zRotate.js";
+export * from 'wasmtools';

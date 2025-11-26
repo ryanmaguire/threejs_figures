@@ -1,14 +1,14 @@
 import {BufferAttribute} from 'three';
+import {meshBufferAddress, indexBufferAddress, memory} from "wasmtools";
 
 /*  Helper function for initializing the three.js geometry.                   */
-export function initGeometry(geometry, module, meshSize, indexSize) {
+export function initGeometry(geometry, meshSize, indexSize) {
 
-    const meshPtr = module.meshBufferAddress();
-    const indexPtr = module.indexBufferAddress();
-    const buffer = module.memory.buffer;
+    const meshPtr = meshBufferAddress();
+    const indexPtr = indexBufferAddress();
 
-    const meshBuffer = new Float32Array(buffer, meshPtr, meshSize);
-    const indexBuffer = new Uint32Array(buffer, indexPtr, indexSize);
+    const meshBuffer = new Float32Array(memory.buffer, meshPtr, meshSize);
+    const indexBuffer = new Uint32Array(memory.buffer, indexPtr, indexSize);
 
     const geometryAttributes = new BufferAttribute(meshBuffer, 3);
     const indexAttribute = new BufferAttribute(indexBuffer, 1);

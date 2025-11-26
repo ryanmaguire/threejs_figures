@@ -27,28 +27,21 @@
  *  the command cp $(go env GOROOT)/misc/wasm/wasm_exec.js .                  */
 import './wasm_exec.js';
 
-/*  Create the module allowing JavaScript to access the Go functions.         */
-export default async function createModule() {
+/*  Initialize the WebAssembly compiled from the Go source code.              */
+const go = new Go();
+const result = await WebAssembly.instantiateStreaming(
+    fetch('main.wasm'), go.importObject
+);
 
-    /*  Initialize the WebAssembly compiled from the Go source code.          */
-    const go = new Go();
-    const result = await WebAssembly.instantiateStreaming(
-        fetch('main.wasm'), go.importObject
-    );
+/*  Calling this function allows us to access the WASM memory. It is then     *
+ *  available via result.instance.exports.mem.                                */
+go.run(result.instance);
 
-    /*  Calling this function allows us to access the WASM memory. It is then *
-     *  available via result.instance.exports.mem.                            */
-    go.run(result.instance);
-
-    /*  Export all of the jsbindings functions and the WASM memory.           */
-    return {
-        indexBufferAddress: window.indexBufferAddress,
-        mainCanvasAddress: window.mainCanvasAddress,
-        meshBufferAddress: window.meshBufferAddress,
-        memory: result.instance.exports.mem,
-        setupMesh: window.setupMesh,
-        zRotateMainCanvas: window.zRotateMainCanvas,
-        setRotationAngle: window.setRotationAngle
-    };
-}
-/*  End of createModule.                                                      */
+/*  Export all of the jsbindings functions and the WASM memory.               */
+export const indexBufferAddress = window.indexBufferAddress;
+export const mainCanvasAddress = window.mainCanvasAddress;
+export const meshBufferAddress = window.meshBufferAddress;
+export const memory = result.instance.exports.mem;
+export const setupMesh = window.setupMesh;
+export const setRotationAngle = window.setRotationAngle;
+export const zRotateMainCanvas = window.zRotateMainCanvas;

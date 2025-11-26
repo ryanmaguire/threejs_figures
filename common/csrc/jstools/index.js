@@ -25,16 +25,14 @@
  ******************************************************************************/
 import initModule from "main";
 
+/*  emscripten compiles everything into a module. Initialize it.              */
 const module = await initModule();
 
-export default async function createModule() {
-    return {
-        indexBufferAddress: module._index_buffer_address,
-        mainCanvasAddress: module._main_canvas_address,
-        meshBufferAddress: module._mesh_buffer_address,
-        zRotateMainCanvas: module._z_rotate_main_canvas,
-        setRotationAngle: module._set_rotation_angle,
-        memory: module.HEAP8,
-        setupMesh: module.setupMesh
-    };
-}
+/*  Export the C functions so that may be called in JavaScript.               */
+export const indexBufferAddress = module._index_buffer_address;
+export const mainCanvasAddress = module._mainCanvasAddress;
+export const meshBufferAddress = module._mesh_buffer_address;
+export const memory = module.HEAP8;
+export const setupMesh = module.setupMesh;
+export const setRotationAngle = module._set_rotation_angle;
+export const zRotateMainCanvas = module._z_rotate_main_canvas;
