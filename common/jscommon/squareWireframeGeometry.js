@@ -1,5 +1,6 @@
 import {BufferGeometry} from 'three';
 import {initGeometry} from './initGeometry.js';
+import {setupMesh} from 'wasmtools';
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -12,7 +13,7 @@ import {initGeometry} from './initGeometry.js';
  *  Output:                                                                   *
  *      None.                                                                 *
  ******************************************************************************/
-export function squareWireframeGeometry(parameters, module) {
+export function squareWireframeGeometry(parameters) {
 
     /*  three.js has parametric function tools, but this renders the object   *
      *  with diagonals across the squares, creating a mesh of triangles. To   *
@@ -24,8 +25,8 @@ export function squareWireframeGeometry(parameters, module) {
     const indexSize = 2 * (2 * product - sum);
 
     /*  Setup the geometry and add a mesh of vertices and line segments.      */
-    module.setupMesh(parameters)
-    initGeometry(geometry, module, meshSize, indexSize);
+    setupMesh(parameters)
+    initGeometry(geometry, meshSize, indexSize);
 
     return geometry;
 }

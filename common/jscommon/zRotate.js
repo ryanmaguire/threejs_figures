@@ -1,4 +1,5 @@
 import {initGeometry} from './initGeometry.js'
+import {zRotateMainCanvas} from 'wasmtools';
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -10,10 +11,10 @@ import {initGeometry} from './initGeometry.js'
  *  Output:                                                                   *
  *      None.                                                                 *
  ******************************************************************************/
-export function zRotate(renderer, scene, camera, surface, module, size) {
+export function zRotate(renderer, scene, camera, surface, size) {
 
     /*  Rotate the object slightly as time passes.                            */
-    module.zRotateMainCanvas();
+    zRotateMainCanvas();
 
     /*  This problem seems to be unique to Go, C and rust do not have this    *
      *  issue. It is possible for the address of the mesh and index buffers   *
@@ -27,7 +28,7 @@ export function zRotate(renderer, scene, camera, surface, module, size) {
         const indexSize = surface.geometry.index.count;
 
         /*  Reset the geometry attributes to use the new addresses.           */
-        initGeometry(surface.geometry, module, meshSize, indexSize);
+        initGeometry(surface.geometry, meshSize, indexSize);
     }
 
     /*  Re-render the newly rotated scene.                                    */
