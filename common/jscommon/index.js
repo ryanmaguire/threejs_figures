@@ -22,6 +22,7 @@
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 21, 2025                                             *
  ******************************************************************************/
+import Stats from "three/examples/jsm/libs/stats.module.js";
 export {basicWireframe} from "./basicWireframe.js";
 export {initGeometry} from "./initGeometry.js";
 export {sceneCamera} from "./sceneCamera.js";
@@ -32,3 +33,4 @@ export {squareWireframeGeometry} from "./squareWireframeGeometry.js";
 export {windowResize} from "./windowResize.js";
 export {zRotate} from "./zRotate.js";
 export * from 'wasmtools';
+export {Stats};

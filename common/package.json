@@ -1,0 +1,13 @@
+{
+    "devDependencies": {
+        "esbuild": "^0.27.0"
+    },
+    "scripts": {
+        "build": "node build.js",
+        "build:c": "WASMTOOLS_SRC=./csrc/jstools/index.js node build.js",
+        "build:go": "WASMTOOLS_SRC=./gosrc/jstools/index.js node build.js"
+    },
+    "dependencies": {
+        "three": "^0.181.2"
+    }
+}
