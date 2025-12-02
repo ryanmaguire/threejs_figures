@@ -1,11 +1,14 @@
 {
+    "name": "rjmthreetools",
+    "version": "0.0.1",
+    "description": "ThreeJS tools with C/Go/Rust WebAssembly backends.",
+    "author": "Ryan Maguire",
+    "license": "GPL-3.0-or-later",
     "devDependencies": {
         "esbuild": "^0.27.0"
     },
     "scripts": {
-        "build": "node build.js",
-        "build:c": "WASMTOOLS_SRC=./csrc/jstools/index.js node build.js",
-        "build:go": "WASMTOOLS_SRC=./gosrc/jstools/index.js node build.js"
+        "build": "node build.js"
     },
     "dependencies": {
         "three": "^0.181.2"
