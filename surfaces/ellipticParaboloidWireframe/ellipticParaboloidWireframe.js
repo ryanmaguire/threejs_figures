@@ -21,8 +21,6 @@
  *  Date:       July 22, 2025                                                 *
  ******************************************************************************/
 
-import Stats from "three/addons/libs/stats.module.js";
-
 /* JavaScript module using WebAssembly compiled from C code using emscripten. */
 import * as threetools from "threetools";
 
@@ -64,7 +62,7 @@ function init() {
     const renderer = threetools.sceneRenderer(window);
     const surface = threetools.basicWireframe(geometry, lightBlue);
     const scene = threetools.sceneFromSurface(surface);
-    const stats = new Stats();
+    const stats = new threetools.Stats();
 
     function animation() {
         threetools.zRotate(
