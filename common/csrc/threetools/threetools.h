@@ -42,12 +42,12 @@ extern "C" {
  *  Purpose:                                                                  *
  *      Computes how many indices are needed for a canvas.                    *
  *  Arguments:                                                                *
- *      canvas (Canvas *):                                                    *
+ *      canvas (Canvas * const):                                              *
  *          The input canvas. Its index_size member will be updated.          *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-extern void compute_index_size(Canvas *canvas);
+extern void compute_index_size(Canvas * const canvas);
 
 /******************************************************************************
  *  Function:                                                                 *

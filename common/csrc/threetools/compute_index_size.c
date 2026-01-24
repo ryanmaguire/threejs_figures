@@ -35,12 +35,12 @@
  *  Purpose:                                                                  *
  *      Computes the number of elements needed for the index buffer.          *
  *  Arguments:                                                                *
- *      canvas (Canvas *):                                                    *
+ *      canvas (Canvas * const):                                              *
  *          The input canvas, the size of its index buffer is computed.       *
  *  Output:                                                                   *
  *      None.                                                                 *
  ******************************************************************************/
-void compute_index_size(Canvas *canvas)
+void compute_index_size(Canvas * const canvas)
 {
     /*  The total number of points in the mesh is the product of the width    *
      *  and height. Points along the boundary usually have a different number *
