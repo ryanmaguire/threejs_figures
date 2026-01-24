@@ -20,9 +20,9 @@ export function squareWireframeGeometry(parameters) {
      *  see a square pattern we need to use our own buffer.                   */
     const geometry = new BufferGeometry();
     const product = parameters.nxPts * parameters.nyPts;
-    const sum = parameters.nxPts + parameters.nyPts;
+    const sum = parameters.nxPts + parameters.nyPts - 1;
     const meshSize = 3 * product;
-    const indexSize = 2 * (2 * product - sum);
+    const indexSize = 2 * (2 * product - sum - 1);
 
     /*  Setup the geometry and add a mesh of vertices and line segments.      */
     setupMesh(parameters)
