@@ -147,7 +147,8 @@ make_rectangular_wireframe(const CanvasParameters * const parameters,
  *  Purpose:                                                                  *
  *      Returns a pointer to the mesh array.                                  *
  *  Arguments:                                                                *
- *      None (void).                                                          *
+ *      canvas (const Canvas * const).                                        *
+ *          The canvas containing the mesh buffer that we want.               *
  *  Output:                                                                   *
  *      mesh (float *):                                                       *
  *          A pointer to the mesh array.                                      *
@@ -155,7 +156,7 @@ make_rectangular_wireframe(const CanvasParameters * const parameters,
  *      This function is called at the JavaScript level to get the address    *
  *      for the mesh array so it may read and write to it.                    *
  ******************************************************************************/
-extern float *mesh_buffer_address(void);
+extern float *mesh_buffer_address(const Canvas * const canvas);
 
 /******************************************************************************
  *  Function:                                                                 *

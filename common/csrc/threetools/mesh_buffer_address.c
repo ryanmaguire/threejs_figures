@@ -31,19 +31,23 @@
 
 /******************************************************************************
  *  Function:                                                                 *
- *      main_canvas_address                                                   *
+ *      mesh_buffer_address                                                   *
  *  Purpose:                                                                  *
- *      Returns the address of the global mesh buffer.                        *
+ *      Returns a pointer to the mesh array.                                  *
  *  Arguments:                                                                *
- *      None (void).                                                          *
+ *      canvas (const Canvas * const).                                        *
+ *          The canvas containing the mesh buffer that we want.               *
  *  Output:                                                                   *
- *      address (float *):                                                    *
- *          The address of the global mesh buffer as a pointer.               *
+ *      mesh (float *):                                                       *
+ *          A pointer to the mesh array.                                      *
+ *  Notes:                                                                    *
+ *      This function is called at the JavaScript level to get the address    *
+ *      for the mesh array so it may read and write to it.                    *
  ******************************************************************************/
-float *mesh_buffer_address(void)
+float *mesh_buffer_address(const Canvas * const canvas)
 {
     /*  We can simply return the mesh buffer. At the JavaScript level this    *
      *  is used to get the address of the mesh array for reading and writing. */
-    return mesh_buffer;
+    return canvas->mesh;
 }
 /*  End of mesh_buffer_address.                                               */
