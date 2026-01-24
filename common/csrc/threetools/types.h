@@ -67,7 +67,7 @@ typedef struct CanvasParameters {
     unsigned int nx_pts, ny_pts;
     float width, height;
     float x_start, y_start;
-    int mesh_type;
+    MeshType mesh_type;
 } CanvasParameters;
 
 #endif
