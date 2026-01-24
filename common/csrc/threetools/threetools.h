@@ -72,12 +72,12 @@ generate_parametric_mesh(Canvas * const canvas, const SurfaceParametrization f);
  *      Generates the line segments for a parametrized surface using          *
  *      a rectangular grid for a surface of the form z = f(x, y).             *
  *  Arguments:                                                                *
- *      canvas (Canvas *):                                                    *
+ *      canvas (Canvas * const):                                              *
  *          The canvas for the animation. This contains geometry and buffers. *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-extern void generate_rectangular_wireframe(Canvas *canvas);
+extern void generate_rectangular_wireframe(Canvas * const canvas);
 
 /******************************************************************************
  *  Function:                                                                 *

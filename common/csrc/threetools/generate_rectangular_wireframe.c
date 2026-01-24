@@ -39,23 +39,18 @@
  *      Generates the line segments for a parametrized surface using          *
  *      a rectangular grid for a surface of the form z = f(x, y).             *
  *  Arguments:                                                                *
- *      canvas (Canvas *):                                                    *
+ *      canvas (Canvas * const):                                              *
  *          The canvas for the animation. This contains geometry and buffers. *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-void generate_rectangular_wireframe(Canvas *canvas)
+void generate_rectangular_wireframe(Canvas * const canvas)
 {
     /*  Variables for indexing the horizontal and vertical axes.              */
     unsigned int x_index, y_index;
 
     /*  Variable for indexing over the array being written to.                */
     unsigned int index = 0;
-
-    /*  Avoid writing beyond the bounds of the array that was allocated.      *
-     *  Check if the input sizes are too big.                                 */
-    if ((canvas->nx_pts > MAX_WIDTH) || (canvas->ny_pts > MAX_HEIGHT))
-        return;
 
     /*  We need to create the lines now. We do this by creating ordered       *
      *  pairs of the indices for the vertices in the vertex array that we     *
