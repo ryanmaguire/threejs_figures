@@ -40,17 +40,17 @@
  *  Arguments:                                                                *
  *      parameters (const CanvasParameters * const):                          *
  *          The parameters for the main canvas.                               *
- *      surface (SurfaceParametrization):                                     *
+ *      surface (const SurfaceParametrization):                               *
  *          The parametrization, a function of the form z = f(x, y).          *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
 void
 make_rectangular_wireframe(const CanvasParameters * const parameters,
-                           SurfaceParametrization surface)
+                           const SurfaceParametrization surface)
 {
     init_main_canvas(parameters);
-    generate_mesh_from_parametrization(&main_canvas, surface);
+    generate_parametric_mesh(&main_canvas, surface);
     generate_rectangular_wireframe(&main_canvas);
 }
 /*  End of make_rectangular_wireframe.                                        */

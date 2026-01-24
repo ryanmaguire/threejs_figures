@@ -92,4 +92,4 @@ generate_parametric_mesh(Canvas * const canvas, const SurfaceParametrization f)
     }
     /*  End of vertical for-loop.                                             */
 }
-/*  End of generate_mesh_from_parametrization.                                */
+/*  End of generate_parametric_mesh.                                          */
