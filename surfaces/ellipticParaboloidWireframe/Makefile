@@ -27,15 +27,19 @@ THREETOOLS = libthreetools.a
 # C Compilation settings
 CXX = em++
 CFLAGS = -Wall -Wextra -Wpedantic -I$(COMMON_DIR) -O3 -flto
-LFLAGS = -L$(COMMON_DIR) -l:$(THREETOOLS) -lembind --bind
+LFLAGS = -L$(COMMON_DIR) \
+	-Wl,--whole-archive \
+	-l:$(THREETOOLS) \
+	-Wl,--no-whole-archive \
+	-lembind
 
-# Location of the C code, and the build directory for C code.
-CSRC = $(wildcard ./csrc/*.cpp)
+# Location of the C++ code.
+CXXSRC = $(wildcard ./csrc/*.cpp)
 
-# Location of the optional JavaScript code. C is used by default.
+# Location of the optional JavaScript code. C / C++ is used by default.
 JS_SRC_DIR = jssrc
 
-# Location of the optional Rust code. C is used by default.
+# Location of the optional Rust code. C / C++ is used by default.
 RUST_SRC_DIR = rustsrc
 RUST_PKG_DIR = pkg
 RUST_TARGET_DIR = target
@@ -72,9 +76,9 @@ all: $(MAIN_FILE) $(WASM_FILE)
 $(COMMON_DIR)/$(THREETOOLS):
 	$(MAKE) -C $(COMMON_DIR)
 
-$(MAIN_FILE) $(WASM_FILE): $(CSRC) $(COMMON_DIR)/$(THREETOOLS)
+$(MAIN_FILE) $(WASM_FILE): $(CXXSRC) $(COMMON_DIR)/$(THREETOOLS)
 	@echo "Building main.js and main.wasm ..."
-	@$(CXX) $(CFLAGS) $(CSRC) -o $(MAIN_FILE) $(LFLAGS) $(EMSCRIPTEN_FLAGS)
+	@$(CXX) $(CFLAGS) $(CXXSRC) -o $(MAIN_FILE) $(LFLAGS) $(EMSCRIPTEN_FLAGS)
 
 js:
 	cp $(JS_SRC_DIR)/$(MAIN_FILE) .
