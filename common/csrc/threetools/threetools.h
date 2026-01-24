@@ -131,14 +131,14 @@ extern Canvas *main_canvas_address(void);
  *  Arguments:                                                                *
  *      parameters (const CanvasParameters * const):                          *
  *          The parameters for the main canvas.                               *
- *      surface (SurfaceParametrization):                                     *
+ *      surface (const SurfaceParametrization):                               *
  *          The parametrization, a function of the form z = f(x, y).          *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
 extern void
 make_rectangular_wireframe(const CanvasParameters * const parameters,
-                           SurfaceParametrization surface);
+                           const SurfaceParametrization surface);
 
 /******************************************************************************
  *  Function:                                                                 *
