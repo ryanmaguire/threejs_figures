@@ -45,15 +45,6 @@ static void setup_mesh(CanvasParameters parameters)
 /*  Main program, start of the JavaScript animation.                          */
 EMSCRIPTEN_BINDINGS(threetools)
 {
-    emscripten::value_object<CanvasParameters>("CanvasParameters")
-        .field("nxPts", &CanvasParameters::nx_pts)
-        .field("nyPts", &CanvasParameters::ny_pts)
-        .field("width", &CanvasParameters::width)
-        .field("height", &CanvasParameters::height)
-        .field("xStart", &CanvasParameters::x_start)
-        .field("yStart", &CanvasParameters::y_start)
-        .field("meshType", &CanvasParameters::mesh_type);
-
     emscripten::function("setupMesh", &setup_mesh);
 }
 /*  End of main.                                                              */
