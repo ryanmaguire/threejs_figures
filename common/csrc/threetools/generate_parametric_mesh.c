@@ -58,11 +58,6 @@ generate_parametric_mesh(Canvas * const canvas, const SurfaceParametrization f)
     /*  Variable for indexing over the array being written to.                */
     unsigned int index = 0;
 
-    /*  Avoid writing beyond the bounds of the array that was allocated.      *
-     *  Check if the input sizes are too big.                                 */
-    if ((canvas->nx_pts > MAX_WIDTH) || (canvas->ny_pts > MAX_HEIGHT))
-        return;
-
     /*  Loop over the vertical axis. The surface is of the form z = f(x, y).  *
      *  Note, since the y index is the outer for-loop, the array is indexed   *
      *  in row-major fashion. That is, index = y * width + x.                 */
