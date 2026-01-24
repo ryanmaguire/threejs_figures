@@ -85,7 +85,8 @@ extern void generate_rectangular_wireframe(Canvas * const canvas);
  *  Purpose:                                                                  *
  *      Returns a pointer to the index array.                                 *
  *  Arguments:                                                                *
- *      None (void).                                                          *
+ *      canvas (const Canvas * const).                                        *
+ *          The canvas containing the index buffer that we want.              *
  *  Output:                                                                   *
  *      address (unsigned int *):                                             *
  *          A pointer to the index array.                                     *
@@ -93,7 +94,7 @@ extern void generate_rectangular_wireframe(Canvas * const canvas);
  *      This function is called at the JavaScript level to get the address    *
  *      for the index array so it may read and write to it.                   *
  ******************************************************************************/
-extern unsigned int *index_buffer_address(void);
+extern unsigned int *index_buffer_address(const Canvas * const);
 
 /******************************************************************************
  *  Function:                                                                 *

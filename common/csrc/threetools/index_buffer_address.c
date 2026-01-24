@@ -35,15 +35,16 @@
  *  Purpose:                                                                  *
  *      Returns the address of the global index buffer.                       *
  *  Arguments:                                                                *
- *      None (void).                                                          *
+ *      canvas (const Canvas * const).                                        *
+ *          The canvas containing the index buffer that we want.              *
  *  Output:                                                                   *
  *      address (unsigned int *):                                             *
  *          The address of the global index buffer as a pointer.              *
  ******************************************************************************/
-unsigned int *index_buffer_address(void)
+unsigned int *index_buffer_address(const Canvas * const canvas)
 {
     /*  We can simply return the index buffer. At the JavaScript level this   *
      *  is used to get the address of the index array for reading and writing.*/
-    return index_buffer;
+    return canvas->indices;
 }
 /*  End of index_buffer_address.                                              */
