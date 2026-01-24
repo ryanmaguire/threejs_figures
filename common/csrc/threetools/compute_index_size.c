@@ -48,21 +48,26 @@ void compute_index_size(Canvas *canvas)
      *  number of points along the boundary is proportional to the sum of the *
      *  width and height, compute both the sum and the product.               */
     const unsigned int product = canvas->nx_pts * canvas->ny_pts;
-    const unsigned int sum = canvas->nx_pts + canvas->ny_pts;
+
+    /*  The corner of the mesh is double counted as a horizontal vertex and a *
+     *  vertical one. Subtract one from the sum to account for this.          */
+    const unsigned int sum = canvas->nx_pts + canvas->ny_pts - 1;
 
     /*  The number of line segments is given by the type of mesh being used.  */
     switch (canvas->mesh_type)
     {
         /*  Square wireframe, internal points have two line segments tied to  *
-         *  them, the top and right boundary points have only one.            */
+         *  them, the top and right boundary points have only one. The vertex *
+         *  in the top-right corner is the base of no edges, hence the -1.    */
         case SquareWireframe:
-            canvas->index_size = 2U * (2U * product - sum);
+            canvas->index_size = 2U * (2U * product - sum - 1);
             break;
 
         /*  Triangle wireframe, internal points have three line segments tied *
-         *  to them, the top and right boundary points have only one.         */
+         *  to them, the top and right boundary points have only one. Again,  *
+         *  the top-right vertex has zero edges, hence the -1.                */
         case TriangleWireframe:
-            canvas->index_size = 2U * (3U * product - 2U * sum);
+            canvas->index_size = 2U * (3U * product - 2U * sum - 1);
             break;
 
         /*  Similar to the square wireframe, but we add a line segment from   *
