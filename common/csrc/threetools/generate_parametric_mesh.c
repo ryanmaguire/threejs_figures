@@ -26,9 +26,6 @@
 /*  Canvas and SurfaceParametrization typedefs found here.                    */
 #include <threetools/types.h>
 
-/*  The MAX_WIDTH and MAX_HEIGHT macros are defined here.                     */
-#include <threetools/globals.h>
-
 /*  Function prototype / forward declaration given here.                      */
 #include <threetools/threetools.h>
 
