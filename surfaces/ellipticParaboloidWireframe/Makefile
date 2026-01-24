@@ -56,14 +56,12 @@ WASM_FILE = main.wasm
 
 # Functions exported by emscripten.
 FUNCTIONS = "[               \
-    '_index_buffer_address', \
-    '_mesh_buffer_address',  \
     '_z_rotate_main_canvas', \
     '_set_rotation_angle'    \
 ]"
 
 # Emscripten flags used for exporting the functions into a JavaScript module.
-JS_FLAGS = -s MODULARIZE=1 -s EXPORT_ES6=1 -s EXPORT_NAME=createModule
+JS_FLAGS = -s MODULARIZE=1 -s EXPORT_ES6=1 -s EXPORT_NAME=initModule
 EXPORT_FUNCS = -s EXPORTED_FUNCTIONS=$(FUNCTIONS)
 EXPORT_METHODS = -s EXPORTED_RUNTIME_METHODS='["HEAP8"]'
 EXPORTS = $(EXPORT_FUNCS) $(EXPORT_METHODS)
@@ -74,7 +72,7 @@ EMSCRIPTEN_FLAGS = $(JS_FLAGS) $(EXPORTS)
 all: $(MAIN_FILE) $(WASM_FILE)
 
 $(COMMON_DIR)/$(THREETOOLS):
-	$(MAKE) -C $(COMMON_DIR)
+	$(MAKE) -C $(COMMON_DIR) -j
 
 $(MAIN_FILE) $(WASM_FILE): $(CXXSRC) $(COMMON_DIR)/$(THREETOOLS)
 	@echo "Building main.js and main.wasm ..."
@@ -94,3 +92,4 @@ go:
 clean:
 	rm -rf $(BUILD_DIR) $(RUST_PKG_DIR) $(RUST_TARGET_DIR)
 	rm -f $(MAIN_FILE) $(WASM_FILE)
+	$(MAKE) -C $(COMMON_DIR) clean
