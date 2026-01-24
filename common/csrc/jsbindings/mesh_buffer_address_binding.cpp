@@ -23,11 +23,13 @@
 #include <threetools/threetools.h>
 #include <emscripten/bind.h>
 
+static uintptr_t get_mesh_buffer_address(const uintptr_t ptr)
+{
+    const Canvas * const canvas = reinterpret_cast<const Canvas * const>(ptr);
+    return reinterpret_cast<uintptr_t>(mesh_buffer_address(canvas));
+}
+
 EMSCRIPTEN_BINDINGS(threetools_mesh_buffer_address_function)
 {
-    emscripten::function(
-        "meshBufferAddress",
-        &mesh_buffer_address,
-        emscripten::return_value_policy::take_ownership()
-    );
+    emscripten::function("meshBufferAddress", &get_mesh_buffer_address);
 }

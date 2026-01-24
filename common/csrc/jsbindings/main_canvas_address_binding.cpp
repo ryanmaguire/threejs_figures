@@ -23,11 +23,12 @@
 #include <threetools/threetools.h>
 #include <emscripten/bind.h>
 
+static uintptr_t get_main_canvas_address(void)
+{
+    return reinterpret_cast<uintptr_t>(main_canvas_address());
+}
+
 EMSCRIPTEN_BINDINGS(threetools_main_canvas_address_function)
 {
-    emscripten::function(
-        "mainCanvasAddress",
-        &main_canvas_address,
-        emscripten::return_value_policy::take_ownership()
-    );
+    emscripten::function("mainCanvasAddress", &get_main_canvas_address);
 }
