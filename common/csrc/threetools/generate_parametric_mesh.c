@@ -34,19 +34,19 @@
 
 /******************************************************************************
  *  Function:                                                                 *
- *      generate_mesh_from_parametrization                                    *
+ *      generate_parametric_mesh                                              *
  *  Purpose:                                                                  *
  *      Computes the vertices of a mesh from a parametric equation.           *
  *  Arguments:                                                                *
- *      canvas (Canvas *):                                                    *
+ *      canvas (Canvas * const):                                              *
  *          The canvas for the animation. This contains geometry and buffers. *
- *      f (SurfaceParametrization):                                           *
+ *      f (const SurfaceParametrization):                                     *
  *          The function that defines the surface, z = f(x, y).               *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
 void
-generate_mesh_from_parametrization(Canvas *canvas, SurfaceParametrization f)
+generate_parametric_mesh(Canvas * const canvas, const SurfaceParametrization f)
 {
     /*  Step sizes in the horizontal and vertical axes.                       */
     const float dx = canvas->width / (float)(canvas->nx_pts - 1U);
