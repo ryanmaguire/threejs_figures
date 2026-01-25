@@ -55,16 +55,10 @@ MAIN_FILE = main.js
 WASM_FILE = main.wasm
 
 # Functions exported by emscripten.
-FUNCTIONS = "[               \
-    '_z_rotate_main_canvas', \
-    '_set_rotation_angle'    \
-]"
 
 # Emscripten flags used for exporting the functions into a JavaScript module.
 JS_FLAGS = -s MODULARIZE=1 -s EXPORT_ES6=1 -s EXPORT_NAME=initModule
-EXPORT_FUNCS = -s EXPORTED_FUNCTIONS=$(FUNCTIONS)
-EXPORT_METHODS = -s EXPORTED_RUNTIME_METHODS='["HEAP8"]'
-EXPORTS = $(EXPORT_FUNCS) $(EXPORT_METHODS)
+EXPORTS = -s EXPORTED_RUNTIME_METHODS='["HEAP8"]'
 EMSCRIPTEN_FLAGS = $(JS_FLAGS) $(EXPORTS)
 
 .PHONY: all clean js rust go
