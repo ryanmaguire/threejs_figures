@@ -15,7 +15,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Rotates the main_canvas by the rotation_vector global.                *
+ *      Rotates a canvas by the global rotation_vector global.                *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 24, 2025                                             *
@@ -29,19 +29,20 @@
 
 /******************************************************************************
  *  Function:                                                                 *
- *      z_rotate_main_canvas                                                  *
+ *      z_rotate_canvas                                                       *
  *  Purpose:                                                                  *
- *      Rotates the main_canvas variable by the rotation_vector.              *
+ *      Rotates the canvas by the global rotation_vector.                     *
  *  Arguments:                                                                *
- *      None (void).                                                          *
+ *      canvas (Canvas * const):                                              *
+ *          The canvas for the animation. This contains geometry and buffers. *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-void z_rotate_main_canvas(void)
+void z_rotate_canvas(Canvas * const canvas)
 {
     /*  This function is for use at the JavaScript and Godot level so that we *
      *  may rotate the main canvas without passing any parameters. Pass the   *
      *  global variables to the rotation function.                            */
-    rotate_mesh(&main_canvas, rotation_vector);
+    rotate_mesh(canvas, rotation_vector);
 }
-/*  End of z_rotate_main_canvas.                                              */
+/*  End of z_rotate_canvas.                                                   */

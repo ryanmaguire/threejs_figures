@@ -218,15 +218,16 @@ extern void set_rotation_angle(float angle);
 
 /******************************************************************************
  *  Function:                                                                 *
- *      z_rotate_main_canvas                                                  *
+ *      z_rotate_canvas                                                       *
  *  Purpose:                                                                  *
- *      Rotates the main_canvas variable by the rotation_vector.              *
+ *      Rotates the canvas by the global rotation_vector.                     *
  *  Arguments:                                                                *
- *      None (void).                                                          *
+ *      canvas (Canvas * const):                                              *
+ *          The canvas for the animation. This contains geometry and buffers. *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-extern void z_rotate_main_canvas(void);
+extern void z_rotate_canvas(Canvas * const canvas);
 
 /*  End the extern "C" statement if a C++ compiler is being used.             */
 #ifdef __cplusplus
