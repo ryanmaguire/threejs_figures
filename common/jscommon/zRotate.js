@@ -1,5 +1,5 @@
 import {initGeometry} from './initGeometry.js'
-import {zRotateMainCanvas} from 'wasmtools';
+import {zRotateCanvas, mainCanvasAddress} from 'wasmtools';
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -14,7 +14,8 @@ import {zRotateMainCanvas} from 'wasmtools';
 export function zRotate(renderer, scene, camera, surface, size) {
 
     /*  Rotate the object slightly as time passes.                            */
-    zRotateMainCanvas();
+    const canvasPtr = mainCanvasAddress();
+    zRotateCanvas(canvasPtr);
 
     /*  This problem seems to be unique to Go, C and rust do not have this    *
      *  issue. It is possible for the address of the mesh and index buffers   *

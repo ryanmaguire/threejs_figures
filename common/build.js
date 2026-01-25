@@ -76,5 +76,5 @@ function build(wasmSource, output) {
 
 /*  Create the C, Go, and rust modules.                                       */
 build(cSrc, cOut);
-build(goSrc, goOut);
+// build(goSrc, goOut);
 // build(rustSrc, rustOut);

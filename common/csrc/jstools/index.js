@@ -34,5 +34,5 @@ export const mainCanvasAddress = module.mainCanvasAddress;
 export const meshBufferAddress = module.meshBufferAddress;
 export const memory = module.HEAP8;
 export const setupMesh = module.setupMesh;
-export const setRotationAngle = module._set_rotation_angle;
-export const zRotateMainCanvas = module._z_rotate_main_canvas;
+export const setRotationAngle = module.setRotationAngle;
+export const zRotateCanvas = module.zRotateCanvas;
