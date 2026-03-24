@@ -17,13 +17,13 @@
  *  along with threejs_figures.  If not, see <https://www.gnu.org/licenses/>. *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Computes the size of the index array needed by a canvas.              *
+ *      Computes the size of the index array needed by an object.             *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 23, 2025                                             *
  ******************************************************************************/
 
-/*  Canvas and MeshType typedefs found here.                                  */
+/*  Object3D and MeshType typedefs found here.                                */
 #include <threetools/types.h>
 
 /*  Function prototype / forward declaration given here.                      */
@@ -35,53 +35,53 @@
  *  Purpose:                                                                  *
  *      Computes the number of elements needed for the index buffer.          *
  *  Arguments:                                                                *
- *      canvas (Canvas * const):                                              *
- *          The input canvas, the size of its index buffer is computed.       *
+ *      object (Object3D * const):                                            *
+ *          The input object, the size of its index buffer is computed.       *
  *  Output:                                                                   *
  *      None.                                                                 *
  ******************************************************************************/
-void compute_index_size(Canvas * const canvas)
+void compute_index_size(Object3D * const object)
 {
     /*  The total number of points in the mesh is the product of the width    *
      *  and height. Points along the boundary usually have a different number *
      *  of line segments associated to them than those in the interior. The   *
      *  number of points along the boundary is proportional to the sum of the *
      *  width and height, compute both the sum and the product.               */
-    const unsigned int product = canvas->nx_pts * canvas->ny_pts;
+    const unsigned int product = object->nx_pts * object->ny_pts;
 
     /*  The corner of the mesh is double counted as a horizontal vertex and a *
      *  vertical one. Subtract one from the sum to account for this.          */
-    const unsigned int sum = canvas->nx_pts + canvas->ny_pts - 1;
+    const unsigned int sum = object->nx_pts + object->ny_pts - 1;
 
     /*  The number of line segments is given by the type of mesh being used.  */
-    switch (canvas->mesh_type)
+    switch (object->mesh_type)
     {
         /*  Square wireframe, internal points have two line segments tied to  *
          *  them, the top and right boundary points have only one. The vertex *
          *  in the top-right corner is the base of no edges, hence the -1.    */
         case SquareWireframe:
-            canvas->index_size = 2U * (2U * product - sum - 1);
+            object->index_size = 2U * (2U * product - sum - 1);
             break;
 
         /*  Triangle wireframe, internal points have three line segments tied *
          *  to them, the top and right boundary points have only one. Again,  *
          *  the top-right vertex has zero edges, hence the -1.                */
         case TriangleWireframe:
-            canvas->index_size = 2U * (3U * product - 2U * sum - 1);
+            object->index_size = 2U * (3U * product - 2U * sum - 1);
             break;
 
         /*  Similar to the square wireframe, but we add a line segment from   *
          *  the right edge to the left edge.                                  */
         case CylindricalSquareWireframe:
         case MobiusSquareWireframe:
-            canvas->index_size = 2U * (2U * product - canvas->nx_pts);
+            object->index_size = 2U * (2U * product - object->nx_pts);
             break;
 
         /*  Similar to the triangle wireframe, but we add edges and diagonals *
          *  from the right edge to the left one.                              */
         case CylindricalTriangleWireframe:
         case MobiusTriangleWireframe:
-            canvas->index_size = 2U * (3U * product - 2 * canvas->nx_pts);
+            object->index_size = 2U * (3U * product - 2 * object->nx_pts);
             break;
 
         /*  Similar to the square wireframe, but the bottom edge is connected *
@@ -89,7 +89,7 @@ void compute_index_size(Canvas * const canvas)
         case ToroidalSquareWireframe:
         case KleinSquareWireframe:
         case ProjectiveSquareWireframe:
-            canvas->index_size = 4U * product;
+            object->index_size = 4U * product;
             break;
 
         /*  Similar to triangle wireframes, but the bottom edge is connected  *
@@ -97,12 +97,12 @@ void compute_index_size(Canvas * const canvas)
         case ToroidalTriangleWireframe:
         case KleinTriangleWireframe:
         case ProjectiveTriangleWireframe:
-            canvas->index_size = 6U * product;
+            object->index_size = 6U * product;
             break;
 
         /*  Illegal input, set the size to zero.                              */
         default:
-            canvas->index_size = 0;
+            object->index_size = 0;
     }
 }
 /*  End of compute_index_size.                                                */
