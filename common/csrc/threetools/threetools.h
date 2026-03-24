@@ -63,7 +63,7 @@ extern void compute_index_size(Object * const object);
  *      None (void).                                                          *
  ******************************************************************************/
 extern void
-generate_parametric_mesh(Object * const object, const SurfaceParametrization f)
+generate_parametric_mesh(Object * const object, const SurfaceParametrization f);
 
 /******************************************************************************
  *  Function:                                                                 *

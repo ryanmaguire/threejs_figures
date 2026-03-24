@@ -35,8 +35,8 @@
  *  Purpose:                                                                  *
  *      Computes the vertices of a mesh from a parametric equation.           *
  *  Arguments:                                                                *
- *      canvas (Object * const):                                              *
- *          The object for the animation. This contains geometry and buffers. *
+ *      object (Object * const):                                              *
+ *          The geometric object. This contains index and mesh buffers.       *
  *      f (const SurfaceParametrization):                                     *
  *          The function that defines the surface, z = f(x, y).               *
  *  Output:                                                                   *
@@ -46,8 +46,8 @@ void
 generate_parametric_mesh(Object * const object, const SurfaceParametrization f)
 {
     /*  Step sizes in the horizontal and vertical axes.                       */
-    const float dx = canvas->width / (float)(canvas->nx_pts - 1U);
-    const float dy = canvas->height / (float)(canvas->ny_pts - 1U);
+    const float dx = object->width / (float)(object->nx_pts - 1U);
+    const float dy = object->height / (float)(object->ny_pts - 1U);
 
     /*  Variables for indexing the horizontal and vertical axes.              */
     unsigned int x_index, y_index;
@@ -58,24 +58,24 @@ generate_parametric_mesh(Object * const object, const SurfaceParametrization f)
     /*  Loop over the vertical axis. The surface is of the form z = f(x, y).  *
      *  Note, since the y index is the outer for-loop, the array is indexed   *
      *  in row-major fashion. That is, index = y * width + x.                 */
-    for (y_index = 0; y_index < canvas->ny_pts; ++y_index)
+    for (y_index = 0; y_index < object->ny_pts; ++y_index)
     {
         /*  Convert pixel index to y coordinate.                              */
-        const float y = canvas->vertical_start + (float)(y_index) * dy;
+        const float y = object->vertical_start + (float)(y_index) * dy;
 
         /*  Loop through the horizontal component of the object.              */
-        for (x_index = 0; x_index < canvas->nx_pts; ++x_index)
+        for (x_index = 0; x_index < object->nx_pts; ++x_index)
         {
             /*  Convert pixel index to x coordinate in the plane.             */
-            const float x = canvas->horizontal_start + (float)(x_index) * dx;
+            const float x = object->horizontal_start + (float)(x_index) * dx;
 
             /*  Get the z component using the provided parametrization.       */
             const float z = f(x, y);
 
             /*  Add this point to our vertex array.                           */
-            canvas->mesh[index] = x;
-            canvas->mesh[index + 1U] = y;
-            canvas->mesh[index + 2U] = z;
+            object->mesh[index] = x;
+            object->mesh[index + 1U] = y;
+            object->mesh[index + 2U] = z;
 
             /*  Move on to the next point in the mesh. A point needs 3 floats.*/
             index += 3;
