@@ -44,7 +44,7 @@ void compute_index_size(Canvas * const canvas)
 {
     /*  The total number of points in the mesh is the product of the width    *
      *  and height. Points along the boundary usually have a different number *
-     *  of line segments associated to them then those in the interior. The   *
+     *  of line segments associated to them than those in the interior. The   *
      *  number of points along the boundary is proportional to the sum of the *
      *  width and height, compute both the sum and the product.               */
     const unsigned int product = canvas->nx_pts * canvas->ny_pts;
@@ -86,7 +86,7 @@ void compute_index_size(Canvas * const canvas)
 
         /*  Similar to the square wireframe, but the bottom edge is connected *
          *  to the top edge, and the left edge to the right edge.             */
-        case TorodialSquareWireframe:
+        case ToroidalSquareWireframe:
         case KleinSquareWireframe:
         case ProjectiveSquareWireframe:
             canvas->index_size = 4U * product;
@@ -94,7 +94,7 @@ void compute_index_size(Canvas * const canvas)
 
         /*  Similar to triangle wireframes, but the bottom edge is connected  *
          *  to the top edge, and the left edge to the right edge.             */
-        case TorodialTriangleWireframe:
+        case ToroidalTriangleWireframe:
         case KleinTriangleWireframe:
         case ProjectiveTriangleWireframe:
             canvas->index_size = 6U * product;
