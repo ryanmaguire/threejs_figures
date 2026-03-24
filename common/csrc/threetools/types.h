@@ -27,6 +27,9 @@
 #ifndef THREETOOLS_TYPES_H
 #define THREETOOLS_TYPES_H
 
+/*  size_t typedef provided here.                                             */
+#include <stddef.h>
+
 /*  Parametrization for surfaces of the form z = f(x, y).                     */
 typedef float (*SurfaceParametrization)(float x, float y);
 
