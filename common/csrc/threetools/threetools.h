@@ -55,15 +55,15 @@ extern void compute_index_size(Object * const object);
  *  Purpose:                                                                  *
  *      Computes the vertices of a mesh from a parametric equation.           *
  *  Arguments:                                                                *
- *      canvas (Canvas * const):                                              *
- *          The canvas for the animation. This contains geometry and buffers. *
+ *      object (Object * const):                                              *
+ *          The geometric object. This contains index and mesh buffers.       *
  *      f (const SurfaceParametrization):                                     *
  *          The function that defines the surface, z = f(x, y).               *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
 extern void
-generate_parametric_mesh(Canvas * const canvas, const SurfaceParametrization f);
+generate_parametric_mesh(Object * const object, const SurfaceParametrization f)
 
 /******************************************************************************
  *  Function:                                                                 *

@@ -23,7 +23,7 @@
  *  Date:       October 30, 2025                                              *
  ******************************************************************************/
 
-/*  Canvas and SurfaceParametrization typedefs found here.                    */
+/*  Object and SurfaceParametrization typedefs found here.                    */
 #include <threetools/types.h>
 
 /*  Function prototype / forward declaration given here.                      */
@@ -35,15 +35,15 @@
  *  Purpose:                                                                  *
  *      Computes the vertices of a mesh from a parametric equation.           *
  *  Arguments:                                                                *
- *      canvas (Canvas * const):                                              *
- *          The canvas for the animation. This contains geometry and buffers. *
+ *      canvas (Object * const):                                              *
+ *          The object for the animation. This contains geometry and buffers. *
  *      f (const SurfaceParametrization):                                     *
  *          The function that defines the surface, z = f(x, y).               *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
 void
-generate_parametric_mesh(Canvas * const canvas, const SurfaceParametrization f)
+generate_parametric_mesh(Object * const object, const SurfaceParametrization f)
 {
     /*  Step sizes in the horizontal and vertical axes.                       */
     const float dx = canvas->width / (float)(canvas->nx_pts - 1U);
