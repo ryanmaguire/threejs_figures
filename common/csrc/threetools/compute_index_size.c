@@ -23,7 +23,7 @@
  *  Date:       November 23, 2025                                             *
  ******************************************************************************/
 
-/*  Object3D and MeshType typedefs found here.                                */
+/*  Object and MeshType typedefs found here.                                  */
 #include <threetools/types.h>
 
 /*  Function prototype / forward declaration given here.                      */
@@ -35,12 +35,12 @@
  *  Purpose:                                                                  *
  *      Computes the number of elements needed for the index buffer.          *
  *  Arguments:                                                                *
- *      object (Object3D * const):                                            *
+ *      object (Object * const):                                              *
  *          The input object, the size of its index buffer is computed.       *
  *  Output:                                                                   *
  *      None.                                                                 *
  ******************************************************************************/
-void compute_index_size(Object3D * const object)
+void compute_index_size(Object * const object)
 {
     /*  The total number of points in the mesh is the product of the width    *
      *  and height. Points along the boundary usually have a different number *
