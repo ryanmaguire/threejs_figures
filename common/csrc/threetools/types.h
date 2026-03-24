@@ -51,8 +51,8 @@ typedef enum MeshType {
     ProjectiveTriangleWireframe
 } MeshType;
 
-/*  Struct with the geometry and buffers for the animation.                   */
-typedef struct Canvas {
+/*  Basic strct for drawing 3D objects.                                       */
+typedef struct Object {
     float *mesh;
     unsigned int *indices;
     unsigned int number_of_points, mesh_size, index_size;
@@ -60,6 +60,12 @@ typedef struct Canvas {
     float width, height;
     float horizontal_start, vertical_start;
     MeshType mesh_type;
+} Object;
+
+/*  Struct with the geometry and buffers for the animation.                   */
+typedef struct Canvas {
+    Object *objects;
+    size_t number_of_objects;
 } Canvas;
 
 /*  Stripped down version of a Canvas. Used at the JavaScript / Godot level.  */
