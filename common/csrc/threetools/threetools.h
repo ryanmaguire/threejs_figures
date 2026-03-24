@@ -40,14 +40,14 @@ extern "C" {
  *  Function:                                                                 *
  *      compute_index_size                                                    *
  *  Purpose:                                                                  *
- *      Computes how many indices are needed for a canvas.                    *
+ *      Computes how many indices are needed for an object.                   *
  *  Arguments:                                                                *
- *      canvas (Canvas * const):                                              *
- *          The input canvas. Its index_size member will be updated.          *
+ *      object (Object * const):                                              *
+ *          The input object. Its index_size member will be updated.          *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-extern void compute_index_size(Canvas * const canvas);
+extern void compute_index_size(Object * const object);
 
 /******************************************************************************
  *  Function:                                                                 *
