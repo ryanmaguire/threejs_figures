@@ -26,8 +26,8 @@
 /*  Object and MeshType typedefs found here.                                  */
 #include <threetools/types.h>
 
-/*  Function prototype / forward declaration given here.                      */
-#include <threetools/threetools.h>
+/*  Function prototype / forward declaration.                                 */
+extern void compute_index_size(Object * const object);
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -102,7 +102,9 @@ void compute_index_size(Object * const object)
 
         /*  Vector fields use tetrahedrons for the arrow heads. These have 4  *
          *  vertices and 6 lines. Two indices per line, the index size is 12. */
-        object->index_size = 12U;
+        case Tetrahedron:
+            object->index_size = 12U;
+            break;
 
         /*  Illegal input, set the size to zero.                              */
         default:
