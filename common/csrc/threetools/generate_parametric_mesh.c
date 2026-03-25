@@ -26,8 +26,10 @@
 /*  Object and SurfaceParametrization typedefs found here.                    */
 #include <threetools/types.h>
 
-/*  Function prototype / forward declaration given here.                      */
-#include <threetools/threetools.h>
+/*  Function prototype / forward declaration.                                 */
+extern void
+generate_parametric_mesh(Object * const object,
+                         const SurfaceParametrization * const surface);
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -37,7 +39,7 @@
  *  Arguments:                                                                *
  *      object (Object * const):                                              *
  *          The geometric object. This contains index and mesh buffers.       *
- *      f (const SurfaceParametrization):                                     *
+ *      surface (const SurfaceParametrization):                               *
  *          The function that defines the surface, z = f(x, y).               *
  *  Output:                                                                   *
  *      None (void).                                                          *
