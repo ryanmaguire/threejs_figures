@@ -23,28 +23,28 @@
  *  Date:       October 30, 2025                                              *
  ******************************************************************************/
 
-/*  The index_buffer global is declared here.                                 */
-#include <threetools/globals.h>
+/*  Object typedef found here.                                                */
+#include <threetools/types.h>
 
-/*  Function prototype / forward declaration found here.                      */
-#include <threetools/threetools.h>
+/*  Function prototype / forward declaration.                                 */
+extern unsigned int *index_buffer_address(const Object * const object);
 
 /******************************************************************************
  *  Function:                                                                 *
  *      index_buffer_address                                                  *
  *  Purpose:                                                                  *
- *      Returns the address of the global index buffer.                       *
+ *      Returns the address of the index buffer.                              *
  *  Arguments:                                                                *
- *      canvas (const Canvas * const).                                        *
- *          The canvas containing the index buffer that we want.              *
+ *      object (const Object * const).                                        *
+ *          The object containing the index buffer that we want.              *
  *  Output:                                                                   *
  *      address (unsigned int *):                                             *
  *          The address of the global index buffer as a pointer.              *
  ******************************************************************************/
-unsigned int *index_buffer_address(const Canvas * const canvas)
+unsigned int *index_buffer_address(const Object * const object)
 {
     /*  We can simply return the index buffer. At the JavaScript level this   *
      *  is used to get the address of the index array for reading and writing.*/
-    return canvas->indices;
+    return object->indices;
 }
 /*  End of index_buffer_address.                                              */
