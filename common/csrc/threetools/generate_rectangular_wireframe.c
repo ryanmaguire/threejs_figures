@@ -23,28 +23,26 @@
  *  Date:       October 30, 2025                                              *
  ******************************************************************************/
 
-/*  Canvas typedef found here.                                                */
+/*  Object typedef found here.                                                */
 #include <threetools/types.h>
 
-/*  The MAX_WIDTH and MAX_HEIGHT macros are defined here.                     */
-#include <threetools/globals.h>
-
 /*  Function prototype / forward declaration given here.                      */
-#include <threetools/threetools.h>
+extern void generate_rectangular_wireframe(Object * const object);
 
 /******************************************************************************
  *  Function:                                                                 *
  *      generate_rectangular_wireframe                                        *
  *  Purpose:                                                                  *
- *      Generates the line segments for a parametrized surface using          *
- *      a rectangular grid for a surface of the form z = f(x, y).             *
+ *      Given an object with a mesh containing nx points in the x axis, and   *
+ *      ny points in the y axis, creates a rectangular wireframe by adding    *
+ *      line segments between a point and its cardinal neighbors.             *
  *  Arguments:                                                                *
- *      canvas (Canvas * const):                                              *
- *          The canvas for the animation. This contains geometry and buffers. *
+ *      object (Object * const):                                              *
+ *          An object in the animation. This contains geometry and buffers.   *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-void generate_rectangular_wireframe(Canvas * const canvas)
+void generate_rectangular_wireframe(Object * const object)
 {
     /*  Variables for indexing the horizontal and vertical axes.              */
     unsigned int x_index, y_index;
@@ -57,14 +55,14 @@ void generate_rectangular_wireframe(Canvas * const canvas)
      *  want to connect. Each point will be connected to its four surrounding *
      *  neighbors, except for the points on the boundary, which have fewer    *
      *  neighbors. We handle these boundary points separately.                */
-    for (y_index = 0; y_index < canvas->ny_pts; ++y_index)
+    for (y_index = 0; y_index < object->ny_pts; ++y_index)
     {
         /*  The indices are row-major, meaning index = y * width + x. The     *
          *  shift factor only depends on the y-component, compute this.       */
-        const unsigned int shift = y_index * canvas->nx_pts;
+        const unsigned int shift = y_index * object->nx_pts;
 
         /*  The vertical component is now fixed, loop through the horizontal. */
-        for (x_index = 0; x_index < canvas->nx_pts; ++x_index)
+        for (x_index = 0; x_index < object->nx_pts; ++x_index)
         {
             /*  The current index is the shift plus horizontal index. That    *
              *  is, the index for (x, y) is y * width + x.                    */
@@ -74,28 +72,28 @@ void generate_rectangular_wireframe(Canvas * const canvas)
             const unsigned int  index01 = index00 + 1U;
 
             /*  The point directly above the current point, in the vertical.  */
-            const unsigned int  index10 = index00 + canvas->nx_pts;
+            const unsigned int  index10 = index00 + object->nx_pts;
 
             /*  If we are not at the top edge or the right edge of the        *
              *  rectangle, we may add an "L" shape to our mesh connecting the *
              *  bottom left point to the bottom right point, and the bottom   *
              *  left point to the upper left point. At the top of the         *
              *  rectangle the upper left point goes beyond the bounds of the  *
-             *  parametrization, so we do not need to draw it. Check for this.*/
-            if (y_index != canvas->ny_pts - 1U)
+             *  mesh, so we do not need to draw it. Check for this.           */
+            if (y_index != object->ny_pts - 1U)
             {
-                canvas->indices[index] = index00;
-                canvas->indices[index + 1U] = index10;
+                object->indices[index] = index00;
+                object->indices[index + 1U] = index10;
                 index += 2U;
             }
 
             /*  Similarly, at the right edge we have that the bottom right    *
-             *  point lies outside of the parametrization and do not need to  *
-             *  add it to our mesh. Check for this.                           */
-            if (x_index != canvas->nx_pts - 1U)
+             *  point lies outside of the mesh and do not need to add it to   *
+             *  our index array. Check for this.                              */
+            if (x_index != object->nx_pts - 1U)
             {
-                canvas->indices[index] = index00;
-                canvas->indices[index + 1U] = index01;
+                object->indices[index] = index00;
+                object->indices[index + 1U] = index01;
                 index += 2U;
             }
         }
