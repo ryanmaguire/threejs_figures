@@ -31,7 +31,11 @@
 #include <stddef.h>
 
 /*  Parametrization for surfaces of the form z = f(x, y).                     */
-typedef float (*SurfaceParametrization)(float x, float y);
+typedef struct SurfaceParametrization {
+    float (*parametrization)(float x, float y);
+    float width, height;
+    float horizontal_start, vertical_start;
+} SurfaceParametrization;
 
 /*  Vector struct used for rotating points about the z axis.                  */
 typedef struct UnitVector {
@@ -51,7 +55,8 @@ typedef enum MeshType {
     KleinSquareWireframe,
     KleinTriangleWireframe,
     ProjectiveSquareWireframe,
-    ProjectiveTriangleWireframe
+    ProjectiveTriangleWireframe,
+    Tetrahedron
 } MeshType;
 
 /*  Basic strct for drawing 3D objects.                                       */
@@ -60,8 +65,6 @@ typedef struct Object {
     unsigned int *indices;
     unsigned int number_of_points, mesh_size, index_size;
     unsigned int nx_pts, ny_pts;
-    float width, height;
-    float horizontal_start, vertical_start;
     MeshType mesh_type;
 } Object;
 
