@@ -43,11 +43,12 @@
  *      None (void).                                                          *
  ******************************************************************************/
 void
-generate_parametric_mesh(Object * const object, const SurfaceParametrization f)
+generate_parametric_mesh(Object * const object,
+                         const SurfaceParametrization * const surface)
 {
     /*  Step sizes in the horizontal and vertical axes.                       */
-    const float dx = object->width / (float)(object->nx_pts - 1U);
-    const float dy = object->height / (float)(object->ny_pts - 1U);
+    const float dx = surface->width / (float)(object->nx_pts - 1U);
+    const float dy = surface->height / (float)(object->ny_pts - 1U);
 
     /*  Variables for indexing the horizontal and vertical axes.              */
     unsigned int x_index, y_index;
@@ -61,16 +62,16 @@ generate_parametric_mesh(Object * const object, const SurfaceParametrization f)
     for (y_index = 0; y_index < object->ny_pts; ++y_index)
     {
         /*  Convert pixel index to y coordinate.                              */
-        const float y = object->vertical_start + (float)(y_index) * dy;
+        const float y = surface->vertical_start + (float)(y_index) * dy;
 
         /*  Loop through the horizontal component of the object.              */
         for (x_index = 0; x_index < object->nx_pts; ++x_index)
         {
             /*  Convert pixel index to x coordinate in the plane.             */
-            const float x = object->horizontal_start + (float)(x_index) * dx;
+            const float x = surface->horizontal_start + (float)(x_index) * dx;
 
             /*  Get the z component using the provided parametrization.       */
-            const float z = f(x, y);
+            const float z = surface->parametrization(x, y);
 
             /*  Add this point to our vertex array.                           */
             object->mesh[index] = x;
