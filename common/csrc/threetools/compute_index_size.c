@@ -100,6 +100,10 @@ void compute_index_size(Object * const object)
             object->index_size = 6U * product;
             break;
 
+        /*  Vector fields use tetrahedrons for the arrow heads. These have 4  *
+         *  vertices and 6 lines. Two indices per line, the index size is 12. */
+        object->index_size = 12U;
+
         /*  Illegal input, set the size to zero.                              */
         default:
             object->index_size = 0;
