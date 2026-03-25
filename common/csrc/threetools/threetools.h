@@ -57,13 +57,14 @@ extern void compute_index_size(Object * const object);
  *  Arguments:                                                                *
  *      object (Object * const):                                              *
  *          The geometric object. This contains index and mesh buffers.       *
- *      f (const SurfaceParametrization):                                     *
+ *      surface (const SurfaceParametrization * const):                       *
  *          The function that defines the surface, z = f(x, y).               *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
 extern void
-generate_parametric_mesh(Object * const object, const SurfaceParametrization f);
+generate_parametric_mesh(Object * const object,
+                         const SurfaceParametrization * const surface);
 
 /******************************************************************************
  *  Function:                                                                 *
