@@ -13,7 +13,7 @@ import {setupMesh} from 'wasmtools';
  *  Output:                                                                   *
  *      None.                                                                 *
  ******************************************************************************/
-export function squareWireframeGeometry(parameters) {
+export function squareWireframeGeometry(ind, parameters) {
 
     /*  three.js has parametric function tools, but this renders the object   *
      *  with diagonals across the squares, creating a mesh of triangles. To   *
@@ -26,7 +26,7 @@ export function squareWireframeGeometry(parameters) {
 
     /*  Setup the geometry and add a mesh of vertices and line segments.      */
     setupMesh(parameters)
-    initGeometry(geometry, meshSize, indexSize);
+    initGeometry(geometry, ind, meshSize, indexSize);
 
     return geometry;
 }

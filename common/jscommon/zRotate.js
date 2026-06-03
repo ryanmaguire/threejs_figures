@@ -11,7 +11,7 @@ import {zRotateCanvas, mainCanvasAddress} from 'wasmtools';
  *  Output:                                                                   *
  *      None.                                                                 *
  ******************************************************************************/
-export function zRotate(renderer, scene, camera, surface, size) {
+export function zRotate(renderer, scene, camera, surface, ind, size) {
 
     /*  Rotate the object slightly as time passes.                            */
     const canvasPtr = mainCanvasAddress();
@@ -29,7 +29,7 @@ export function zRotate(renderer, scene, camera, surface, size) {
         const indexSize = surface.geometry.index.count;
 
         /*  Reset the geometry attributes to use the new addresses.           */
-        initGeometry(surface.geometry, meshSize, indexSize);
+        initGeometry(surface.geometry, ind, meshSize, indexSize);
     }
 
     /*  Re-render the newly rotated scene.                                    */
