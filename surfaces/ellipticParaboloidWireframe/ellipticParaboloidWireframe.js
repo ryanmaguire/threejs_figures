@@ -56,8 +56,9 @@ function init() {
 
     /*  Initialize the globals for the animation. This includes the renderer, *
      *  camera, objects, and scene.                                           */
+    const objIndex = 0;
     const lightBlue = {color: 0x00AAFF};
-    const geometry = threetools.squareWireframeGeometry(parameters);
+    const geometry = threetools.squareWireframeGeometry(objIndex, parameters);
     const camera = threetools.sceneCamera(window, cameraPosition);
     const renderer = threetools.sceneRenderer(window);
     const surface = threetools.basicWireframe(geometry, lightBlue);
@@ -66,7 +67,7 @@ function init() {
 
     function animation() {
         threetools.zRotate(
-            renderer, scene, camera, surface, numberOfPoints
+            renderer, scene, camera, surface, objIndex, numberOfPoints
         );
 
         stats.update();
