@@ -23,7 +23,7 @@
  *  Date:       November 24, 2025                                             *
  ******************************************************************************/
 
-/*  SurfaceParametrization and CanvasParameters typedefs provided here.       */
+/*  SurfaceParametrization and SurfaceParameters typedefs provided here.      */
 #include <threetools/types.h>
 
 /*  The main_canvas global is declared here.                                  */
@@ -38,19 +38,20 @@
  *  Purpose:                                                                  *
  *      Creates a rectangular wireframe stored in the main_canvas.            *
  *  Arguments:                                                                *
- *      parameters (const CanvasParameters * const):                          *
- *          The parameters for the main canvas.                               *
+ *      parameters (const SurfaceParameters * const):                         *
+ *          The parameters for the object.                                    *
  *      surface (const SurfaceParametrization):                               *
  *          The parametrization, a function of the form z = f(x, y).          *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
 void
-make_rectangular_wireframe(const CanvasParameters * const parameters,
-                           const SurfaceParametrization surface)
+make_rectangular_wireframe(Object * const object,
+                           const SurfaceParameters * const parameters,
+                           const SurfaceParametrization * const surface)
 {
-    init_main_canvas(parameters);
-    generate_parametric_mesh(&main_canvas, surface);
-    generate_rectangular_wireframe(&main_canvas);
+    init_surface_object(object, parameters);
+    generate_parametric_mesh(object, surface);
+    generate_rectangular_wireframe(object);
 }
 /*  End of make_rectangular_wireframe.                                        */

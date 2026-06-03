@@ -27,6 +27,9 @@
 /*  Function prototype / forward declaration given here.                      */
 #include <threetools/threetools.h>
 
+/*  size_t typedef found here.                                                */
+#include <stddef.h>
+
 /******************************************************************************
  *  Function:                                                                 *
  *      z_rotate_canvas                                                       *
@@ -38,11 +41,14 @@
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-void z_rotate_canvas(Canvas * const canvas)
+void z_rotate_canvas(Canvas * const canvas, UnitVector point)
 {
+    size_t n;
+
     /*  This function is for use at the JavaScript and Godot level so that we *
      *  may rotate the main canvas without passing any parameters. Pass the   *
      *  global variables to the rotation function.                            */
-    rotate_mesh(canvas, rotation_vector);
+    for (n = 0; n < canvas->number_of_objects; ++n)
+        rotate_mesh(&canvas->objects[n], point);
 }
 /*  End of z_rotate_canvas.                                                   */

@@ -15,49 +15,46 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Provides an emscripten binding for the Canvas struct.                 *
+ *      Provides an emscripten binding for the Object struct.                 *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       January 24, 2026                                              *
  ******************************************************************************/
 #include <threetools/threetools.h>
 #include <emscripten/bind.h>
+#include <cstddef>
 
 /*  Getter and setters are needed since we can not bind a raw pointer.        */
-static uintptr_t mesh_getter(const Canvas& canvas)
+static std::uintptr_t mesh_getter(const Object &object)
 {
-    return reinterpret_cast<uintptr_t>(canvas.mesh);
+    return reinterpret_cast<std::uintptr_t>(object.mesh);
 }
 
-static void mesh_setter(Canvas& canvas, uintptr_t ptr)
+static void mesh_setter(Object &object, std::uintptr_t ptr)
 {
-    canvas.mesh = reinterpret_cast<float *>(ptr);
+    object.mesh = reinterpret_cast<float *>(ptr);
 }
 
 /*  The index buffer is also a raw pointer, provided a getter and a setter.   */
-static uintptr_t index_getter(const Canvas& canvas)
+static std::uintptr_t index_getter(const Object &object)
 {
-    return reinterpret_cast<uintptr_t>(canvas.indices);
+    return reinterpret_cast<std::uintptr_t>(object.indices);
 }
 
-static void index_setter(Canvas& canvas, uintptr_t ptr)
+static void index_setter(Object &object, std::uintptr_t ptr)
 {
-    canvas.indices = reinterpret_cast<unsigned int *>(ptr);
+    object.indices = reinterpret_cast<unsigned int *>(ptr);
 }
 
-EMSCRIPTEN_BINDINGS(threetools_canvas_struct)
+EMSCRIPTEN_BINDINGS(threetools_object_struct)
 {
-    emscripten::value_object<Canvas>("Canvas")
+    emscripten::value_object<Object>("Object")
         .field("mesh", &mesh_getter, &mesh_setter)
         .field("indices", &index_getter, &index_setter)
-        .field("number_of_points", &Canvas::number_of_points)
-        .field("mesh_size", &Canvas::mesh_size)
-        .field("index_size", &Canvas::index_size)
-        .field("nx_pts", &Canvas::nx_pts)
-        .field("ny_pts", &Canvas::ny_pts)
-        .field("width", &Canvas::width)
-        .field("height", &Canvas::height)
-        .field("horizontal_start", &Canvas::horizontal_start)
-        .field("vertical_start", &Canvas::vertical_start)
-        .field("mesh_type", &Canvas::mesh_type);
+        .field("number_of_points", &Object::number_of_points)
+        .field("mesh_size", &Object::mesh_size)
+        .field("index_size", &Object::index_size)
+        .field("nx_pts", &Object::nx_pts)
+        .field("ny_pts", &Object::ny_pts)
+        .field("mesh_type", &Object::mesh_type);
 }

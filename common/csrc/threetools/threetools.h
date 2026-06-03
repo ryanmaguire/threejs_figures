@@ -25,16 +25,38 @@
 #ifndef THREETOOLS_H
 #define THREETOOLS_H
 
-/*  Typedefs for the animations, provides Canvas, UnitVector, and MeshType.   */
+/*  Typedefs for the animations, provides Canvas, Object, and MeshType.       */
 #include <threetools/types.h>
 
 /*  Globals variables for the animations, including the canvas and buffers.   */
 #include <threetools/globals.h>
 
+/*  size_t typedef provided here.                                             */
+#include <stddef.h>
+
 /*  Avoid mangling with C++ compilers, check if a C++ compiler is being used. */
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/******************************************************************************
+ *  Function:                                                                 *
+ *      canvas_object_address                                                 *
+ *  Purpose:                                                                  *
+ *      Returns the address of an object in a canvas.                         *
+ *  Arguments:                                                                *
+ *      canvas (const Canvas * const):                                        *
+ *          The canvas containing the object.                                 *
+ *      ind (const size_t):                                                   *
+ *          The index, starting at zero, for the object in the canvas.        *
+ *  Output:                                                                   *
+ *      address (const Object *):                                             *
+ *          A pointer to the object.                                          *
+ *  Notes:                                                                    *
+ *      This function is only used at the JavaScript level.                   *
+ ******************************************************************************/
+extern const Object *
+canvas_object_address(const Canvas * const canvas, const size_t ind);
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -73,12 +95,12 @@ generate_parametric_mesh(Object * const object,
  *      Generates the line segments for a parametrized surface using          *
  *      a rectangular grid for a surface of the form z = f(x, y).             *
  *  Arguments:                                                                *
- *      canvas (Canvas * const):                                              *
- *          The canvas for the animation. This contains geometry and buffers. *
+ *      object (Object * const):                                              *
+ *          The object for the animation. This contains geometry and buffers. *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-extern void generate_rectangular_wireframe(Canvas * const canvas);
+extern void generate_rectangular_wireframe(Object * const object);
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -99,48 +121,53 @@ extern unsigned int *index_buffer_address(const Object * const object);
 
 /******************************************************************************
  *  Function:                                                                 *
- *      init_main_canvas                                                      *
+ *      init_surface_object                                                   *
  *  Purpose:                                                                  *
- *      Initializes the main canvas for an animation.                         *
+ *      Initializes an object as a surface.                                   *
  *  Arguments:                                                                *
- *      parameters (const CanvasParameters * const):                          *
+ *      parameters (const SurfaceParameters * const):                         *
  *          The parameters for the canvas, passed from JavaScript or Godot.   *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-extern void init_main_canvas(const CanvasParameters * const parameters);
+extern void
+init_surface_object(Object * const object,
+                    const SurfaceParameters * const parameters);
 
 /******************************************************************************
  *  Function:                                                                 *
  *      main_canvas_address                                                   *
  *  Purpose:                                                                  *
- *      Returns a pointer to the main canvas.                                 *
+ *      Returns the address of the global main canvas.                        *
  *  Arguments:                                                                *
  *      None (void).                                                          *
  *  Output:                                                                   *
- *      address (Canvas *):                                                   *
+ *      address (const Canvas *):                                             *
  *          A pointer to the main canvas.                                     *
  *  Notes:                                                                    *
  *      This function is only used at the JavaScript level.                   *
  ******************************************************************************/
-extern Canvas *main_canvas_address(void);
+extern const Canvas *main_canvas_address(void);
 
 /******************************************************************************
  *  Function:                                                                 *
  *      make_rectangular_wireframe                                            *
  *  Purpose:                                                                  *
- *      Creates a rectangular wireframe stored in the main_canvas.            *
+ *      Creates a rectangular wireframe stored in the given object.           *
  *  Arguments:                                                                *
- *      parameters (const CanvasParameters * const):                          *
- *          The parameters for the main canvas.                               *
- *      surface (const SurfaceParametrization):                               *
+ *      object (Object * const):                                              *
+ *          The object the surface is stored in.                              *
+ *      parameters (const SurfaceParameters * const):                         *
+ *          The parameters for the object.                                    *
+ *      surface (const SurfaceParametrization * const):                       *
  *          The parametrization, a function of the form z = f(x, y).          *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
 extern void
-make_rectangular_wireframe(const CanvasParameters * const parameters,
-                           const SurfaceParametrization surface);
+make_rectangular_wireframe(Object * const object,
+                           const SurfaceParameters * const parameters,
+                           const SurfaceParametrization * const surface);
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -148,8 +175,8 @@ make_rectangular_wireframe(const CanvasParameters * const parameters,
  *  Purpose:                                                                  *
  *      Returns a pointer to the mesh array.                                  *
  *  Arguments:                                                                *
- *      canvas (const Canvas * const).                                        *
- *          The canvas containing the mesh buffer that we want.               *
+ *      object (const Object * const).                                        *
+ *          The object containing the mesh buffer that we want.               *
  *  Output:                                                                   *
  *      mesh (float *):                                                       *
  *          A pointer to the mesh array.                                      *
@@ -157,7 +184,7 @@ make_rectangular_wireframe(const CanvasParameters * const parameters,
  *      This function is called at the JavaScript level to get the address    *
  *      for the mesh array so it may read and write to it.                    *
  ******************************************************************************/
-extern float *mesh_buffer_address(const Canvas * const canvas);
+extern float *mesh_buffer_address(const Object * const object);
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -165,14 +192,12 @@ extern float *mesh_buffer_address(const Canvas * const canvas);
  *  Purpose:                                                                  *
  *      Resets the size of the index buffer.                                  *
  *  Arguments:                                                                *
- *      canvas (Canvas *):                                                    *
- *          The canvas that is being resized.                                 *
- *      buffer (unsigned int *):                                              *
- *          The buffer where the canvas will store its data.                  *
+ *      object (Object *):                                                    *
+ *          The object that is being resized.                                 *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-extern void reset_index_buffer(Canvas *canvas, unsigned int *buffer);
+extern void reset_index_buffer(Object * const canvas);
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -180,14 +205,12 @@ extern void reset_index_buffer(Canvas *canvas, unsigned int *buffer);
  *  Purpose:                                                                  *
  *      Resets the size of the mesh buffer.                                   *
  *  Arguments:                                                                *
- *      canvas (Canvas *):                                                    *
- *          The canvas that is being resized.                                 *
- *      buffer (float *):                                                     *
- *          The buffer where the canvas will store its data.                  *
+ *      object (Object * const):                                              *
+ *          The object that is being reset.                                   *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-extern void reset_mesh_buffer(Canvas *canvas, float *buffer);
+extern void reset_mesh_buffer(Object * const canvas);
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -195,14 +218,14 @@ extern void reset_mesh_buffer(Canvas *canvas, float *buffer);
  *  Purpose:                                                                  *
  *      Rotates the mesh in a canvas by the provided unit vector.             *
  *  Arguments:                                                                *
- *      canvas (Canvas *):                                                    *
+ *      canvas (Object *):                                                    *
  *          The canvas with the mesh that is being rotated.                   *
  *      point (UnitVector):                                                   *
  *          A point on the unit circle, its polar angle is used for rotating. *
  *  Output:                                                                   *
  *      None.                                                                 *
  ******************************************************************************/
-extern void rotate_mesh(Canvas *canvas, UnitVector point);
+extern void rotate_mesh(Object * const canvas, const UnitVector point);
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -228,7 +251,7 @@ extern void set_rotation_angle(float angle);
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-extern void z_rotate_canvas(Canvas * const canvas);
+extern void z_rotate_canvas(Canvas * const canvas, const UnitVector point);
 
 /*  End the extern "C" statement if a C++ compiler is being used.             */
 #ifdef __cplusplus

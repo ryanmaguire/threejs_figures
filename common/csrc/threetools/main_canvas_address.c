@@ -40,10 +40,10 @@
  *  Arguments:                                                                *
  *      None (void).                                                          *
  *  Output:                                                                   *
- *      address (Canvas *):                                                   *
+ *      address (const Canvas *):                                             *
  *          The address of the global main canvas as a pointer.               *
  ******************************************************************************/
-Canvas *main_canvas_address(void)
+const Canvas *main_canvas_address(void)
 {
     /*  Simply return the address of the main canvas. This is used at the     *
      *  JavaScript level to access the struct.                                */

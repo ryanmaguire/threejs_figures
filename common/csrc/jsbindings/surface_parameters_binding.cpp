@@ -15,22 +15,22 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Provides an emscripten binding for the set_rotation_angle function.   *
+ *      Provides an emscripten binding for the CanvasParameter struct.        *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       January 24, 2026                                              *
  ******************************************************************************/
 #include <threetools/threetools.h>
 #include <emscripten/bind.h>
-#include <stddef.h>
 
-static void z_canvas_rotation(const std::uintptr_t ptr)
+EMSCRIPTEN_BINDINGS(threetools_surface_parameters_struct)
 {
-    Canvas * const canvas = reinterpret_cast<Canvas * const>(ptr);
-    z_rotate_canvas(canvas, rotation_vector);
-}
-
-EMSCRIPTEN_BINDINGS(threetools_set_rotation_angle_function)
-{
-    emscripten::function("zRotateCanvas", &z_canvas_rotation);
+    emscripten::value_object<SurfaceParameters>("SurfaceParameters")
+        .field("nxPts", &SurfaceParameters::nx_pts)
+        .field("nyPts", &SurfaceParameters::ny_pts)
+        .field("width", &SurfaceParameters::width)
+        .field("height", &SurfaceParameters::height)
+        .field("xStart", &SurfaceParameters::x_start)
+        .field("yStart", &SurfaceParameters::y_start)
+        .field("meshType", &SurfaceParameters::mesh_type);
 }

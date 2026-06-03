@@ -26,36 +26,33 @@
 /*  Canvas and CanvasParameters typedefs provided here.                       */
 #include <threetools/types.h>
 
-/*  The main_canvas and buffer globals are declared here.                     */
-#include <threetools/globals.h>
-
 /*  Function prototype / forward declaration found here.                      */
 #include <threetools/threetools.h>
 
 /******************************************************************************
  *  Function:                                                                 *
- *      init_main_canvas                                                      *
+ *      init_surface_object                                                   *
  *  Purpose:                                                                  *
  *      Initializes the main canvas for an animation.                         *
  *  Arguments:                                                                *
- *      parameters (const CanvasParameters * const):                          *
+ *      parameters (const SurfaceParameters * const):                         *
  *          The parameters for the canvas, passed from JavaScript or Godot.   *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-void init_main_canvas(const CanvasParameters * const parameters)
+void
+init_surface_object(Object * const object,
+                    const SurfaceParameters * const parameters)
 {
     /*  Most of the JavaScript / Godot parameters are the same, copy them.    */
-    main_canvas.nx_pts = parameters->nx_pts;
-    main_canvas.ny_pts = parameters->ny_pts;
-    main_canvas.width = parameters->width;
-    main_canvas.height = parameters->height;
-    main_canvas.horizontal_start = parameters->x_start;
-    main_canvas.vertical_start = parameters->y_start;
-    main_canvas.mesh_type = parameters->mesh_type;
+    object->nx_pts = parameters->nx_pts;
+    object->ny_pts = parameters->ny_pts;
+    object->mesh_type = parameters->mesh_type;
+    object->indices = NULL;
+    object->mesh = NULL;
 
     /*  The remaining variables in the canvas can be computed from these.     */
-    reset_mesh_buffer(&main_canvas, mesh_buffer);
-    reset_index_buffer(&main_canvas, index_buffer);
+    reset_mesh_buffer(object);
+    reset_index_buffer(object);
 }
-/*  End of init_main_canvas.                                                  */
+/*  End of init_surface_object.                                               */

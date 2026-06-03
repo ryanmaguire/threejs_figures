@@ -17,17 +17,20 @@
  *  along with threejs_figures.  If not, see <https://www.gnu.org/licenses/>. *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Resets the size of the mesh buffer inside a canvas.                   *
+ *      Resets the size of the mesh buffer inside a object.                   *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       November 23, 2025                                             *
  ******************************************************************************/
 
-/*  Canvas typedef found here.                                                */
+/*  Object typedef found here.                                                */
 #include <threetools/types.h>
 
 /*  Function prototype / forward declaration given here.                      */
 #include <threetools/threetools.h>
+
+/*  free and malloc are found here.                                           */
+#include <stdlib.h>
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -35,24 +38,23 @@
  *  Purpose:                                                                  *
  *      Resets the size of the mesh buffer.                                   *
  *  Arguments:                                                                *
- *      canvas (Canvas *):                                                    *
- *          The canvas that is being resized.                                 *
- *      buffer (float *):                                                     *
- *          The buffer where the canvas will store its data.                  *
+ *      object (Object * const):                                              *
+ *          The object that is being resized.                                 *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-void reset_mesh_buffer(Canvas *canvas, float *buffer)
+void reset_mesh_buffer(Object * const object)
 {
-    /*  The canvas is a rectangular grid, the total number of points is given *
+    /*  The object is a rectangular grid, the total number of points is given *
      *  by the product of the width and the height.                           */
-    canvas->number_of_points = canvas->nx_pts * canvas->ny_pts;
+    object->number_of_points = object->nx_pts * object->ny_pts;
 
     /*  Each point corresponds to three floats (the x, y, and z components).  *
      *  The mesh size is hence three times the number of points.              */
-    canvas->mesh_size = 3U * canvas->number_of_points;
+    object->mesh_size = 3U * object->number_of_points;
 
-    /*  Reset the mesh buffer to use the provided pointer.                    */
-    canvas->mesh = buffer;
+    /*  Reset the mesh buffer to use the current size.                        */
+    free(object->mesh);
+    object->mesh = malloc(sizeof(*object->mesh) * object->mesh_size);
 }
 /*  End of reset_mesh_buffer.                                                 */

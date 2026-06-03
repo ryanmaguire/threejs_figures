@@ -29,6 +29,9 @@
 /*  Function prototype / forward declaration given here.                      */
 #include <threetools/threetools.h>
 
+/*  free and malloc are found here.                                           */
+#include <stdlib.h>
+
 /******************************************************************************
  *  Function:                                                                 *
  *      reset_index_buffer                                                    *
@@ -37,17 +40,16 @@
  *  Arguments:                                                                *
  *      canvas (Canvas *):                                                    *
  *          The canvas that is being resized.                                 *
- *      buffer (unsigned int *):                                              *
- *          The buffer where the canvas will store its data.                  *
  *  Output:                                                                   *
  *      None (void).                                                          *
  ******************************************************************************/
-void reset_index_buffer(Canvas *canvas, unsigned int *buffer)
+void reset_index_buffer(Object * const object)
 {
     /*  The size of the index buffer depends on the mesh type. Compute this.  */
-    compute_index_size(canvas);
+    compute_index_size(object);
 
-    /*  Reset the index buffer to use the one provided.                       */
-    canvas->indices = buffer;
+    /*  Reset the index buffer to use the new size.                           */
+    free(object->indices);
+    object->indices = malloc(sizeof(*object->indices) * object->index_size);
 }
 /*  End of reset_index_buffer.                                                */

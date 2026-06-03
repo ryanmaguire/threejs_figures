@@ -34,9 +34,3 @@ UnitVector rotation_vector = {1.0, 0.0};
 
 /*  The main canvas for animations. Not initialized at the start.             */
 Canvas main_canvas;
-
-/*  Buffer for the vertices in the mesh.                                      */
-float mesh_buffer[MAX_MESH_BUFFER_SIZE];
-
-/*  Buffer for the indices indicating which vertices are connected by a line. */
-unsigned int index_buffer[MAX_INDEX_BUFFER_SIZE];

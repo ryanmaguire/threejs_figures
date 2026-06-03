@@ -15,22 +15,22 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Provides an emscripten binding for the CanvasParameter struct.        *
+ *      Provides an emscripten binding for the main_canvas_address function.  *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       January 24, 2026                                              *
  ******************************************************************************/
 #include <threetools/threetools.h>
 #include <emscripten/bind.h>
+#include <cstddef>
 
-EMSCRIPTEN_BINDINGS(threetools_canvas_parameters_struct)
+static std::uintptr_t get_canvas_object_address(std::size_t ind)
 {
-    emscripten::value_object<CanvasParameters>("CanvasParameters")
-        .field("nxPts", &CanvasParameters::nx_pts)
-        .field("nyPts", &CanvasParameters::ny_pts)
-        .field("width", &CanvasParameters::width)
-        .field("height", &CanvasParameters::height)
-        .field("xStart", &CanvasParameters::x_start)
-        .field("yStart", &CanvasParameters::y_start)
-        .field("meshType", &CanvasParameters::mesh_type);
+    const Object * const ptr = canvas_object_address(&main_canvas, ind);
+    return reinterpret_cast<std::uintptr_t>(ptr);
+}
+
+EMSCRIPTEN_BINDINGS(threetools_canvas_object_address_function)
+{
+    emscripten::function("canvasObjectAddress", &get_canvas_object_address);
 }

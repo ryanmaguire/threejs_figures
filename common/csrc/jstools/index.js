@@ -26,9 +26,13 @@
 import initModule from "main";
 
 /*  emscripten compiles everything into a module. Initialize it.              */
+import { LineSegments, MeshBasicMaterial } from "three";
+globalThis.THREE = { LineSegments, MeshBasicMaterial };
 const module = await initModule();
 
 /*  Export the C functions so that may be called in JavaScript.               */
+export const basicWireframe = module.basicWireframe;
+export const canvasObjectAddress = module.canvasObjectAddress;
 export const indexBufferAddress = module.indexBufferAddress;
 export const mainCanvasAddress = module.mainCanvasAddress;
 export const meshBufferAddress = module.meshBufferAddress;

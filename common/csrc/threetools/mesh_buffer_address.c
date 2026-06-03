@@ -35,8 +35,8 @@
  *  Purpose:                                                                  *
  *      Returns a pointer to the mesh array.                                  *
  *  Arguments:                                                                *
- *      canvas (const Canvas * const).                                        *
- *          The canvas containing the mesh buffer that we want.               *
+ *      object (const Object * const).                                        *
+ *          The object containing the mesh buffer that we want.               *
  *  Output:                                                                   *
  *      mesh (float *):                                                       *
  *          A pointer to the mesh array.                                      *
@@ -44,10 +44,10 @@
  *      This function is called at the JavaScript level to get the address    *
  *      for the mesh array so it may read and write to it.                    *
  ******************************************************************************/
-float *mesh_buffer_address(const Canvas * const canvas)
+float *mesh_buffer_address(const Object * const object)
 {
     /*  We can simply return the mesh buffer. At the JavaScript level this    *
      *  is used to get the address of the mesh array for reading and writing. */
-    return canvas->mesh;
+    return object->mesh;
 }
 /*  End of mesh_buffer_address.                                               */

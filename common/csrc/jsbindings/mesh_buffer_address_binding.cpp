@@ -22,11 +22,12 @@
  ******************************************************************************/
 #include <threetools/threetools.h>
 #include <emscripten/bind.h>
+#include <cstddef>
 
-static uintptr_t get_mesh_buffer_address(const uintptr_t ptr)
+static std::uintptr_t get_mesh_buffer_address(const std::uintptr_t ptr)
 {
-    const Canvas * const canvas = reinterpret_cast<const Canvas * const>(ptr);
-    return reinterpret_cast<uintptr_t>(mesh_buffer_address(canvas));
+    const Object * const object = reinterpret_cast<const Object * const>(ptr);
+    return reinterpret_cast<std::uintptr_t>(mesh_buffer_address(object));
 }
 
 EMSCRIPTEN_BINDINGS(threetools_mesh_buffer_address_function)

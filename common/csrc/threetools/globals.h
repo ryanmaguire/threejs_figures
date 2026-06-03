@@ -60,12 +60,6 @@ extern UnitVector rotation_vector;
  *  index buffers provided below.                                             */
 extern Canvas main_canvas;
 
-/*  Arrays for the mesh, which contains the points in the surface, and the    *
- *  index array, which specifies the line segments. These are fixed-width     *
- *  arrays created at compile time. No calls to malloc or free needed.        */
-extern float mesh_buffer[MAX_MESH_BUFFER_SIZE];
-extern unsigned int index_buffer[MAX_INDEX_BUFFER_SIZE];
-
 /*  End the extern "C" statement if a C++ compiler is being used.             */
 #ifdef __cplusplus
 }
