@@ -22,12 +22,13 @@
  ******************************************************************************/
 #include <threetools/threetools.h>
 #include <emscripten/bind.h>
+#include <cstdlib>
 
 /*  Height shift for centering the mesh when it is rendered on the screen.    */
 static const float surface_height_shift = -2.0F;
 
 /*  The surface being rendered, an elliptic paraboloid.                       */
-static float surface(float x, float y)
+static float function(float x, float y)
 {
     /*  An elliptic paraboloid has the formula z = x^2 + a y^2, with a > 1.   *
      *  We use the height shift to center the object on the screen.           */
@@ -36,9 +37,21 @@ static float surface(float x, float y)
 /*  End of surface.                                                           */
 
 /*  Wrapper for the Go function MakeRectangularWireframe.                     */
-static void setup_mesh(CanvasParameters parameters)
+static void setup_mesh(SurfaceParameters parameters)
 {
-    make_rectangular_wireframe(&parameters, surface);
+    SurfaceParametrization surface;
+    Object *object = new Object();
+
+    surface.width = parameters.width;
+    surface.height = parameters.height;
+    surface.horizontal_start = parameters.x_start;
+    surface.vertical_start = parameters.y_start;
+    surface.parametrization = function;
+
+    make_rectangular_wireframe(object, &parameters, &surface);
+
+    main_canvas.number_of_objects = 1;
+    main_canvas.objects = object;
 }
 /*  End of setupMesh.                                                         */
 
