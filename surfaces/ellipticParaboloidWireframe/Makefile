@@ -24,9 +24,20 @@
 COMMON_DIR = ../../common/csrc
 THREETOOLS = libthreetools.a
 
-# C Compilation settings
+# Common build flags.
+include $(COMMON_DIR)/build_flags.mk
+
+# C++ compiler used.
 CXX = em++
-CFLAGS = -Wall -Wextra -Wpedantic -I$(COMMON_DIR) -O3 -flto
+
+# Compile flags for the bindings.
+INCLUDES = -I$(COMMON_DIR)
+CXXFLAGS = $(STD_CXX) $(WARN_FLAGS) $(INCLUDES) $(CODEGEN_FLAGS)
+
+# Link against the static library. --whole-archive is needed to ensure
+# functions generated using the EMSCRIPTEN_BINDINGS macro survive are not
+# removed. Once libthreetools.a has been linked we may disable this using
+# --no-whole-archive to avoid bloating the final build.
 LFLAGS = -L$(COMMON_DIR) \
 	-Wl,--whole-archive \
 	-l:$(THREETOOLS) \
@@ -34,7 +45,7 @@ LFLAGS = -L$(COMMON_DIR) \
 	-lembind
 
 # Location of the C++ code.
-CXXSRC = $(wildcard ./csrc/*.cpp)
+CXX_SRC = $(wildcard ./csrc/*.cpp)
 
 # Location of the optional JavaScript code. C / C++ is used by default.
 JS_SRC_DIR = jssrc
@@ -54,12 +65,40 @@ GO_FLAGS = GOOS=js GOARCH=wasm
 MAIN_FILE = main.js
 WASM_FILE = main.wasm
 
-# Functions exported by emscripten.
+ifeq ($(USE_THREADS), 1)
+    ENVIRONMENT = web,worker
+    THREAD_LINK = -sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency
+else
+    ENVIRONMENT = web
+    THREAD_LINK =
+endif
+
+# Memory and stack sizes, large enough for animations.
+INITIAL_MEMORY ?= 256MB
+STACK_SIZE ?= 1MB
+
+# Heap views for JavaScript.
+EXPORTED_RUNTIME_METHODS = HEAP8,HEAPU8,HEAP32,HEAPU32,HEAPF32,HEAPF64
 
 # Emscripten flags used for exporting the functions into a JavaScript module.
 JS_FLAGS = -s MODULARIZE=1 -s EXPORT_ES6=1 -s EXPORT_NAME=initModule
-EXPORTS = -s EXPORTED_RUNTIME_METHODS='["HEAP8"]'
-EMSCRIPTEN_FLAGS = $(JS_FLAGS) $(EXPORTS)
+
+# Linker flags aimed at improving optimization.
+LINK_FLAGS = \
+	$(JS_FLAGS) \
+	-s ENVIRONMENT=$(ENVIRONMENT) \
+	-s EXPORTED_RUNTIME_METHODS=$(EXPORTED_RUNTIME_METHODS) \
+	-s FILESYSTEM=0 \
+	-s WASM_BIGINT \
+	-s TEXTDECODER=2 \
+	-s ALLOW_MEMORY_GROWTH=0 \
+	-s INITIAL_MEMORY=$(INITIAL_MEMORY) \
+	-s STACK_SIZE=$(STACK_SIZE) \
+	-s ASSERTIONS=0 \
+	-s SAFE_HEAP=0 \
+	-s STACK_OVERFLOW_CHECK=0 \
+	$(THREAD_LINK) \
+	--closure 1
 
 .PHONY: all clean js rust go
 
@@ -68,9 +107,9 @@ all: $(MAIN_FILE) $(WASM_FILE)
 $(COMMON_DIR)/$(THREETOOLS):
 	$(MAKE) -C $(COMMON_DIR) -j
 
-$(MAIN_FILE) $(WASM_FILE): $(CXXSRC) $(COMMON_DIR)/$(THREETOOLS)
-	@echo "Building main.js and main.wasm ..."
-	@$(CXX) $(CFLAGS) $(CXXSRC) -o $(MAIN_FILE) $(LFLAGS) $(EMSCRIPTEN_FLAGS)
+$(MAIN_FILE) $(WASM_FILE) &: $(CXX_SRC) $(COMMON_DIR)/$(THREETOOLS)
+	@echo "Building $(MAIN_FILE) and $(WASM_FILE) ..."
+	@$(CXX) $(CXXFLAGS) $(CXX_SRC) -o $(MAIN_FILE) $(LFLAGS) $(LINK_FLAGS)
 
 js:
 	cp $(JS_SRC_DIR)/$(MAIN_FILE) .
