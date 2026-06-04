@@ -26,17 +26,51 @@
 import initModule from "main";
 
 /*  emscripten compiles everything into a module. Initialize it.              */
-import { LineSegments, MeshBasicMaterial } from "three";
-globalThis.THREE = { LineSegments, MeshBasicMaterial };
+import {
+    BufferAttribute,
+    BufferGeometry,
+    LineSegments,
+    MeshBasicMaterial,
+    PerspectiveCamera,
+    Scene,
+    WebGLRenderer
+} from "three";
+
+/*  OrbitControls allows the user to control the animation using their mouse. */
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+/*  Stats allows the FPS counter to be displayed.                             */
+import Stats from "three/examples/jsm/libs/stats.module.js";
+
+globalThis.THREE = {
+    BufferAttribute,
+    BufferGeometry,
+    LineSegments,
+    MeshBasicMaterial,
+    OrbitControls,
+    PerspectiveCamera,
+    Scene,
+    WebGLRenderer
+};
+
 const module = await initModule();
 
 /*  Export the C functions so that may be called in JavaScript.               */
 export const basicWireframe = module.basicWireframe;
 export const canvasObjectAddress = module.canvasObjectAddress;
 export const indexBufferAddress = module.indexBufferAddress;
+export const initGeometry = module.initGeometry;
 export const mainCanvasAddress = module.mainCanvasAddress;
 export const meshBufferAddress = module.meshBufferAddress;
 export const memory = module.HEAP8;
+export const sceneCamera = module.sceneCamera;
+export const sceneFromSurface = module.sceneFromSurface;
+export const sceneRenderer = module.sceneRenderer;
+export const setupControls = module.setupControls;
 export const setupMesh = module.setupMesh;
 export const setRotationAngle = module.setRotationAngle;
+export const squareWireframeGeometry = module.squareWireframeGeometry;
+export const windowResize = module.windowResize;
 export const zRotateCanvas = module.zRotateCanvas;
+export const zRotate = module.zRotate;
+export {Stats};
