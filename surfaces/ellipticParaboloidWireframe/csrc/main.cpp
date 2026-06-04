@@ -37,7 +37,7 @@ static float function(float x, float y)
 /*  End of surface.                                                           */
 
 /*  Wrapper for the Go function MakeRectangularWireframe.                     */
-static void setup_mesh(SurfaceParameters parameters)
+void setup_mesh(SurfaceParameters parameters)
 {
     SurfaceParametrization surface;
     Object *object = new Object();
@@ -54,10 +54,3 @@ static void setup_mesh(SurfaceParameters parameters)
     main_canvas.objects = object;
 }
 /*  End of setupMesh.                                                         */
-
-/*  Main program, start of the JavaScript animation.                          */
-EMSCRIPTEN_BINDINGS(threetools)
-{
-    emscripten::function("setupMesh", &setup_mesh);
-}
-/*  End of main.                                                              */
