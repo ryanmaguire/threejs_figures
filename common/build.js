@@ -44,8 +44,8 @@ function build(wasmSource, output) {
     /*  Setup parameters for esbuild.                                         */
     const buildParameters = {
 
-        /*  Each language uses the same jscommon code.                        */
-        entryPoints: ["jscommon/index.js"],
+        /*  The source file for the selected language.                        */
+        entryPoints: [wasmSource],
 
         /*  Package the ES module together.                                   */
         bundle: true,
@@ -61,12 +61,7 @@ function build(wasmSource, output) {
 
         /*  The "main" module is provided by the individual animations. It is *
          *  external and not part of the "common" directory.                  */
-        external: ["main"],
-
-        /*  The location of "wasmtools" is dependent on the selected language.*/
-        alias: {
-            wasmtools: wasmSource
-        }
+        external: ["main"]
     };
 
     /*  Generate the min.js file.                                             */
