@@ -81,7 +81,10 @@ STACK_SIZE ?= 1MB
 EXPORTED_RUNTIME_METHODS = HEAP8,HEAPU8,HEAP32,HEAPU32,HEAPF32,HEAPF64
 
 # Emscripten flags used for exporting the functions into a JavaScript module.
-JS_FLAGS = -s MODULARIZE=1 -s EXPORT_ES6=1 -s EXPORT_NAME=initModule
+JS_PRE = --extern-pre-js $(COMMON_DIR)/jstools/pre.js
+JS_POST = --extern-post-js $(COMMON_DIR)/jstools/post.js
+JS_BUILD_FLAGS = -s MODULARIZE=1 -s EXPORT_ES6=1 -s EXPORT_NAME=initModule
+JS_FLAGS = $(JS_PRE) $(JS_BUILD_FLAGS) $(JS_POST)
 
 # Linker flags aimed at improving optimization.
 LINK_FLAGS = \
