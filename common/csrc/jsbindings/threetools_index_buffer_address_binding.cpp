@@ -20,17 +20,30 @@
  *  Author:     Ryan Maguire                                                  *
  *  Date:       January 24, 2026                                              *
  ******************************************************************************/
+
+/*  Function prototypes and various typedefs are provided here.               */
 #include <threetools/threetools.h>
+
+/*  The EMSCRIPTEN_BINDINGS macro is found here.                              */
 #include <emscripten/bind.h>
+
+/*  std::size_t typedef given here.                                           */
 #include <cstddef>
 
+/*  JS binding for the index_buffer_address function.                         */
 static std::uintptr_t get_index_buffer_address(const std::uintptr_t ptr)
 {
+    /*  Call the C function.                                                  */
     const Object * const object = reinterpret_cast<const Object * const>(ptr);
+
+    /*  JavaScript uses raw integers for pointers. Make an explicit cast.     */
     return reinterpret_cast<std::uintptr_t>(index_buffer_address(object));
 }
+/*  End of get_index_buffer_address.                                          */
 
+/*  Expose this function to JavaScript so it may be called directly.          */
 EMSCRIPTEN_BINDINGS(threetools_index_buffer_address_function)
 {
+    /*  The calling convention in JavaScript is snakeCase.                    */
     emscripten::function("indexBufferAddress", &get_index_buffer_address);
 }
