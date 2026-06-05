@@ -20,17 +20,30 @@
  *  Author:     Ryan Maguire                                                  *
  *  Date:       January 24, 2026                                              *
  ******************************************************************************/
-#include <threetools/threetools.h>
-#include <emscripten/bind.h>
-#include <stddef.h>
 
-static void z_canvas_rotation(const std::uintptr_t ptr)
+/*  Function prototypes and various typedefs are provided here.               */
+#include <threetools/threetools.h>
+
+/*  The EMSCRIPTEN_BINDINGS macro is found here.                              */
+#include <emscripten/bind.h>
+
+/*  std::uintptr_t typedef given here.                                        */
+#include <cstddef>
+
+/*  JS binding for the z_rotate_canvas function.                              */
+static void get_z_rotate_canvas(const std::uintptr_t ptr)
 {
+    /*  JS uses integers for pointers. Get a Canvas pointer from this.        */
     Canvas * const canvas = reinterpret_cast<Canvas * const>(ptr);
+
+    /*  Call the C function.                                                  */
     z_rotate_canvas(canvas, rotation_vector);
 }
+/*  End of get_z_rotate_canvas.                                               */
 
-EMSCRIPTEN_BINDINGS(threetools_set_rotation_angle_function)
+/*  Expose this function to JavaScript so it may be called directly.          */
+EMSCRIPTEN_BINDINGS(threetools_z_rotate_canvas_function)
 {
-    emscripten::function("zRotateCanvas", &z_canvas_rotation);
+    /*  The calling convention in JavaScript is snakeCase.                    */
+    emscripten::function("zRotateCanvas", &get_z_rotate_canvas);
 }
