@@ -27,8 +27,8 @@
 const esbuild = require("esbuild");
 
 /*  Location of the C glue code, and the name of the C module.                */
-const cSrc = "./csrc/jstools/index.js";
-const cOut = "./dist/rjmthreetools.c.min.js";
+const cSrc = "./csrc/jstools/deps.js";
+const cOut = "./dist/threedeps.min.js";
 
 /*  Location of the Go glue code, and the name of the Go module.              */
 const goSrc = "./gosrc/jstools/index.js";
