@@ -20,10 +20,16 @@
  *  Author:     Ryan Maguire                                                  *
  *  Date:       January 24, 2026                                              *
  ******************************************************************************/
+
+/*  Function prototypes and various typedefs are provided here.               */
 #include <threetools/threetools.h>
+
+/*  The EMSCRIPTEN_BINDINGS macro is found here.                              */
 #include <emscripten/bind.h>
 
+/*  Expose this function to JavaScript so it may be called directly.          */
 EMSCRIPTEN_BINDINGS(threetools_set_rotation_angle_function)
 {
+    /*  The calling convention in JavaScript is snakeCase.                    */
     emscripten::function("setRotationAngle", &set_rotation_angle);
 }
