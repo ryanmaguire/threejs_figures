@@ -20,10 +20,15 @@
  *  Author:     Ryan Maguire                                                  *
  *  Date:       January 24, 2026                                              *
  ******************************************************************************/
-#include <threetools/threetools.h>
+
+/*  The MeshType typedef is provided here.                                    */
+#include <threetools/types.h>
+
+/*  The EMSCRIPTEN_BINDINGS macro is found here.                              */
 #include <emscripten/bind.h>
 
-EMSCRIPTEN_BINDINGS(threetools_mesh_type_enum)
+/*  Allow the C enum to be used with JS code.                                 */
+EMSCRIPTEN_BINDINGS(threetools_mesh_type_enum_binding)
 {
     emscripten::enum_<MeshType>("MeshType")
         .value("SquareWireframe", SquareWireframe)
