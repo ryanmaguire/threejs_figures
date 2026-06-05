@@ -27,7 +27,7 @@
 /*  The EMSCRIPTEN_BINDINGS macro is found here.                              */
 #include <emscripten/bind.h>
 
-/*  std::size_t typedef given here.                                           */
+/*  std::uintptr_t typedef given here.                                        */
 #include <cstddef>
 
 /*  JS binding for the mesh_buffer_address function.                          */
