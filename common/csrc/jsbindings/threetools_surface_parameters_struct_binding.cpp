@@ -22,7 +22,7 @@
  ******************************************************************************/
 
 /*  The SurfaceParameters typedef is provided here.                           */
-#include <threetools/globals.h>
+#include <threetools/types.h>
 
 /*  The EMSCRIPTEN_BINDINGS macro is found here.                              */
 #include <emscripten/bind.h>
