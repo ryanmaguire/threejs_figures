@@ -15,46 +15,27 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Provides an emscripten binding for the Object struct.                 *
+ *      Provides an emscripten binding for the CanvasParameter struct.        *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       January 24, 2026                                              *
  ******************************************************************************/
-#include <threetools/threetools.h>
+
+/*  The SurfaceParameters typedef is provided here.                           */
+#include <threetools/globals.h>
+
+/*  The EMSCRIPTEN_BINDINGS macro is found here.                              */
 #include <emscripten/bind.h>
-#include <cstddef>
 
-/*  Getter and setters are needed since we can not bind a raw pointer.        */
-static std::uintptr_t mesh_getter(const Object &object)
+/*  Allow the C struct to be used with JS code.                               */
+EMSCRIPTEN_BINDINGS(threetools_surface_parameters_struct)
 {
-    return reinterpret_cast<std::uintptr_t>(object.mesh);
-}
-
-static void mesh_setter(Object &object, std::uintptr_t ptr)
-{
-    object.mesh = reinterpret_cast<float *>(ptr);
-}
-
-/*  The index buffer is also a raw pointer, provided a getter and a setter.   */
-static std::uintptr_t index_getter(const Object &object)
-{
-    return reinterpret_cast<std::uintptr_t>(object.indices);
-}
-
-static void index_setter(Object &object, std::uintptr_t ptr)
-{
-    object.indices = reinterpret_cast<unsigned int *>(ptr);
-}
-
-EMSCRIPTEN_BINDINGS(threetools_object_struct)
-{
-    emscripten::value_object<Object>("Object")
-        .field("mesh", &mesh_getter, &mesh_setter)
-        .field("indices", &index_getter, &index_setter)
-        .field("number_of_points", &Object::number_of_points)
-        .field("mesh_size", &Object::mesh_size)
-        .field("index_size", &Object::index_size)
-        .field("nx_pts", &Object::nx_pts)
-        .field("ny_pts", &Object::ny_pts)
-        .field("mesh_type", &Object::mesh_type);
+    emscripten::value_object<SurfaceParameters>("SurfaceParameters")
+        .field("nxPts", &SurfaceParameters::nx_pts)
+        .field("nyPts", &SurfaceParameters::ny_pts)
+        .field("width", &SurfaceParameters::width)
+        .field("height", &SurfaceParameters::height)
+        .field("xStart", &SurfaceParameters::x_start)
+        .field("yStart", &SurfaceParameters::y_start)
+        .field("meshType", &SurfaceParameters::mesh_type);
 }
