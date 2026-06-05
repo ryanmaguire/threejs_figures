@@ -15,20 +15,35 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Provides an emscripten binding for the main_canvas_address function.  *
+ *      Provides an emscripten binding for the canvas_object_address function.*
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       January 24, 2026                                              *
  ******************************************************************************/
+
+/*  Function prototypes and various typedefs are provided here.               */
 #include <threetools/threetools.h>
+
+/*  The EMSCRIPTEN_BINDINGS macro is found here.                              */
 #include <emscripten/bind.h>
 
-static uintptr_t get_main_canvas_address(void)
-{
-    return reinterpret_cast<uintptr_t>(main_canvas_address());
-}
+/*  std::size_t typedef given here.                                           */
+#include <cstddef>
 
-EMSCRIPTEN_BINDINGS(threetools_main_canvas_address_function)
+/*  JS binding for the canvas_object_address function.                        */
+static std::uintptr_t get_canvas_object_address(std::size_t ind)
 {
-    emscripten::function("mainCanvasAddress", &get_main_canvas_address);
+    /*  Call the C function.                                                  */
+    const Object * const ptr = canvas_object_address(&main_canvas, ind);
+
+    /*  JavaScript uses raw integers for pointers. Make an explicit cast.     */
+    return reinterpret_cast<std::uintptr_t>(ptr);
+}
+/*  End of get_canvas_object_address.                                         */
+
+/*  Expose this function to JavaScript so it may be called directly.          */
+EMSCRIPTEN_BINDINGS(threetools_canvas_object_address_function)
+{
+    /*  The calling convention in JavaScript is snakeCase.                    */
+    emscripten::function("canvasObjectAddress", &get_canvas_object_address);
 }
