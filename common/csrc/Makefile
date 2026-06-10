@@ -44,7 +44,7 @@ CXX_OBJ_DIR = $(BUILD_DIR)/cxx
 DEPFLAGS = -MMD -MP
 
 # The C and C++ files assume threetools/ is in view. Add this include flag.
-INCLUDES = -I./
+INCLUDES = -I./ -I/usr/local/include
 
 # Language flags.
 CFLAGS = $(STD_C) $(WARN_FLAGS) $(INCLUDES) $(COMMON_FLAGS) $(DEPFLAGS)
